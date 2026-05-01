@@ -2,28 +2,41 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Zajda Admin - Direct Mode</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zajda Admin - Uploadcare</title>
 </head>
 <body>
-  <!-- Použijeme jen základní CMS bez externích doplňků media knihovny -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script src="https://unpkg.com/netlify-cms-media-library-uploadcare@^0.5.10/dist/netlify-cms-media-library-uploadcare.js"></script>
+
   <script>
+    // Registrace knihovny pro nahrávání
+    CMS.registerMediaLibrary(NetlifyCmsMediaLibraryUploadcare);
+
     CMS.init({
       config: {
-        backend: { name: "test-repo" },
-        // Zkusíme standardní nahrávání přímo do GitHubu, 
-        // abychom zjistili, jestli není chyba v samotném Decapu
-        media_folder: "assets/img",
-        public_folder: "/assets/img",
+        backend: { 
+          name: "github",
+          repo: "pavelzajicek75-ops/zajda_web",
+          branch: "main"
+        },
+        media_library: {
+          name: "uploadcare",
+          config: {
+            // Tvůj klíč ze screenshotu image_3da441.jpg
+            publicKey: "fb584abdf0298377bbd6" 
+          }
+        },
         collections: [{
           name: "posts",
-          label: "Články",
+          label: "Příspěvky",
           folder: "_posts",
           create: true,
           fields: [
             {label: "Titulek", name: "title", widget: "string"},
-            {label: "Foto", name: "image", widget: "image"},
-            {label: "Text", name: "body", widget: "markdown"}
+            {label: "Datum", name: "date", widget: "datetime"},
+            {label: "Úvodní foto", name: "image", widget: "image"},
+            {label: "Text článku", name: "body", widget: "markdown"}
           ]
         }]
       }
