@@ -1,12 +1,12 @@
 backend:
   name: github
-  repo: pavelzajicek75-ops/zajda_web
+  repo: "pavelzajicek75-ops/zajda_web" # Ujisti se, že je to v uvozovkách
   branch: main
 
 media_library:
   name: cloudinary
   config:
-    cloud_name: dvfllu1oi
+    cloud_name: "dvfllu1oi"
     api_key: "SEM_VLOŽ_SVŮJ_API_KEY"
     api_secret: "SEM_VLOŽ_SVŮJ_API_SECRET"
 
