@@ -24,13 +24,22 @@
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   
   <script>
-    CMS.registerMediaLibrary(NetlifyCmsMediaLibraryCloudinary);
+    // NATVRDO DEFINOVANÉ ÚDAJE (Přebíjí config.yml)
+    const cloudinaryConfig = {
+      name: 'cloudinary',
+      config: {
+        cloud_name: 'dxf1lu1oi',
+        api_key: '593899341857225',
+        default_transformations: [{ fetch_format: 'auto', quality: 'auto' }]
+      }
+    };
+
+    CMS.registerMediaLibrary(NetlifyCmsMediaLibraryCloudinary, cloudinaryConfig);
 
     function checkPass() {
       if (document.getElementById('pass').value === "zajda2026") {
         document.getElementById('auth-overlay').style.display = 'none';
-        // Tohle vynutí nové načtení Cloudinary údajů
-        localStorage.removeItem('cms-cloudinary');
+        localStorage.clear(); // Vymaže úplně všechnu starou paměť prohlížeče
       } else { alert("Špatně / Wrong"); }
     }
   </script>
