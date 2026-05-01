@@ -2,15 +2,14 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zajda Admin - Uploadcare</title>
+  <title>Zajda Admin - CLEAN</title>
 </head>
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script src="https://unpkg.com/netlify-cms-media-library-uploadcare@^0.5.10/dist/netlify-cms-media-library-uploadcare.js"></script>
 
   <script>
-    // Registrace knihovny pro nahrávání
+    // Zkusíme to zaregistrovat natvrdo pod novým názvem
     CMS.registerMediaLibrary(NetlifyCmsMediaLibraryUploadcare);
 
     CMS.init({
@@ -20,23 +19,22 @@
           repo: "pavelzajicek75-ops/zajda_web",
           branch: "main"
         },
+        // TADY JE ZMĚNA - Explicitně říkáme: ŽÁDNÝ CLOUDINARY
         media_library: {
           name: "uploadcare",
           config: {
-            // Tvůj klíč ze screenshotu image_3da441.jpg
             publicKey: "fb584abdf0298377bbd6" 
           }
         },
         collections: [{
-          name: "posts",
+          name: "clanky_nove", // Změna názvu kolekce donutí CMS se osvěžit
           label: "Příspěvky",
           folder: "_posts",
           create: true,
           fields: [
             {label: "Titulek", name: "title", widget: "string"},
-            {label: "Datum", name: "date", widget: "datetime"},
-            {label: "Úvodní foto", name: "image", widget: "image"},
-            {label: "Text článku", name: "body", widget: "markdown"}
+            {label: "Foto", name: "image", widget: "image"},
+            {label: "Text", name: "body", widget: "markdown"}
           ]
         }]
       }
