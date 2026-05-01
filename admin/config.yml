@@ -3,14 +3,12 @@ backend:
   repo: pavelzajicek75-ops/zajda_web
   branch: main
 
-# PROPOJENÍ S CLOUDINARY
+# PROPOJENÍ S CLOUDINARY - OPRAVENO
 media_library:
   name: cloudinary
   config:
-    cloud_name: pavel-zajicek-75-ops
+    cloud_name: dxf1lu1oi
     api_key: "625697669466547"
-    # Api Secret se do configu nedává z bezpečnostních důvodů, 
-    # Cloudinary si ho vyžádá při prvním přihlášení v adminu přes popup.
     default_transformations:
       - fetch_format: "auto"
         quality: "auto"
