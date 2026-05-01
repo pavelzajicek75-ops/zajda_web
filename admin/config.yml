@@ -1,23 +1,19 @@
 backend:
   name: github
-  repo: "pavelzajicek75-ops/zajda_web"
+  repo: pavelzajicek75-ops/zajda_web
   branch: main
 
-media_library:
-  name: cloudinary
-  config:
-    cloud_name: "dvfllu1oi"
-    api_key: "593859341857225"
-    api_secret: "xfKy9PX9RwvKws8Q8inDynY5z4sM"
+media_folder: "assets/images"
+public_folder: "/assets/images"
 
 collections:
-  - name: "blog"
-    label: "Články"
-    folder: "posts"
+  - name: "posts"
+    label: "Příspěvky"
+    folder: "_posts"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - {label: "Nadpis", name: "title", widget: "string"}
-      - {label: "Kategorie", name: "category", widget: "select", options: ["Cestování", "Fotografie", "Projekty"]}
-      - {label: "Hlavní fotka", name: "image", widget: "image"}
-      - {label: "Text článku", name: "body", widget: "markdown"}
+      - {label: "Layout", name: "layout", widget: "hidden", default: "post"}
+      - {label: "Titulek", name: "title", widget: "string"}
+      - {label: "Datum", name: "date", widget: "datetime"}
+      - {label: "Obsah", name: "body", widget: "markdown"}
