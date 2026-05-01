@@ -8,7 +8,7 @@ media_library:
   name: cloudinary
   config:
     cloud_name: dxf1lu1oi
-    api_key: "625697669466547"
+    api_key: "593899341857225"
     default_transformations:
       - fetch_format: "auto"
         quality: "auto"
