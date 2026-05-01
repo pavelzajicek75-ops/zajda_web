@@ -1,7 +1,6 @@
 backend:
   name: test-repo
 
-# PROPOJENÍ S CLOUDINARY - POUŽITÍ TVÝCH ÚDAJŮ Z DASHBOARDU
 media_library:
   name: cloudinary
   config:
