@@ -3,22 +3,26 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zajda Admin - Cloudflare & Cloudinary</title>
+  <title>Zajda Admin</title>
 </head>
 <body>
+  <!-- Načtení Decap CMS a Cloudinary knihovny -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script src="https://unpkg.com/netlify-cms-media-library-cloudinary@^1.3.0/dist/netlify-cms-media-library-cloudinary.js"></script>
-
+  
   <script>
+    // Registrace Cloudinary
     CMS.registerMediaLibrary(NetlifyCmsMediaLibraryCloudinary);
 
     CMS.init({
       config: {
-        backend: { 
+        // Propojení s tvým GitHubem
+        backend: {
           name: "github",
           repo: "pavelzajicek75-ops/zajda_web",
           branch: "main"
         },
+        // Nastavení Cloudinary pro fotky
         media_library: {
           name: "cloudinary",
           config: {
@@ -28,18 +32,22 @@
             upload_preset: "zajda555"
           }
         },
-        collections: [{
-          name: "posts",
-          label: "Příspěvky",
-          folder: "_posts",
-          create: true,
-          fields: [
-            {label: "Titulek", name: "title", widget: "string"},
-            {label: "Datum", name: "date", widget: "datetime"},
-            {label: "Úvodní foto", name: "image", widget: "image"},
-            {label: "Text článku", name: "body", widget: "markdown"}
-          ]
-        }]
+        // Definice obsahu (tady můžeš později přidávat další políčka)
+        collections: [
+          {
+            name: "blog",
+            label: "Články",
+            folder: "_posts",
+            create: true,
+            slug: "{{year}}-{{month}}-{{day}}-{{slug}}",
+            fields: [
+              { label: "Titulek", name: "title", widget: "string" },
+              { label: "Datum", name: "date", widget: "datetime" },
+              { label: "Úvodní obrázek", name: "image", widget: "image", clearable: true },
+              { label: "Text článku", name: "body", widget: "markdown" }
+            ]
+          }
+        ]
       }
     });
   </script>
