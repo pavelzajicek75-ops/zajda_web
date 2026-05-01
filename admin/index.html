@@ -2,15 +2,14 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Zajda Admin - Cloudinary REBORN</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zajda Admin - Cloudflare & Cloudinary</title>
 </head>
 <body>
-  <!-- Načtení CMS a Cloudinary pluginu -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script src="https://unpkg.com/netlify-cms-media-library-cloudinary@^1.3.0/dist/netlify-cms-media-library-cloudinary.js"></script>
 
   <script>
-    // Registrace Cloudinary
     CMS.registerMediaLibrary(NetlifyCmsMediaLibraryCloudinary);
 
     CMS.init({
@@ -20,7 +19,6 @@
           repo: "pavelzajicek75-ops/zajda_web",
           branch: "main"
         },
-        // Konfigurace tvého Cloudinary
         media_library: {
           name: "cloudinary",
           config: {
@@ -31,14 +29,15 @@
           }
         },
         collections: [{
-          name: "clanky_cloudinary",
+          name: "posts",
           label: "Příspěvky",
           folder: "_posts",
           create: true,
           fields: [
             {label: "Titulek", name: "title", widget: "string"},
-            {label: "Foto", name: "image", widget: "image"},
-            {label: "Text", name: "body", widget: "markdown"}
+            {label: "Datum", name: "date", widget: "datetime"},
+            {label: "Úvodní foto", name: "image", widget: "image"},
+            {label: "Text článku", name: "body", widget: "markdown"}
           ]
         }]
       }
