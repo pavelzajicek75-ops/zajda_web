@@ -6,7 +6,7 @@ backend:
 media_library:
   name: cloudinary
   config:
-    cloud_name: dul1lu1oi
+    cloud_name: dul1iu1oi
     api_key: "593899341857225"
     unsigned_upload: true
     upload_preset: zajda555
