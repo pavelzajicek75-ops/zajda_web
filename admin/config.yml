@@ -3,14 +3,24 @@ backend:
   repo: pavelzajicek75-ops/zajda_web
   branch: main
 
-media_folder: "assets/images"
-public_folder: "/assets/images"
+# PROPOJENÍ S CLOUDINARY
+media_library:
+  name: cloudinary
+  config:
+    cloud_name: pavel-zajicek-75-ops
+    api_key: "625697669466547"
+    # Api Secret se do configu nedává z bezpečnostních důvodů, 
+    # Cloudinary si ho vyžádá při prvním přihlášení v adminu přes popup.
+    default_transformations:
+      - fetch_format: "auto"
+        quality: "auto"
 
 collections:
   - name: "posts"
     label: "Články / Posts"
     folder: "_posts"
     create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - {label: "Sekce / Section", name: "section", widget: "select", options: ["Fotografování", "Cestování", "Projekty"]}
       - {label: "Titulek (CZ)", name: "title_cz", widget: "string"}
