@@ -1,9 +1,7 @@
 backend:
-  name: github
-  repo: pavelzajicek75-ops/zajda_web
-  branch: main
+  name: test-repo
 
-# CLOUDINARY CONFIG - DXF1LU1OI
+# PROPOJENÍ S CLOUDINARY - POUŽITÍ TVÝCH ÚDAJŮ Z DASHBOARDU
 media_library:
   name: cloudinary
   config:
