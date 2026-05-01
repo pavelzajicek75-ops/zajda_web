@@ -3,26 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zajda Admin</title>
+  <title>Zajda Admin - Cloudflare Edition</title>
 </head>
 <body>
-  <!-- Načtení Decap CMS a Cloudinary knihovny -->
+  <!-- Nejdříve načteme CMS, pak knihovnu pro Cloudinary -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script src="https://unpkg.com/netlify-cms-media-library-cloudinary@^1.3.0/dist/netlify-cms-media-library-cloudinary.js"></script>
-  
+
   <script>
-    // Registrace Cloudinary
+    // Registrace Cloudinary knihovny do CMS
     CMS.registerMediaLibrary(NetlifyCmsMediaLibraryCloudinary);
 
     CMS.init({
       config: {
-        // Propojení s tvým GitHubem
+        // Napojení na tvůj GitHub repozitář
         backend: {
           name: "github",
           repo: "pavelzajicek75-ops/zajda_web",
-          branch: "main"
+          branch: "main",
+          base_url: "https://zajda-web.pages.dev"
         },
-        // Nastavení Cloudinary pro fotky
+        // Správná konfigurace Cloudinary (oprava chyby z image_3c4017.jpg)
         media_library: {
           name: "cloudinary",
           config: {
@@ -32,7 +33,7 @@
             upload_preset: "zajda555"
           }
         },
-        // Definice obsahu (tady můžeš později přidávat další políčka)
+        // Definice polí v administraci
         collections: [
           {
             name: "blog",
