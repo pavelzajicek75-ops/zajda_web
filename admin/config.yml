@@ -1,26 +1,23 @@
 backend:
-  name: test-repo
+  name: github
+  repo: pavelzajicek75-ops/zajda_web
+  branch: main
 
 media_library:
   name: cloudinary
   config:
-    cloud_name: dxf1lu1oi
+    cloud_name: dul1lu1oi
     api_key: "593899341857225"
-    default_transformations:
-      - fetch_format: "auto"
-        quality: "auto"
+    unsigned_upload: true
+    upload_preset: zajda555
 
 collections:
-  - name: "posts"
-    label: "Články / Posts"
+  - name: "blog"
+    label: "Články"
     folder: "_posts"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - {label: "Sekce / Section", name: "section", widget: "select", options: ["Fotografování", "Cestování", "Projekty"]}
-      - {label: "Titulek (CZ)", name: "title_cz", widget: "string"}
-      - {label: "Title (EN)", name: "title_en", widget: "string"}
-      - {label: "Úvodní fotka / Main Image", name: "image", widget: "image"}
-      - {label: "Obsah (CZ)", name: "body_cz", widget: "markdown"}
-      - {label: "Content (EN)", name: "body_en", widget: "markdown"}
-      - {label: "Galerie / Gallery", name: "photos", widget: "list", field: {label: "Foto", name: "image", widget: "image"}}
+      - {label: "Titulek", name: "title", widget: "string"}
+      - {label: "Obrázek", name: "image", widget: "image"}
+      - {label: "Text", name: "body", widget: "markdown"}
