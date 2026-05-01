@@ -1,29 +1,18 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zajda Admin - Cloudflare Edition</title>
-</head>
+<head><meta charset="utf-8" /><title>Zajda Admin</title></head>
 <body>
-  <!-- Nejdříve načteme CMS, pak knihovnu pro Cloudinary -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script src="https://unpkg.com/netlify-cms-media-library-cloudinary@^1.3.0/dist/netlify-cms-media-library-cloudinary.js"></script>
-
   <script>
-    // Registrace Cloudinary knihovny do CMS
     CMS.registerMediaLibrary(NetlifyCmsMediaLibraryCloudinary);
-
     CMS.init({
       config: {
-        // Napojení na tvůj GitHub repozitář
         backend: {
           name: "github",
           repo: "pavelzajicek75-ops/zajda_web",
-          branch: "main",
-          base_url: "https://zajda-web.pages.dev"
+          branch: "main"
         },
-        // Správná konfigurace Cloudinary (oprava chyby z image_3c4017.jpg)
         media_library: {
           name: "cloudinary",
           config: {
@@ -33,22 +22,17 @@
             upload_preset: "zajda555"
           }
         },
-        // Definice polí v administraci
-        collections: [
-          {
-            name: "blog",
-            label: "Články",
-            folder: "_posts",
-            create: true,
-            slug: "{{year}}-{{month}}-{{day}}-{{slug}}",
-            fields: [
-              { label: "Titulek", name: "title", widget: "string" },
-              { label: "Datum", name: "date", widget: "datetime" },
-              { label: "Úvodní obrázek", name: "image", widget: "image", clearable: true },
-              { label: "Text článku", name: "body", widget: "markdown" }
-            ]
-          }
-        ]
+        collections: [{
+          name: "blog",
+          label: "Články",
+          folder: "_posts",
+          create: true,
+          fields: [
+            {label: "Titulek", name: "title", widget: "string"},
+            {label: "Obrázek", name: "image", widget: "image"},
+            {label: "Text", name: "body", widget: "markdown"}
+          ]
+        }]
       }
     });
   </script>
