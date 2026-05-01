@@ -3,7 +3,7 @@ backend:
   repo: pavelzajicek75-ops/zajda_web
   branch: main
 
-# PROPOJENÍ S CLOUDINARY - OPRAVENO
+# PROPOJENÍ S CLOUDINARY - FINÁLNÍ OPRAVA
 media_library:
   name: cloudinary
   config:
