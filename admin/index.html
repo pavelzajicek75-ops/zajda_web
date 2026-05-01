@@ -2,69 +2,36 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zajda Admin</title>
-  <style>
-    #auth-overlay { position: fixed; inset: 0; background: #f3f4f6; display: flex; align-items: center; justify-content: center; z-index: 9999; font-family: sans-serif; }
-    .modal { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 300px; text-align: center; }
-    input { width: 100%; padding: 12px; margin: 20px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-    button { background: #000; color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
-  </style>
 </head>
 <body>
-  <div id="auth-overlay">
-    <div class="modal">
-      <h2 style="margin-top:0">Zajda Admin</h2>
-      <input type="password" id="pass" placeholder="Zadej heslo" onkeypress="if(event.key==='Enter') startAdmin()">
-      <button onclick="startAdmin()">Vstoupit</button>
-    </div>
-  </div>
-
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script src="https://unpkg.com/netlify-cms-media-library-cloudinary@^1.3.0/dist/netlify-cms-media-library-cloudinary.js"></script>
-
   <script>
-    function startAdmin() {
-      const p = document.getElementById('pass').value;
-      if (p !== "zajda2026") { alert("Špatné heslo!"); return; }
-      
-      document.getElementById('auth-overlay').style.display = 'none';
-
-      // REGISTRACE KNIHOVNY PŘED INICIALIZACÍ
-      CMS.registerMediaLibrary(NetlifyCmsMediaLibraryCloudinary);
-
-      CMS.init({
-        config: {
-          backend: { 
-            name: "test-repo" 
-          },
-          // KLÍČOVÁ OPRAVA: Media library musí být přímo zde
-          media_library: {
-            name: "cloudinary",
-            config: {
-              cloud_name: "dxf1lu1oi",
-              api_key: "593899341857225"
-            }
-          },
-          collections: [{
-            name: "posts",
-            label: "Články / Posts",
-            folder: "_posts",
-            create: true,
-            slug: "{{year}}-{{month}}-{{day}}-{{slug}}",
-            fields: [
-              {label: "Sekce / Section", name: "section", widget: "select", options: ["Fotografování", "Cestování", "Projekty"]},
-              {label: "Titulek (CZ)", name: "title_cz", widget: "string"},
-              {label: "Title (EN)", name: "title_en", widget: "string"},
-              {label: "Úvodní fotka / Main Image", name: "image", widget: "image"},
-              {label: "Obsah (CZ)", name: "body_cz", widget: "markdown"},
-              {label: "Content (EN)", name: "body_en", widget: "markdown"},
-              {label: "Galerie / Gallery", name: "photos", widget: "list", field: {label: "Foto", name: "image", widget: "image"}}
-            ]
-          }]
-        }
-      });
-    }
+    CMS.registerMediaLibrary(NetlifyCmsMediaLibraryCloudinary);
+    CMS.init({
+      config: {
+        backend: { name: "test-repo" },
+        media_library: {
+          name: "cloudinary",
+          config: {
+            cloud_name: "dxf1lu1oi",
+            api_key: "593899341857225"
+          }
+        },
+        collections: [{
+          name: "posts",
+          label: "Články",
+          folder: "_posts",
+          create: true,
+          fields: [
+            {label: "Titulek", name: "title", widget: "string"},
+            {label: "Foto", name: "image", widget: "image"},
+            {label: "Text", name: "body", widget: "markdown"}
+          ]
+        }]
+      }
+    });
   </script>
 </body>
 </html>
