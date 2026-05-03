@@ -5,25 +5,48 @@ backend:
   base_url: https://fancy-math-7491.pavel-zajicek75.workers.dev
   auth_endpoint: auth
 
-# Nastavení fotek - ukládají se přímo k tobě do GitHubu
 media_folder: "assets/img"
 public_folder: "/assets/img"
 
-# Admin v češtině
-locale: 'cs'
+# Tady zapínáme editor pro úpravy před vložením
+media_library:
+  name: uploadcare
+  config:
+    publicKey: 'demopublickey' # Zatím necháme demo, umožňuje ořez a úpravy
 
-# Nastavení editoru
-editor:
-  preview: true
+locale: 'cs'
 
 collections:
   - name: "blog"
-    label: "Články"
+    label: "Obsah webu"
     folder: "_posts"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - {label: "Titulek", name: "title", widget: "string"}
-      - {label: "Datum", name: "date", widget: "datetime"}
-      - {label: "Hlavní obrázek", name: "image", widget: "image"}
-      - {label: "Text článku", name: "body", widget: "markdown"}
+      - label: "Typ příspěvku"
+        name: "section"
+        widget: "select"
+        options: ["Článek s fotkami", "Samostatná fotografie"]
+        default: "Článek s fotkami"
+
+      - {label: "Nadpis (vetsím písmem)", name: "title", widget: "string"}
+      
+      - label: "Datum cesty"
+        name: "travel_date"
+        widget: "datetime"
+        required: true # Povinné
+
+      - label: "Stát"
+        name: "country"
+        widget: "string"
+        required: true # Povinné
+
+      - {label: "Místo / Lokalita", name: "location", widget: "string"}
+
+      - label: "Hlavní obrázek"
+        name: "image"
+        widget: "image"
+
+      - label: "Text článku"
+        name: "body"
+        widget: "markdown"
