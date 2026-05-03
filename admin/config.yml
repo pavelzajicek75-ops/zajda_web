@@ -2,14 +2,13 @@ backend:
   name: github
   repo: pavelzajicek75-ops/zajda_web
   branch: main
+  # Tvoje nová brána, kterou jsme právě postavili:
+  base_url: https://fancy-math-7491.pavel-zajicek75.workers.dev
+  auth_endpoint: auth
 
-media_library:
-  name: cloudinary
-  config:
-    cloud_name: dul1iu1oi
-    api_key: "593899341857225"
-    unsigned_upload: true
-    upload_preset: zajda555
+# Kam se budou ukládat fotky, až je tam začneš sázet
+media_folder: "assets/img"
+public_folder: "/assets/img"
 
 collections:
   - name: "blog"
@@ -19,5 +18,6 @@ collections:
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - {label: "Titulek", name: "title", widget: "string"}
-      - {label: "Obrázek", name: "image", widget: "image"}
-      - {label: "Text", name: "body", widget: "markdown"}
+      - {label: "Datum", name: "date", widget: "datetime"}
+      - {label: "Hlavní obrázek", name: "image", widget: "image", required: false}
+      - {label: "Text článku", name: "body", widget: "markdown"}
