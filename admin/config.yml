@@ -8,45 +8,45 @@ backend:
 media_folder: "assets/img"
 public_folder: "/assets/img"
 
-# Tady zapínáme editor pro úpravy před vložením
 media_library:
   name: uploadcare
   config:
-    publicKey: 'demopublickey' # Zatím necháme demo, umožňuje ořez a úpravy
+    publicKey: 'demopublickey' # Umožňuje nahrávání z webu, soc. sítí a ořez
 
 locale: 'cs'
 
 collections:
-  - name: "blog"
-    label: "Obsah webu"
+  - name: "obsah"
+    label: "Veškerý obsah"
     folder: "_posts"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - label: "Typ příspěvku"
-        name: "section"
+      - label: "Hlavní sekce"
+        name: "main_section"
         widget: "select"
-        options: ["Článek s fotkami", "Samostatná fotografie"]
-        default: "Článek s fotkami"
+        options: ["Fotografování", "Cestování", "Projekty"]
+        required: true
 
-      - {label: "Nadpis (vetsím písmem)", name: "title", widget: "string"}
+      - label: "Podsekce (např. Island 2025, Portréty...)"
+        name: "category"
+        widget: "string" # Tady si prostě napíšeš název nové podsekce
+        required: true
+
+      - {label: "Nadpis", name: "title", widget: "string"}
       
-      - label: "Datum cesty"
-        name: "travel_date"
-        widget: "datetime"
-        required: true # Povinné
-
       - label: "Stát"
         name: "country"
         widget: "string"
-        required: true # Povinné
+        required: true
 
-      - {label: "Místo / Lokalita", name: "location", widget: "string"}
+      - label: "Datum (Povinné)"
+        name: "date"
+        widget: "datetime"
+        required: true
 
-      - label: "Hlavní obrázek"
-        name: "image"
-        widget: "image"
+      - {label: "Hlavní obrázek", name: "image", widget: "image"}
 
-      - label: "Text článku"
+      - label: "Text článku (Nadpisy piš s # na začátku)"
         name: "body"
         widget: "markdown"
