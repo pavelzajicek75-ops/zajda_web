@@ -2,13 +2,19 @@ backend:
   name: github
   repo: pavelzajicek75-ops/zajda_web
   branch: main
-  # Tvoje nová brána, kterou jsme právě postavili:
   base_url: https://fancy-math-7491.pavel-zajicek75.workers.dev
   auth_endpoint: auth
 
-# Kam se budou ukládat fotky, až je tam začneš sázet
+# Nastavení fotek - ukládají se přímo k tobě do GitHubu
 media_folder: "assets/img"
 public_folder: "/assets/img"
+
+# Admin v češtině
+locale: 'cs'
+
+# Nastavení editoru
+editor:
+  preview: true
 
 collections:
   - name: "blog"
@@ -19,5 +25,5 @@ collections:
     fields:
       - {label: "Titulek", name: "title", widget: "string"}
       - {label: "Datum", name: "date", widget: "datetime"}
-      - {label: "Hlavní obrázek", name: "image", widget: "image", required: false}
+      - {label: "Hlavní obrázek", name: "image", widget: "image"}
       - {label: "Text článku", name: "body", widget: "markdown"}
