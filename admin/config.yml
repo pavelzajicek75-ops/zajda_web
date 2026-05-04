@@ -11,12 +11,13 @@ public_folder: "/assets/img"
 media_library:
   name: uploadcare
   config:
-    publicKey: 'demopublickey' # Pro plnou kontrolu doporučuji vlastní klíč později
-    # imageShrink jsme zrušili jako automatiku, aby ses v tom mohl vrtat RUČNĚ
+    publicKey: 'demopublickey'
+    # Zapínáme ruční editační nástroje
+    effects: 'crop, rotate, enhance, sharp, blur'
+    # Povolujeme manuální změnu rozlišení a kvality při nahrávání
+    imageShrink: '1600x1600 80%' # Základní nastavení, které si v editoru doladíš
     tabs: 'file camera facebook instagram url'
     previewStep: true
-    # Zapíná editor s manuální kompresí a rozlišením
-    effects: 'crop, rotate, mirror, flip, enhance, sharp, blur'
 
 locale: 'cs'
 
@@ -27,13 +28,8 @@ collections:
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - label: "Hlavní sekce"
-        name: "main_section"
-        widget: "select"
-        options: ["Fotografování", "Cestování", "Projekty"]
-      - label: "Podsekce"
-        name: "category"
-        widget: "string"
+      - {label: "Hlavní sekce", name: "main_section", widget: "select", options: ["Fotografování", "Cestování", "Projekty"]}
+      - {label: "Podsekce", name: "category", widget: "string"}
       - {label: "Nadpis", name: "title", widget: "string"}
       - {label: "Stát", name: "country", widget: "string", required: true}
       - {label: "Datum", name: "date", widget: "datetime", required: true}
