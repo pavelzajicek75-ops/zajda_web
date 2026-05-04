@@ -1,5 +1,4 @@
 backend:
-  backend:
   name: github
   repo: pavelzajicek75-ops/zajda_web
   branch: main
@@ -17,18 +16,13 @@ locale: 'cs'
 
 collections:
   - name: "obsah"
-    label: "Veškerý obsah"
+    label: "Moje Články"
     folder: "_posts"
     create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - {label: "Hlavní sekce", name: "main_section", widget: "select", options: ["Fotografování", "Cestování", "Projekty"]}
+      - {label: "Kategorie", name: "main_section", widget: "select", options: ["Fotografování", "Cestování", "Projekty"]}
       - {label: "Nadpis", name: "title", widget: "string"}
       - {label: "Datum", name: "date", widget: "datetime"}
-      - label: "Obrázek"
-        name: "image"
-        widget: "image"
-        media_library:
-          config:
-            previewStep: true
-            effects: 'crop, resize, quality'
+      - {label: "Obrázek", name: "image", widget: "image"}
       - {label: "Text článku", name: "body", widget: "markdown"}
