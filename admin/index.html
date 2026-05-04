@@ -4,31 +4,29 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Administrace Zajda Web</title>
+  <!-- Nahrání plného widgetu s editačními funkcemi -->
   <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 </head>
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
-    // Nastavení Uploadcare natvrdo v prohlížeči
+    // Nastavení editoru pro iPad
     window.UPLOADCARE_PUBLIC_KEY = 'demopublickey';
-    window.UPLOADCARE_PREVIEW_STEP = true;
-    window.UPLOADCARE_EFFECTS = 'crop,rotate,enhance,sharp';
+    window.UPLOADCARE_PREVIEW_STEP = true; // Toto vytvoří mezikrok s tlačítkem EDIT
+    window.UPLOADCARE_EFFECTS = 'crop,rotate,enhance,sharp'; 
     window.UPLOADCARE_IMAGE_SHRINK = '1600x1600 80%';
 
-    // BRUTÁLNÍ STYLING: Sleduje změny na stránce a okamžitě zmenšuje fotky
-    const observer = new MutationObserver(() => {
-      const images = document.querySelectorAll('[class*="PreviewPaneContent"] img, .nc-previewPane img');
-      images.forEach(img => {
-        img.style.maxWidth = '450px';
-        img.style.width = '100%';
+    // Skript pro okamžité zmenšení fotky v náhledu (vpravo na tvém obrázku)
+    setInterval(() => {
+      const previewImgs = document.querySelectorAll('[class*="PreviewPaneContent"] img');
+      previewImgs.forEach(img => {
+        img.style.maxWidth = '400px';
         img.style.height = 'auto';
-        img.style.margin = '20px auto';
         img.style.display = 'block';
-        img.style.borderRadius = '12px';
+        img.style.margin = '20px auto';
+        img.style.borderRadius = '10px';
       });
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
+    }, 500);
   </script>
 </body>
 </html>
