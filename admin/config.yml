@@ -5,32 +5,28 @@ backend:
   base_url: https://fancy-math-7491.pavel-zajicek75.workers.dev
   auth_endpoint: auth
 
-media_folder: "assets/img"
-public_folder: "/assets/img"
-
 media_library:
   name: uploadcare
   config:
     publicKey: 'demopublickey'
-    tabs: 'file camera url'
-    # Toto vynutí náhledové okno s tlačítkem EDIT i při opětovném kliknutí
-    previewStep: true 
+    previewStep: true
     effects: 'crop, rotate, enhance, sharp'
-    imagesShrink: '1600x1600 80%'
-
-locale: 'cs'
 
 collections:
   - name: "obsah"
     label: "Veškerý obsah"
     folder: "_posts"
     create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - {label: "Hlavní sekce", name: "main_section", widget: "select", options: ["Fotografování", "Cestování", "Projekty"]}
-      - {label: "Podsekce", name: "category", widget: "string"}
       - {label: "Nadpis", name: "title", widget: "string"}
-      - {label: "Stát", name: "country", widget: "string", required: true}
-      - {label: "Datum", name: "date", widget: "datetime", required: true}
-      - {label: "Obrázek", name: "image", widget: "image", allow_multiple: false}
+      - label: "Obrázek"
+        name: "image"
+        widget: "image"
+        # Přidaná konfigurace přímo do pole:
+        default: ""
+        media_library:
+          config:
+            previewStep: true
+            effects: 'crop, rotate, enhance, sharp'
       - {label: "Text článku", name: "body", widget: "markdown"}
