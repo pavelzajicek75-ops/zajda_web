@@ -4,41 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZAJDA WEB</title>
+    <!-- Tailwind CSS pro vzhled -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GLightbox pro zvětšování fotek -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.2.0/css/glightbox.min.css">
+    <!-- Knihovna pro čtení Markdownu z adminu -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* Fotky v článku: nebudou obří, max 800px, vycentrované */
         .article-content img {
-            max-width: 800px;
+            max-width: 600px; /* Fotka v článku bude úhledně malá */
             width: 100%;
             height: auto;
             display: block;
-            margin: 2rem auto;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 1.5rem auto;
+            border-radius: 8px;
             cursor: zoom-in;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
+        .article-content h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; line-height: 1.2; }
+        .meta-info { color: #666; font-size: 0.9rem; margin-bottom: 2rem; border-bottom: 1px solid #eee; padding-bottom: 1rem; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
-    <nav class="bg-black text-white p-5 shadow-2xl">
+<body class="bg-gray-50 text-gray-900">
+
+    <nav class="bg-black text-white p-5 shadow-xl">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-3xl font-black tracking-tighter">ZAJDA WEB</h1>
-            <div class="space-x-6">
-                <a href="/" class="hover:text-orange-500 transition">Domů</a>
-                <a href="/admin/" class="bg-orange-600 px-5 py-2 rounded-full font-bold hover:bg-orange-500 transition">ADMIN</a>
+            <h1 class="text-2xl font-black tracking-tighter cursor-pointer" onclick="location.reload()">ZAJDA WEB</h1>
+            <div class="flex gap-4">
+                <a href="/admin/" class="bg-orange-600 px-4 py-2 rounded-lg font-bold hover:bg-orange-500 transition">ADMIN</a>
             </div>
         </div>
     </nav>
 
-    <main class="container mx-auto mt-12 p-4">
-        <div id="content" class="max-w-4xl mx-auto article-content">
-            <!-- Tady se zobrazí články -->
-            <p class="text-center text-slate-400">Načítám tvé zážitky...</p>
+    <main class="container mx-auto mt-10 p-4 max-w-4xl">
+        <div id="content">
+            <div class="text-center py-20">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-600 mb-4"></div>
+                <p class="text-gray-500">Stahuji články z GitHubu...</p>
+            </div>
         </div>
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.2.0/js/glightbox.min.js"></script>
-    <script>const lightbox = GLightbox({ selector: '.glightbox' });</script>
+    <script>
+        // Nastavení tvého GitHubu
+        const username = 'pavelzajicek75-ops';
+        const repo = 'zajda_web';
+        const branch = 'main';
+
+        async function loadPosts() {
+            const contentDiv = document.getElementById('content');
+            try {
+                // 1. Získáme seznam souborů ze složky _posts
+                const response = await fetch(`https://api.github.com/repos/${username}/${repo}/contents/_posts?ref=${branch}`);
+                const files = await response.json();
+
+                if (!files || files.length === 0) {
+                    contentDiv.innerHTML = '<p class="text-center">Zatím tu nejsou žádné články.</p>';
+                    return;
+                }
+
+                contentDiv.innerHTML = ''; // Vyčistit loader
+
+                // 2. Projdeme soubory (od nejnovějšího)
+                for (const file of files.reverse()) {
+                    if (file.name.endsWith('.md')) {
+                        const postRes = await fetch(file.download_url);
+                        const postText = await postRes.text();
+                        
+                        // Rozdělení Frontmatter (nastavení) a obsahu
+                        const parts = postText.split('---');
+                        const yaml = parts[1];
+                        const markdown = parts.slice(2).join('---');
+
+                        // Extrakce dat (jednoduchý parser)
+                        const title = yaml.match(/title:\s*(.*)/)?.[1] || 'Bez nadpisu';
+                        const country = yaml.match(/country:\s*(.*)/)?.[1] || '';
+                        const date = yaml.match(/date:\s*(.*)/)?.[1]?.split('T')[0] || '';
+                        const mainImg = yaml.match(/image:\s*(.*)/)?.[1];
+
+                        // Vytvoření HTML článku
+                        const article = document.createElement('article');
+                        article.className = 'mb-20 bg-white p-6 rounded-2xl shadow-sm border border-gray-100';
+                        
+                        let htmlContent = `
+                            <h1 class="text-4xl font-black">${title.replace(/['"]/g, '')}</h1>
+                            <div class="meta-info">
+                                🌍 <strong>${country.replace(/['"]/g, '')}</strong> | 📅 ${date}
+                            </div>
+                        `;
+
+                        if (mainImg) {
+                            htmlContent += `
+                                <a href="${mainImg}" class="glightbox">
+                                    <img src="${mainImg}" class="rounded-xl mb-6 shadow-md" alt="${title}">
+                                </a>
+                            `;
+                        }
+
+                        htmlContent += `<div class="article-content">${marked.parse(markdown)}</div>`;
+                        
+                        article.innerHTML = htmlContent;
+                        contentDiv.appendChild(article);
+                    }
+                }
+
+                // Aktivace zvětšování fotek
+                const lightbox = GLightbox({ selector: '.glightbox, .article-content img' });
+
+            } catch (e) {
+                console.error(e);
+                contentDiv.innerHTML = '<p class="text-center text-red-500">Chyba při načítání článků. Zkontroluj připojení.</p>';
+            }
+        }
+
+        loadPosts();
+    </script>
 </body>
 </html>
