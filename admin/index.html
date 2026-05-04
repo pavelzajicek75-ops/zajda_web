@@ -4,42 +4,32 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Administrace Zajda Web</title>
-  <!-- Nahráváme plnou verzi editoru se všemi funkcemi -->
+  <script>
+    // Konfigurace musí být úplně první
+    window.UPLOADCARE_PUBLIC_KEY = 'demopublickey';
+    window.UPLOADCARE_LOCALE = 'cs';
+    window.UPLOADCARE_PREVIEW_STEP = true;
+    window.UPLOADCARE_EFFECTS = 'crop,resize,quality'; // To nejdůležitější pro tebe
+  </script>
   <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 </head>
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
-    // Globální nastavení pro editor fotek
-    window.UPLOADCARE_PUBLIC_KEY = 'demopublickey';
-    window.UPLOADCARE_LOCALE = 'cs';
-    window.UPLOADCARE_PREVIEW_STEP = true;
-    // Vynucení ikon pro rozlišení (resize) a kompresi (quality)
-    window.UPLOADCARE_EFFECTS = 'crop,resize,quality,enhance,sharp';
-    // Automatické zmenšení při nahrání na pozadí, pokud na to zapomeneš ručně
-    window.UPLOADCARE_IMAGE_SHRINK = '1600x1600 80%';
-
-    // WYSIWYG SKRIPT: Zmenšuje fotky v pravém náhledu adminu
+    // Skript pro zmenšení náhledu vpravo, aby nebyl obří jako na image_aa8a54.jpg
     setInterval(() => {
-      // Najde pravý panel náhledu
-      const previewPane = document.querySelector('[class*="PreviewPaneContent"]');
-      if (previewPane) {
-        const imgs = previewPane.querySelectorAll('img');
+      const pane = document.querySelector('[class*="PreviewPaneContent"]');
+      if (pane) {
+        const imgs = pane.querySelectorAll('img');
         imgs.forEach(img => {
-          // Nastaví rozměry jako na opravdovém webu
-          img.style.maxWidth = '400px'; 
-          img.style.width = '100%';
+          img.style.maxWidth = '400px';
           img.style.height = 'auto';
           img.style.margin = '20px auto';
           img.style.display = 'block';
           img.style.borderRadius = '10px';
-          img.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
         });
       }
     }, 500);
-
-    // Registrace základního stylu pro texty
-    CMS.registerPreviewStyle("https://cdn.tailwindcss.com");
   </script>
 </body>
 </html>
