@@ -9,10 +9,8 @@ media_library:
   name: uploadcare
   config:
     publicKey: 'demopublickey'
-    # previewStep vynutí to okno, které vidíš na fotce image_aa7e56.jpg
     previewStep: true
-    # Zde jsou aktivovány nástroje pro rozlišení (resize) a kvalitu (quality)
-    effects: 'crop, resize, quality, enhance, sharp'
+    effects: 'crop, resize, quality'
 
 locale: 'cs'
 
@@ -21,18 +19,15 @@ collections:
     label: "Veškerý obsah"
     folder: "_posts"
     create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - {label: "Hlavní sekce", name: "main_section", widget: "select", options: ["Fotografování", "Cestování", "Projekty"]}
-      - {label: "Podsekce", name: "category", widget: "string"}
       - {label: "Nadpis", name: "title", widget: "string"}
-      - {label: "Stát", name: "country", widget: "string", required: true}
-      - {label: "Datum", name: "date", widget: "datetime", required: true}
+      - {label: "Datum", name: "date", widget: "datetime"}
       - label: "Obrázek"
         name: "image"
         widget: "image"
         media_library:
           config:
             previewStep: true
-            effects: 'crop, resize, quality, enhance, sharp'
+            effects: 'crop, resize, quality'
       - {label: "Text článku", name: "body", widget: "markdown"}
