@@ -4,24 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Administrace Zajda Web</title>
+  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 </head>
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
-    // Tento skript "vstříkne" styl webu přímo do náhledového okna adminu
+    // Globální nastavení pro všechna okna nahrávání
+    UPLOADCARE_PUBLIC_KEY = 'demopublickey';
+    UPLOADCARE_PREVIEW_STEP = true; 
+    UPLOADCARE_EFFECTS = 'crop,rotate,enhance,sharp';
+
+    // Styl, aby náhled vpravo byl WYSIWYG a fotky vlevo byly klikatelné
     CMS.registerPreviewStyle("https://cdn.tailwindcss.com");
     CMS.registerPreviewStyle(`
-      body { background-color: #f8fafc !important; font-family: sans-serif !important; padding: 20px !important; }
-      h1 { font-size: 2.5rem !important; font-weight: 900 !important; color: #000 !important; margin-bottom: 10px !important; }
-      img { 
-        max-width: 400px !important; /* Tady krotíme fotku v náhledu */
-        height: auto !important; 
-        display: block !important; 
-        margin: 20px auto !important; 
-        border-radius: 12px !important; 
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
-      }
-      .article-content { max-width: 600px !important; margin: 0 auto !important; }
+      img { max-width: 450px !important; border-radius: 10px; margin: 15px auto !important; display: block !important; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+      h1 { font-family: sans-serif; font-weight: 900; }
     `);
   </script>
 </body>
