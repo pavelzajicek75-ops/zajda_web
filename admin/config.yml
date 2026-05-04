@@ -12,6 +12,8 @@ media_library:
     previewStep: true
     effects: 'crop, rotate, enhance, sharp'
 
+locale: 'cs' # Zapne češtinu v adminu
+
 collections:
   - name: "obsah"
     label: "Veškerý obsah"
@@ -23,8 +25,6 @@ collections:
       - label: "Obrázek"
         name: "image"
         widget: "image"
-        # Přidaná konfigurace přímo do pole:
-        default: ""
         media_library:
           config:
             previewStep: true
