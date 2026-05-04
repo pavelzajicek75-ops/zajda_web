@@ -9,20 +9,20 @@ media_library:
   name: uploadcare
   config:
     publicKey: 'demopublickey'
-    previewStep: true
-    effects: 'crop, resize, quality'
 
-locale: 'cs'
+publish_mode: simple
+show_preview_links: true
 
 collections:
-  - name: "obsah"
-    label: "Moje Články"
+  - name: "clanky"
+    label: "Moje Příspěvky"
     folder: "_posts"
     create: true
+    delete: true # Tlačítko pro mazání v detailu příspěvku
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - {label: "Kategorie", name: "main_section", widget: "select", options: ["Fotografování", "Cestování", "Projekty"]}
+      - {label: "Jazyk", name: "lang", widget: "select", options: ["cs", "en"]}
+      - {label: "Sekce", name: "section", widget: "select", options: ["Cestování", "Fotografování", "Mé projekty"]}
       - {label: "Nadpis", name: "title", widget: "string"}
-      - {label: "Datum", name: "date", widget: "datetime"}
       - {label: "Obrázek", name: "image", widget: "image"}
-      - {label: "Text článku", name: "body", widget: "markdown"}
+      - {label: "Text", name: "body", widget: "markdown"}
