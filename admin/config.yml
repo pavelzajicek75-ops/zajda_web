@@ -12,12 +12,11 @@ media_library:
   name: uploadcare
   config:
     publicKey: 'demopublickey'
-    # Zapínáme ruční editační nástroje
-    effects: 'crop, rotate, enhance, sharp, blur'
-    # Povolujeme manuální změnu rozlišení a kvality při nahrávání
-    imageShrink: '1600x1600 80%' # Základní nastavení, které si v editoru doladíš
-    tabs: 'file camera facebook instagram url'
-    previewStep: true
+    tabs: 'file camera url'
+    # Toto vynutí náhledové okno s tlačítkem EDIT i při opětovném kliknutí
+    previewStep: true 
+    effects: 'crop, rotate, enhance, sharp'
+    imagesShrink: '1600x1600 80%'
 
 locale: 'cs'
 
@@ -33,5 +32,5 @@ collections:
       - {label: "Nadpis", name: "title", widget: "string"}
       - {label: "Stát", name: "country", widget: "string", required: true}
       - {label: "Datum", name: "date", widget: "datetime", required: true}
-      - {label: "Obrázek", name: "image", widget: "image"}
+      - {label: "Obrázek", name: "image", widget: "image", allow_multiple: false}
       - {label: "Text článku", name: "body", widget: "markdown"}
