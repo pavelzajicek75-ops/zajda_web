@@ -9,17 +9,26 @@
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   <script>
-    // Globální nastavení pro všechna okna nahrávání
-    UPLOADCARE_PUBLIC_KEY = 'demopublickey';
-    UPLOADCARE_PREVIEW_STEP = true; 
-    UPLOADCARE_EFFECTS = 'crop,rotate,enhance,sharp';
+    // Nastavení Uploadcare natvrdo v prohlížeči
+    window.UPLOADCARE_PUBLIC_KEY = 'demopublickey';
+    window.UPLOADCARE_PREVIEW_STEP = true;
+    window.UPLOADCARE_EFFECTS = 'crop,rotate,enhance,sharp';
+    window.UPLOADCARE_IMAGE_SHRINK = '1600x1600 80%';
 
-    // Styl, aby náhled vpravo byl WYSIWYG a fotky vlevo byly klikatelné
-    CMS.registerPreviewStyle("https://cdn.tailwindcss.com");
-    CMS.registerPreviewStyle(`
-      img { max-width: 450px !important; border-radius: 10px; margin: 15px auto !important; display: block !important; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-      h1 { font-family: sans-serif; font-weight: 900; }
-    `);
+    // BRUTÁLNÍ STYLING: Sleduje změny na stránce a okamžitě zmenšuje fotky
+    const observer = new MutationObserver(() => {
+      const images = document.querySelectorAll('[class*="PreviewPaneContent"] img, .nc-previewPane img');
+      images.forEach(img => {
+        img.style.maxWidth = '450px';
+        img.style.width = '100%';
+        img.style.height = 'auto';
+        img.style.margin = '20px auto';
+        img.style.display = 'block';
+        img.style.borderRadius = '12px';
+      });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
   </script>
 </body>
 </html>
