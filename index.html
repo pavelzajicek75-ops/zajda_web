@@ -2,60 +2,118 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>ZAJDA WEB</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZAJDA WEB | Žiju naplno!</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #f1f5f9; }
-        .post-card { transition: transform 0.2s; }
-        .post-card:hover { transform: translateY(-5px); }
-        .aspect-video-custom { aspect-ratio: 16 / 9; object-fit: cover; }
+        .section-tab { cursor: pointer; white-space: nowrap; transition: 0.3s; padding: 10px 20px; }
+        .active-tab { color: #f59e0b; border-bottom: 4px solid #f59e0b; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="p-4 md:p-12">
-    <header class="max-w-6xl mx-auto mb-12 text-center">
-        <h1 class="text-6xl font-black text-slate-900 tracking-tighter">ZAJDA WEB</h1>
-        <p class="text-slate-500 mt-2 font-medium">Fotografie & Cesty</p>
+<body class="bg-slate-50 text-slate-900 font-sans">
+
+    <!-- Horní část se sloganem -->
+    <header class="py-12 px-6 text-center bg-white shadow-sm">
+        <h1 class="text-5xl md:text-8xl font-black italic tracking-tighter uppercase">Zajda Web</h1>
+        <p class="text-slate-500 mt-4 text-lg md:text-2xl italic font-light max-w-3xl mx-auto">
+            "Žiju rád, žiju rychle a jsem tak trochu cvok. Ale kdo není, ten nežije!"
+        </p>
+        
+        <!-- Přepínač jazyků -->
+        <div class="mt-8 flex justify-center gap-6 font-bold text-sm tracking-widest uppercase">
+            <button onclick="setLang('cs')" id="btn-cs" class="transition-all">CZ</button>
+            <button onclick="setLang('en')" id="btn-en" class="text-slate-300 transition-all">EN</button>
+        </div>
     </header>
 
-    <div id="content" class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <!-- Tady se budou načítat články -->
-    </div>
+    <!-- Navigace - 3 sekce vedle sebe -->
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-slate-200 overflow-x-auto no-scrollbar">
+        <div class="max-w-5xl mx-auto flex justify-around font-black uppercase text-xs md:text-base tracking-widest">
+            <div onclick="setSection('Cestování')" id="tab-Cestování" class="section-tab active-tab">Cestování</div>
+            <div onclick="setSection('Fotografování')" id="tab-Fotografování" class="section-tab">Fotografování</div>
+            <div onclick="setSection('Mé projekty')" id="tab-Projekty" class="section-tab">Mé projekty</div>
+        </div>
+    </nav>
+
+    <!-- Hlavní výpis článků -->
+    <main id="content" class="max-w-7xl mx-auto p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Tady se děje magie -->
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        async function loadPosts() {
-            const response = await fetch('https://api.github.com/repos/pavelzajicek75-ops/zajda_web/contents/_posts');
-            const files = await response.json();
-            const container = document.getElementById('content');
+        let currentLang = 'cs';
+        let currentSection = 'Cestování';
+        let allPosts = [];
+
+        async function fetchPosts() {
+            const res = await fetch('https://api.github.com/repos/pavelzajicek75-ops/zajda_web/contents/_posts');
+            const files = await res.json();
+            allPosts = [];
 
             for (const file of files) {
                 if (file.name.endsWith('.md')) {
-                    const res = await fetch(file.download_url);
-                    const text = await res.text();
+                    const postRes = await fetch(file.download_url);
+                    const text = await postRes.text();
                     const parts = text.split('---');
                     const yaml = parts[1];
                     const body = parts[2];
 
-                    // Jednoduchý vytahovač dat z YAML
-                    const title = yaml.match(/title:\s*"(.*)"/) || yaml.match(/title:\s*(.*)/);
-                    const image = yaml.match(/image:\s*"(.*)"/) || yaml.match(/image:\s*(.*)/);
-
-                    const card = `
-                        <div class="post-card bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl border border-slate-200">
-                            <img src="${image ? image[1] : ''}" class="w-full aspect-video-custom">
-                            <div class="p-6">
-                                <h2 class="text-2xl font-bold text-slate-800">${title ? title[1] : 'Bez nadpisu'}</h2>
-                                <div class="mt-4 prose prose-slate line-clamp-3">
-                                    ${marked.parse(body)}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    container.innerHTML += card;
+                    allPosts.push({
+                        lang: yaml.match(/lang:\s*"?(\w+)"?/) ? yaml.match(/lang:\s*"?(\w+)"?/)[1] : 'cs',
+                        section: yaml.match(/section:\s*"?([^"\n]+)"?/) ? yaml.match(/section:\s*"?([^"\n]+)"?/)[1].trim() : 'Cestování',
+                        title: yaml.match(/title:\s*"?([^"\n]+)"?/) ? yaml.match(/title:\s*"?([^"\n]+)"?/)[1] : 'Bez názvu',
+                        image: yaml.match(/image:\s*"?([^"\n]+)"?/) ? yaml.match(/image:\s*"?([^"\n]+)"?/)[1] : '',
+                        body: body
+                    });
                 }
             }
+            render();
         }
-        loadPosts();
+
+        function render() {
+            const container = document.getElementById('content');
+            container.innerHTML = '';
+            const filtered = allPosts.filter(p => p.lang === currentLang && p.section === currentSection);
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-20 text-slate-300 font-bold uppercase tracking-widest">Tady zatím nic není...</div>`;
+            }
+
+            filtered.forEach(p => {
+                container.innerHTML += `
+                    <div class="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-100 group">
+                        <div class="overflow-hidden h-64">
+                            <img src="${p.image}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        </div>
+                        <div class="p-8">
+                            <h2 class="text-2xl font-black mb-4 leading-tight">${p.title}</h2>
+                            <div class="prose prose-slate line-clamp-3 text-slate-500 text-sm">
+                                ${marked.parse(p.body)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function setLang(l) { 
+            currentLang = l; 
+            document.getElementById('btn-cs').className = l === 'cs' ? 'text-orange-500' : 'text-slate-300';
+            document.getElementById('btn-en').className = l === 'en' ? 'text-orange-500' : 'text-slate-300';
+            render(); 
+        }
+        
+        function setSection(s) { 
+            currentSection = s; 
+            document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active-tab'));
+            const id = s === 'Mé projekty' ? 'tab-Projekty' : 'tab-' + s;
+            document.getElementById(id).classList.add('active-tab');
+            render(); 
+        }
+
+        fetchPosts();
     </script>
 </body>
 </html>
