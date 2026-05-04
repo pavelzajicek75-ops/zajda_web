@@ -1,4 +1,5 @@
 backend:
+  backend:
   name: github
   repo: pavelzajicek75-ops/zajda_web
   branch: main
