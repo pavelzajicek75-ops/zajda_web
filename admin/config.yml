@@ -11,7 +11,10 @@ public_folder: "/assets/img"
 media_library:
   name: uploadcare
   config:
-    publicKey: 'demopublickey' # Umožňuje nahrávání z webu, soc. sítí a ořez
+    publicKey: 'demopublickey'
+    imageShrink: '1600x1600 80%' 
+    tabs: 'file camera facebook instagram url'
+    previewStep: true
 
 locale: 'cs'
 
@@ -27,26 +30,17 @@ collections:
         widget: "select"
         options: ["Fotografování", "Cestování", "Projekty"]
         required: true
-
-      - label: "Podsekce (např. Island 2025, Portréty...)"
+      - label: "Podsekce (vlastní)"
         name: "category"
-        widget: "string" # Tady si prostě napíšeš název nové podsekce
-        required: true
-
-      - {label: "Nadpis", name: "title", widget: "string"}
-      
-      - label: "Stát"
-        name: "country"
         widget: "string"
         required: true
-
-      - label: "Datum (Povinné)"
-        name: "date"
-        widget: "datetime"
-        required: true
-
-      - {label: "Hlavní obrázek", name: "image", widget: "image"}
-
-      - label: "Text článku (Nadpisy piš s # na začátku)"
+      - {label: "Nadpis", name: "title", widget: "string"}
+      - {label: "Stát", name: "country", widget: "string", required: true}
+      - {label: "Datum", name: "date", widget: "datetime", required: true}
+      - label: "Obrázek"
+        name: "image"
+        widget: "image"
+        hint: "ZLATÝ STANDARD: V editoru uvidíš velikost v KB. Cíl je pod 500 KB."
+      - label: "Text článku"
         name: "body"
         widget: "markdown"
