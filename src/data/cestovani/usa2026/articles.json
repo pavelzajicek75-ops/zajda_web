@@ -1,5 +1,12 @@
 [
-  { "title": "Den 1 – Přílet do USA", "file": "usa2026-den01.json" },
-  { "title": "Den 2 – San Francisco", "file": "usa2026-den02.json" }
+  {
+    "title": "Den 1 – New York",
+    "file": "usa2026-den01.json",
+    "date": "2026-07-15"
+  },
+  {
+    "title": "Den 2 – San Francisco",
+    "file": "usa2026-den02.json",
+    "date": "2026-07-16"
+  }
 ]
-
