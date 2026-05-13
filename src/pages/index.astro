@@ -1,20 +1,11 @@
 ---
 import Timeline from "../components/Timeline.astro";
-import { loadArticles } from "../utils/loadArticles.js";
-import { generateTimeline } from "../utils/generateTimeline.js";
+import { loadArticles } from "../utils/loadArticles";
 
-const articles = loadArticles("cestovani/usa2026");
-const timeline = generateTimeline(articles);
+const items = await loadArticles();
 ---
 
-<html lang="cs">
-  <head>
-    <meta charset="utf-8" />
-    <title>Moje diagnóza: můj vesmír</title>
-    <link rel="stylesheet" href="/styles/global.css" />
-  </head>
-  <body>
-    <h1>USA 2026 – Timeline</h1>
-    <Timeline items={timeline} />
-  </body>
-</html>
+<div class="container">
+  <h1>USA 2026 – Timeline</h1>
+  <Timeline items={items} />
+</div>
