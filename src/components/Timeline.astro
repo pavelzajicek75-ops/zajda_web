@@ -2,19 +2,57 @@
 const { items } = Astro.props;
 ---
 
-<ul class="timeline">
+<div class="timeline">
   {items.map((item) => (
-    <li>
-      <a href={item.url}>
-        <strong>{item.datum}</strong> – {item.nazev}
-        {item.live && <span class="live">LIVE</span>}
-      </a>
-    </li>
+    <div class="entry">
+      <div class="date">{item.date}</div>
+      <div class="card">
+        <h3>{item.title}</h3>
+        <a href={`/cestovani/usa2026/${item.file.replace('.json', '')}`}>Zobrazit den</a>
+      </div>
+    </div>
   ))}
-</ul>
+</div>
 
 <style>
-  .timeline { list-style: none; padding: 0; }
-  .timeline li { margin: 0.5rem 0; }
-  .live { color: red; margin-left: 0.5rem; }
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  border-left: 2px solid var(--accent);
+  padding-left: 2rem;
+}
+
+.entry {
+  position: relative;
+}
+
+.entry::before {
+  content: "";
+  position: absolute;
+  left: -1.1rem;
+  top: 0.4rem;
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.date {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.card {
+  background: var(--surface);
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius);
+  transition: var(--transition);
+}
+
+.card:hover {
+  transform: translateX(5px);
+  background: #1d1d22;
+}
 </style>
