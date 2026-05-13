@@ -1,0 +1,18 @@
+---
+import Gallery from "../../../components/Gallery.astro";
+import fs from "fs";
+
+const file = Astro.params.clanek + ".json";
+const path = `src/data/cestovani/usa2026/${file}`;
+const article = JSON.parse(fs.readFileSync(path, "utf-8"));
+---
+
+<div class="container">
+  <h1>{article.title}</h1>
+
+  <div class="card">
+    <p>{article.content}</p>
+  </div>
+
+  {article.photos && <Gallery photos={article.photos} title={article.title} />}
+</div>
