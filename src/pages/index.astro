@@ -1,11 +1,14 @@
 ---
+import Base from "../layouts/Base.astro";
 import Timeline from "../components/Timeline.astro";
 import { loadArticles } from "../utils/loadArticles";
 
 const items = await loadArticles();
 ---
 
-<div class="container">
-  <h1>USA 2026 – Timeline</h1>
-  <Timeline items={items} />
-</div>
+<Base title="USA 2026">
+  <div class="container">
+    <h1>USA 2026 – Timeline</h1>
+    <Timeline items={items} />
+  </div>
+</Base>
