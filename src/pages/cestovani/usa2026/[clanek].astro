@@ -1,5 +1,15 @@
 ---
 export async function getStaticPaths() {
+  return [
+    { params: { clanek: "den1" } },
+    { params: { clanek: "den2" } },
+    { params: { clanek: "den3" } },
+  ];
+}
+
+const { clanek } = Astro.params;
+---
+export async function getStaticPaths() {
   const articles = [
     { params: { clanek: 'den1' } },
     { params: { clanek: 'den2' } },
