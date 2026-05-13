@@ -1,13 +1,14 @@
 :root {
   --background: #0d0d0f;
   --surface: #16161a;
+  --surface-hover: #1d1d22;
   --text: #e8e8e8;
   --text-muted: #9a9a9a;
   --accent: #4cc9f0;
   --accent-hover: #3bb8e0;
-  --radius: 10px;
+  --radius: 12px;
   --transition: 0.25s ease;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 body {
@@ -31,4 +32,21 @@ a:hover {
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
+}
+
+h1, h2, h3 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.card {
+  background: var(--surface);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  transition: var(--transition);
+}
+
+.card:hover {
+  background: var(--surface-hover);
+  transform: translateY(-3px);
 }
