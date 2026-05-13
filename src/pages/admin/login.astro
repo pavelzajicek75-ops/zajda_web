@@ -1,0 +1,76 @@
+---
+let error = false;
+
+if (Astro.request.method === "POST") {
+  const form = await Astro.request.formData();
+  const password = form.get("password");
+
+  if (password === import.meta.env.ADMIN_PASSWORD) {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        "Set-Cookie": "admin_session=1; Path=/; HttpOnly; Max-Age=86400",
+        Location: "/admin"
+      }
+    });
+  } else {
+    error = true;
+  }
+}
+---
+
+<html>
+  <head>
+    <title>Admin Login</title>
+    <style>
+      body {
+        background: #0d0d0f;
+        color: #e8e8e8;
+        font-family: Inter, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      form {
+        background: #16161a;
+        padding: 2rem;
+        border-radius: 10px;
+        width: 300px;
+      }
+      input {
+        width: 100%;
+        padding: 0.7rem;
+        margin-top: 1rem;
+        border-radius: 8px;
+        border: none;
+        background: #1f1f24;
+        color: #fff;
+      }
+      button {
+        margin-top: 1rem;
+        width: 100%;
+        padding: 0.8rem;
+        background: #4cc9f0;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .error {
+        color: #ff6b6b;
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <form method="POST">
+      <h2>Přihlášení</h2>
+      <input type="password" name="password" placeholder="Heslo" required />
+
+      {error && <div class="error">Nesprávné heslo</div>}
+
+      <button type="submit">Přihlásit</button>
+    </form>
+  </body>
+</html>
