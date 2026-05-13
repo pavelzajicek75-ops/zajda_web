@@ -1,0 +1,20 @@
+---
+const { items } = Astro.props;
+---
+
+<ul class="timeline">
+  {items.map((item) => (
+    <li>
+      <a href={item.url}>
+        <strong>{item.datum}</strong> – {item.nazev}
+        {item.live && <span class="live">LIVE</span>}
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .timeline { list-style: none; padding: 0; }
+  .timeline li { margin: 0.5rem 0; }
+  .live { color: red; margin-left: 0.5rem; }
+</style>
