@@ -1,15 +1,34 @@
+:root {
+  --background: #0d0d0f;
+  --surface: #16161a;
+  --text: #e8e8e8;
+  --text-muted: #9a9a9a;
+  --accent: #4cc9f0;
+  --accent-hover: #3bb8e0;
+  --radius: 10px;
+  --transition: 0.25s ease;
+  font-family: 'Inter', sans-serif;
+}
+
 body {
-  background: #111;
-  color: #eee;
-  font-family: Arial, sans-serif;
-  padding: 2rem;
+  background: var(--background);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
 }
 
 a {
-  color: #4da3ff;
+  color: var(--accent);
   text-decoration: none;
+  transition: var(--transition);
 }
 
 a:hover {
-  text-decoration: underline;
+  color: var(--accent-hover);
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
 }
