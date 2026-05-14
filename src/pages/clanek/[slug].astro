@@ -1,0 +1,50 @@
+---
+const { slug } = Astro.params;
+
+// Načteme data z API
+const articlesRes = await fetch("https://zajda-web.pages.dev/api/articles");
+const sectionsRes = await fetch("https://zajda-web.pages.dev/api/sections");
+const subsectionsRes = await fetch("https://zajda-web.pages.dev/api/subsections");
+
+const { articles } = await articlesRes.json();
+const { sections } = await sectionsRes.json();
+const { subsections } = await subsectionsRes.json();
+
+// Najdeme článek podle slugu
+const article = articles.find(a => a.slug === slug);
+
+if (!article) {
+  throw new Error("Článek nenalezen");
+}
+
+// Najdeme sekci a podsekci
+const section = sections.find(s => s.id === article.section_id);
+const subsection = subsections.find(s => s.id === article.subsection_id);
+---
+
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{article.title}</title>
+  </head>
+
+  <body>
+    <h1>{article.title}</h1>
+
+    <p>
+      <strong>Sekce:</strong> {section?.name}<br />
+      <strong>Podsekce:</strong> {subsection?.name}<br />
+      <strong>Datum:</strong> {article.created}
+    </p>
+
+    <hr />
+
+    <article>
+      <p>{article.content}</p>
+    </article>
+
+    <p>
+      <a href={`/${section.slug}/clanky`}>← Zpět na články</a>
+    </p>
+  </body>
+</html>
