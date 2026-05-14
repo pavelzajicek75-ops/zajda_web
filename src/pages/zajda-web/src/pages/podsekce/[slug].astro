@@ -1,0 +1,63 @@
+---
+const { slug } = Astro.params;
+
+// Načteme data z API
+const sectionsRes = await fetch("https://zajda-web.pages.dev/api/sections");
+const subsectionsRes = await fetch("https://zajda-web.pages.dev/api/subsections");
+const articlesRes = await fetch("https://zajda-web.pages.dev/api/articles");
+
+const { sections } = await sectionsRes.json();
+const { subsections } = await subsectionsRes.json();
+const { articles } = await articlesRes.json();
+
+// Najdeme podsekci podle slugu
+const subsection = subsections.find(s => s.slug === slug);
+
+if (!subsection) {
+  throw new Error("Podsekce nenalezena");
+}
+
+// Najdeme sekci, do které patří
+const section = sections.find(s => s.id === subsection.section_id);
+
+// Filtrovat články podle subsection_id
+const filteredArticles = articles.filter(a => a.subsection_id === subsection.id);
+---
+
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Články – {subsection.name}</title>
+  </head>
+
+  <body>
+    <h1>Články – {subsection.name}</h1>
+
+    <p>
+      <strong>Sekce:</strong> {section.name}<br />
+      <strong>Podsekce:</strong> {subsection.name}
+    </p>
+
+    <hr />
+
+    {filteredArticles.length === 0 ? (
+      <p>Zatím zde nejsou žádné články.</p>
+    ) : (
+      <ul>
+        {filteredArticles.map(article => (
+          <li>
+            <a href={`/clanek/${article.slug}`}>
+              <strong>{article.title}</strong>
+            </a>
+            <br />
+            <small>Datum: {article.created}</small>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    <p>
+      <a href={`/${section.slug}/clanky`}>← Zpět na články sekce</a>
+    </p>
+  </body>
+</html>
