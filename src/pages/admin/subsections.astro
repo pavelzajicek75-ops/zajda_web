@@ -1,0 +1,52 @@
+---
+const sectionsRes = await fetch("https://zajda-web.pages.dev/api/sections");
+const subsectionsRes = await fetch("https://zajda-web.pages.dev/api/subsections");
+
+const { sections } = await sectionsRes.json();
+const { subsections } = await subsectionsRes.json();
+---
+
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin – Podsekce</title>
+  </head>
+
+  <body>
+    <h1>Správa podsekcí</h1>
+
+    <h2>Existující podsekce</h2>
+    <ul>
+      {subsections.map(sub => (
+        <li>
+          {sub.name} ({sub.slug}) – patří do: {
+            sections.find(s => s.id === sub.section_id)?.name
+          }
+
+          <form method="post" action="/api/subsections/delete" style="display:inline;">
+            <input type="hidden" name="id" value={sub.id} />
+            <button>Smazat</button>
+          </form>
+        </li>
+      ))}
+    </ul>
+
+    <h2>Přidat novou podsekci</h2>
+    <form method="post" action="/api/subsections/add">
+      <label>Název:</label><br />
+      <input name="name" /><br /><br />
+
+      <label>Slug:</label><br />
+      <input name="slug" /><br /><br />
+
+      <label>Patří do sekce:</label><br />
+      <select name="section_id">
+        {sections.map(section => (
+          <option value={section.id}>{section.name}</option>
+        ))}
+      </select><br /><br />
+
+      <button>Přidat</button>
+    </form>
+  </body>
+</html>
