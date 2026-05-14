@@ -1,4 +1,3 @@
-// /functions/api/sections.js
 export async function onRequestGet(context) {
   try {
     const sections = [
@@ -16,10 +15,13 @@ export async function onRequestGet(context) {
       { id: 5, section_id: 2, name: "Města", slug: "mesta" }
     ];
 
+    console.log("Sections API called"); // testovací log
+
     return new Response(JSON.stringify({ sections, subsections }), {
       headers: { "Content-Type": "application/json" }
     });
   } catch (err) {
+    console.error("Error in sections.js:", err);
     return new Response("Internal error: " + err.message, { status: 500 });
   }
 }
