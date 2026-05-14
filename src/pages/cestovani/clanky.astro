@@ -1,57 +1,52 @@
 ---
 let section = null;
-let filteredArticles = [];
 let subsections = [];
 
 // Během buildu (SSR) nesmíme volat API
 if (!import.meta.env.SSR) {
   const sectionsRes = await fetch("/api/sections");
   const subsectionsRes = await fetch("/api/subsections");
-  const articlesRes = await fetch("/api/articles");
 
   const { sections } = await sectionsRes.json();
   const { subsections: subs } = await subsectionsRes.json();
-  const { articles } = await articlesRes.json();
-
-  subsections = subs;
 
   section = sections.find(s => s.slug === "cestovani");
-  filteredArticles = articles.filter(a => a.section_id === section.id);
+  subsections = subs.filter(sub => sub.section_id === section.id);
 }
 ---
 
 <html lang="cs">
   <head>
     <meta charset="UTF-8" />
-    <title>Články – Cestování</title>
+    <title>Cestování</title>
   </head>
 
   <body>
-    <h1>Články – Cestování</h1>
+    <h1>Cestování</h1>
 
     {import.meta.env.SSR ? (
       <p>Obsah se načte až na serveru.</p>
     ) : (
       <>
-        {filteredArticles.length === 0 ? (
-          <p>Zatím zde nejsou žádné články.</p>
+        <h2>Podsekce</h2>
+
+        {subsections.length === 0 ? (
+          <p>Zatím zde nejsou žádné podsekce.</p>
         ) : (
           <ul>
-            {filteredArticles.map(article => (
+            {subsections.map(sub => (
               <li>
-                <a href={`/clanek/${article.slug}`}>
-                  <strong>{article.title}</strong>
+                <a href={`/podsekce/${sub.slug}`}>
+                  {sub.name}
                 </a>
-                <br />
-                <small>
-                  Podsekce: {
-                    subsections.find(s => s.id === article.subsection_id)?.name
-                  }
-                </small>
               </li>
             ))}
           </ul>
         )}
+
+        <p>
+          <a href="/cestovani/clanky">→ Zobrazit všechny články</a>
+        </p>
       </>
     )}
   </body>
