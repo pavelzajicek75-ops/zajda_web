@@ -1,0 +1,13 @@
+{
+  "articles": [
+    {
+      "id": 1,
+      "section_id": 1,
+      "subsection_id": 1,
+      "title": "První článek",
+      "slug": "prvni-clanek",
+      "content": "Obsah článku…",
+      "created": "2026-01-01"
+    }
+  ]
+}
