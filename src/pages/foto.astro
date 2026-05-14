@@ -1,0 +1,24 @@
+---
+const response = await fetch("https://zajda-web.pages.dev/api/sections");
+const data = await response.json();
+
+const section = data.sections.find(s => s.slug === "fotografovani");
+const subsections = data.subsections.filter(sub => sub.section_id === section.id);
+---
+
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{section.name}</title>
+  </head>
+
+  <body>
+    <h1>{section.name}</h1>
+
+    <ul>
+      {subsections.map(sub => (
+        <li>{sub.name}</li>
+      ))}
+    </ul>
+  </body>
+</html>
