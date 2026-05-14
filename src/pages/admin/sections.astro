@@ -1,0 +1,40 @@
+---
+const response = await fetch("https://zajda-web.pages.dev/api/sections");
+const data = await response.json();
+const { sections } = data;
+---
+
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin – Sekce</title>
+  </head>
+
+  <body>
+    <h1>Správa sekcí</h1>
+
+    <h2>Existující sekce</h2>
+    <ul>
+      {sections.map(section => (
+        <li>
+          {section.name} ({section.slug})
+          <form method="post" action="/api/sections/delete" style="display:inline;">
+            <input type="hidden" name="id" value={section.id} />
+            <button>Smazat</button>
+          </form>
+        </li>
+      ))}
+    </ul>
+
+    <h2>Přidat novou sekci</h2>
+    <form method="post" action="/api/sections/add">
+      <label>Název:</label><br />
+      <input name="name" /><br /><br />
+
+      <label>Slug:</label><br />
+      <input name="slug" /><br /><br />
+
+      <button>Přidat</button>
+    </form>
+  </body>
+</html>
