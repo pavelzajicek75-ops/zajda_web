@@ -1,5 +1,7 @@
 export async function onRequestGet(context) {
   try {
+    console.log("Sections API called");
+
     const sections = [
       { id: 1, name: "Cestování", slug: "cestovani" },
       { id: 2, name: "Fotografování", slug: "fotografovani" },
@@ -15,13 +17,13 @@ export async function onRequestGet(context) {
       { id: 5, section_id: 2, name: "Města", slug: "mesta" }
     ];
 
-    console.log("Sections API called"); // testovací log
-
     return new Response(JSON.stringify({ sections, subsections }), {
       headers: { "Content-Type": "application/json" }
     });
+
   } catch (err) {
     console.error("Error in sections.js:", err);
     return new Response("Internal error: " + err.message, { status: 500 });
   }
 }
+
