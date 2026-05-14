@@ -1,0 +1,46 @@
+---
+const sectionsRes = await fetch("https://zajda-web.pages.dev/api/sections");
+const subsectionsRes = await fetch("https://zajda-web.pages.dev/api/subsections");
+const articlesRes = await fetch("https://zajda-web.pages.dev/api/articles");
+
+const { sections } = await sectionsRes.json();
+const { subsections } = await subsectionsRes.json();
+const { articles } = await articlesRes.json();
+
+// Najdeme sekci podle slugu
+const section = sections.find(s => s.slug === "cestovani");
+
+// Filtrovat články podle section_id
+const filteredArticles = articles.filter(a => a.section_id === section.id);
+---
+
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Články – {section.name}</title>
+  </head>
+
+  <body>
+    <h1>Články – {section.name}</h1>
+
+    {filteredArticles.length === 0 ? (
+      <p>Zatím zde nejsou žádné články.</p>
+    ) : (
+      <ul>
+        {filteredArticles.map(article => (
+          <li>
+            <a href={`/clanek/${article.slug}`}>
+              <strong>{article.title}</strong>
+            </a>
+            <br />
+            <small>
+              Podsekce: {
+                subsections.find(s => s.id === article.subsection_id)?.name
+              }
+            </small>
+          </li>
+        ))}
+      </ul>
+    )}
+  </body>
+</html>
