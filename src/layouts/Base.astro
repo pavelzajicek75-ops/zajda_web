@@ -1,16 +1,26 @@
 ---
-import "../styles/global.css";
+const { title = "Moje diagnóza: můj vesmír" } = Astro.props;
 ---
 
-<html lang="cs">
+<html lang="cs" class="dark">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <title>{Astro.props.title || "Moje diagnóza: můj vesmír"}</title>
+    <meta charset="utf-8" />
+    <title>{title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/styles/global.css" />
   </head>
 
-  <body>
-    <slot />
+  <body class="bg-neutral-900 text-neutral-100 min-h-screen">
+    <header class="p-4 border-b border-neutral-700">
+      <h1 class="text-xl font-bold">Moje diagnóza: můj vesmír</h1>
+    </header>
+
+    <main class="p-4">
+      <slot />
+    </main>
+
+    <footer class="p-4 border-t border-neutral-700 text-sm opacity-60">
+      © {new Date().getFullYear()} Pavel Zajíček
+    </footer>
   </body>
 </html>
