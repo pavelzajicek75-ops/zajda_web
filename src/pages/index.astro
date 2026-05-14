@@ -27,12 +27,15 @@ const cards = [
 ];
 ---
 
-<h1 class="title fade-in">Moje diagnóza: můj vesmír</h1>
+<section class="hero">
+  <h1 class="title fly-title">Moje diagnóza: můj vesmír</h1>
+  <p class="subtitle fade-sub">Osobní prostor, kde tvořím, cestuji, fotím a žiju.</p>
+</section>
 
 <div class="cards">
   {cards.map((card, i) => (
     <a href={card.link} class={`card fly-in-${i}`}>
-      <div class="icon">{card.icon}</div>
+      <div class="icon pulse">{card.icon}</div>
       <h3>{card.title}</h3>
       <p>{card.text}</p>
       <span class="btn">Otevřít</span>
@@ -41,36 +44,61 @@ const cards = [
 </div>
 
 <style>
+  /* ------------------------------
+     GLOBAL
+  ------------------------------ */
   body {
-    background: #0b0b0b;
+    background: radial-gradient(circle at top, #0f0f0f, #050505 60%);
     color: #e6e6e6;
     font-family: system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ------------------------------
+     HERO SECTION
+  ------------------------------ */
+  .hero {
+    text-align: center;
+    padding: 4rem 1rem 2rem;
   }
 
   .title {
-    text-align: center;
-    margin-top: 2rem;
-    font-size: 2.6rem;
-    color: #fff;
+    font-size: 3rem;
+    font-weight: 700;
     opacity: 0;
-    transform: translateY(20px);
-    animation: fadeUp 0.8s ease forwards;
+    transform: translateY(30px);
+    animation: fadeUp 1s ease forwards;
   }
 
+  .subtitle {
+    margin-top: 0.5rem;
+    font-size: 1.2rem;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 1s ease forwards 0.4s;
+    color: #aaa;
+  }
+
+  /* ------------------------------
+     CARDS GRID
+  ------------------------------ */
   .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.8rem;
+    gap: 2rem;
     padding: 2rem;
     max-width: 1100px;
-    margin: 0 auto;
+    margin: 0 auto 4rem;
   }
 
+  /* ------------------------------
+     CARD
+  ------------------------------ */
   .card {
-    background: #111;
+    background: rgba(20, 20, 20, 0.9);
     border: 1px solid #222;
-    padding: 1.7rem;
-    border-radius: 18px;
+    padding: 1.8rem;
+    border-radius: 20px;
     text-decoration: none;
     color: #eee;
     transition: 0.25s;
@@ -78,21 +106,53 @@ const cards = [
     flex-direction: column;
     gap: 0.8rem;
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(40px) scale(0.97);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(6px);
   }
 
+  /* Hover efekty */
   .card:hover {
     border-color: #4a90e2;
-    transform: translateY(-6px);
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 0 25px rgba(74, 144, 226, 0.25);
   }
 
+  /* Glow efekt */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, rgba(74,144,226,0.18), transparent 70%);
+    opacity: 0;
+    transition: 0.4s;
+  }
+
+  .card:hover::before {
+    opacity: 1;
+  }
+
+  /* Ikona */
   .icon {
-    font-size: 2.8rem;
+    font-size: 3rem;
+    transition: 0.3s ease;
   }
 
+  /* Parallax efekt */
+  .card:hover .icon {
+    transform: translateY(-6px) scale(1.12);
+  }
+
+  /* Pulzování ikon */
+  .pulse {
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  /* Texty */
   h3 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
   p {
@@ -100,6 +160,7 @@ const cards = [
     line-height: 1.45;
   }
 
+  /* Tlačítko */
   .btn {
     margin-top: auto;
     background: #4a90e2;
@@ -108,13 +169,17 @@ const cards = [
     text-align: center;
     font-weight: 600;
     color: white;
+    transition: 0.2s;
   }
 
   .btn:hover {
     background: #357ab8;
+    transform: scale(1.05);
   }
 
-  /* Animace */
+  /* ------------------------------
+     ANIMACE
+  ------------------------------ */
   @keyframes fadeUp {
     to {
       opacity: 1;
@@ -122,15 +187,21 @@ const cards = [
     }
   }
 
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.08); opacity: 0.9; }
+  }
+
   @keyframes flyIn {
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
   }
 
-  .fly-in-0 { animation: flyIn 0.6s ease forwards 0.2s; }
-  .fly-in-1 { animation: flyIn 0.6s ease forwards 0.35s; }
-  .fly-in-2 { animation: flyIn 0.6s ease forwards 0.5s; }
-  .fly-in-3 { animation: flyIn 0.6s ease forwards 0.65s; }
+  .fly-in-0 { animation: flyIn 0.7s ease forwards 0.2s; }
+  .fly-in-1 { animation: flyIn 0.7s ease forwards 0.35s; }
+  .fly-in-2 { animation: flyIn 0.7s ease forwards 0.5s; }
+  .fly-in-3 { animation: flyIn 0.7s ease forwards 0.65s; }
+
 </style>
