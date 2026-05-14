@@ -1,3 +1,4 @@
+// /functions/api/sections.js
 export async function onRequestGet(context) {
   try {
     const sections = [
