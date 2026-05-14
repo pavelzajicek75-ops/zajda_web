@@ -1,0 +1,103 @@
+---
+const res = await fetch("/api/posts");
+const { posts } = await res.json();
+---
+
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <title>Správa článků</title>
+
+    <style>
+      :root { color-scheme: dark; }
+      body {
+        margin: 0;
+        background: #050509;
+        font-family: system-ui, sans-serif;
+        color: #f3f3f3;
+      }
+      .page {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      h1 {
+        font-size: 2.6rem;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(120deg, #ffe8c8, #ff8c3a);
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+      }
+      th, td {
+        padding: 0.8rem;
+        border-bottom: 1px solid #333;
+        text-align: left;
+      }
+      th {
+        background: rgba(255,255,255,0.05);
+      }
+      .btn-delete {
+        padding: 0.4rem 0.8rem;
+        background: #ff4d4d;
+        border: none;
+        border-radius: 6px;
+        color: white;
+        cursor: pointer;
+      }
+      .btn-delete:hover {
+        background: #ff7777;
+      }
+      .btn-edit {
+        padding: 0.4rem 0.8rem;
+        background: #ffaa33;
+        border: none;
+        border-radius: 6px;
+        color: black;
+        cursor: pointer;
+      }
+      .btn-edit:hover {
+        background: #ffcc66;
+      }
+    </style>
+  </head>
+
+  <body>
+    <section class="page">
+      <h1>📚 Správa článků</h1>
+
+      <table>
+        <tr>
+          <th>ID</th>
+          <th>Název</th>
+          <th>Datum</th>
+          <th>Slug</th>
+          <th>Akce</th>
+        </tr>
+
+        {posts.map(p => (
+          <tr>
+            <td>{p.id}</td>
+            <td>{p.title}</td>
+            <td>{p.date}</td>
+            <td>{p.slug}</td>
+            <td>
+              <a href={`/admin/edit/${p.id}`}>
+                <button class="btn-edit">Upravit</button>
+              </a>
+
+              <form method="post" action="/api/delete-post" style="display:inline;">
+                <input type="hidden" name="id" value={p.id} />
+                <button class="btn-delete">Smazat</button>
+              </form>
+            </td>
+          </tr>
+        ))}
+      </table>
+    </section>
+  </body>
+</html>
