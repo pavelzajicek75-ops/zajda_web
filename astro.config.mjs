@@ -1,5 +1,6 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
 
 export default defineConfig({
-  output: 'hybrid'
+  output: "hybrid",
+  site: "https://zajda-web.pages.dev",
 });
