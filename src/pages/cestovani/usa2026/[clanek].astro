@@ -2,7 +2,7 @@
 import Gallery from "../../../components/Gallery.astro";
 import fs from "fs";
 
-// 1) Načtení článku z props
+// článek z props
 const { article } = Astro.props;
 ---
 
@@ -16,21 +16,19 @@ const { article } = Astro.props;
   {article.photos && <Gallery photos={article.photos} title={article.title} />}
 </div>
 
-<!-- TADY KONČÍ HTML A ZAČÍNÁ EXPORT -->
+---
 
-<script>
-  export async function getStaticPaths() {
-    const dir = "src/data/cestovani/usa2026";
-    const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
+export async function getStaticPaths() {
+  const dir = "src/data/cestovani/usa2026";
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
 
-    return files.map((file) => {
-      const raw = fs.readFileSync(`${dir}/${file}`, "utf-8");
-      const article = JSON.parse(raw);
+  return files.map((file) => {
+    const raw = fs.readFileSync(`${dir}/${file}`, "utf-8");
+    const article = JSON.parse(raw);
 
-      return {
-        params: { clanek: file.replace(".json", "") },
-        props: { article }
-      };
-    });
-  }
-</script>
+    return {
+      params: { clanek: file.replace(".json", "") },
+      props: { article }
+    };
+  });
+}
