@@ -1,24 +1,75 @@
----
-let sections = [
-  { id: 1, name: "Cestování" },
-  { id: 2, name: "Fotografie" },
-  { id: 3, name: "Projekty" },
-  { id: 4, name: "Zajda" }
-];
-
-let subsections = [
-  { id: 1, section_id: 1, name: "USA 2026" },
-  { id: 2, section_id: 1, name: "Island" },
-  { id: 3, section_id: 1, name: "Tokyo" },
-  { id: 4, section_id: 2, name: "Krajiny" },
-  { id: 5, section_id: 2, name: "Města" }
-];
----
-
-<html>
+<html lang="cs">
   <head>
+    <meta charset="utf-8" />
+    <title>Nový článek</title>
+
+    <!-- CropperJS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+
+    <style>
+      :root { color-scheme: dark; }
+      body {
+        margin: 0;
+        background: #050509;
+        font-family: system-ui, sans-serif;
+        color: #f3f3f3;
+      }
+      .page {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      h1 {
+        font-size: 2.6rem;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(120deg, #ffe8c8, #ff8c3a);
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+      .form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.4rem;
+        background: rgba(255,255,255,0.05);
+        padding: 2rem;
+        border-radius: 16px;
+      }
+      input, textarea, select {
+        padding: 0.8rem;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+      }
+      .btn {
+        padding: 1rem;
+        background: orange;
+        border: none;
+        border-radius: 10px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #ffb870;
+      }
+      .ratio-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin: 1rem 0;
+      }
+      .ratio-buttons button {
+        padding: 0.5rem 1rem;
+        background: #333;
+        border: 1px solid #666;
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .ratio-buttons button:hover {
+        background: #555;
+      }
+    </style>
   </head>
 
   <body>
@@ -45,21 +96,15 @@ let subsections = [
 
         <label>
           Sekce
-          <select name="section_id" required>
-            <option value="">Vyber sekci…</option>
-            {sections.map((s) => (
-              <option value={s.id}>{s.name}</option>
-            ))}
+          <select name="section_id" id="section-select" required>
+            <option value="">Načítám…</option>
           </select>
         </label>
 
         <label>
           Podsekce
-          <select name="subsection_id">
+          <select name="subsection_id" id="subsection-select">
             <option value="">(volitelné)</option>
-            {subsections.map((ss) => (
-              <option value={ss.id}>{ss.name}</option>
-            ))}
           </select>
         </label>
 
@@ -75,8 +120,20 @@ let subsections = [
 
         <div id="editor" style="display:none; margin-top:20px;">
           <h3>Editor fotky</h3>
+
+          <div class="ratio-buttons">
+            <button type="button" data-ratio="4/3">4:3</button>
+            <button type="button" data-ratio="3/4">3:4</button>
+            <button type="button" data-ratio="1/1">1:1</button>
+            <button type="button" data-ratio="16/9">16:9</button>
+            <button type="button" data-ratio="free">Volně</button>
+          </div>
+
           <img id="photo-preview" style="max-width:100%; border-radius:10px;" />
-          <button type="button" id="crop-btn" class="btn">Použít ořez</button>
+
+          <button type="button" id="crop-btn" class="btn" style="margin-top:1rem;">
+            Použít ořez
+          </button>
         </div>
 
         <input type="file" id="final-photo" name="photos" style="display:none;">
@@ -88,6 +145,35 @@ let subsections = [
     </section>
 
     <script>
+      /* 1) Načtení číselníků z API */
+      async function loadSections() {
+        const res = await fetch("/api/sections");
+        const { sections, subsections } = await res.json();
+
+        const sectionSelect = document.getElementById("section-select");
+        const subsectionSelect = document.getElementById("subsection-select");
+
+        sectionSelect.innerHTML = `<option value="">Vyber sekci…</option>`;
+
+        sections.forEach(s => {
+          sectionSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+        });
+
+        sectionSelect.addEventListener("change", () => {
+          const id = Number(sectionSelect.value);
+          const filtered = subsections.filter(ss => ss.section_id === id);
+
+          subsectionSelect.innerHTML = `<option value="">(volitelné)</option>`;
+          filtered.forEach(ss => {
+            subsectionSelect.innerHTML += `<option value="${ss.id}">${ss.name}</option>`;
+          });
+        });
+      }
+
+      loadSections();
+
+
+      /* 2) Editor fotek */
       let cropper = null;
 
       document.getElementById("photo-input").addEventListener("change", (e) => {
@@ -112,10 +198,20 @@ let subsections = [
         });
       });
 
+      /* 3) Přepínání poměrů stran */
+      document.querySelectorAll(".ratio-buttons button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const r = btn.dataset.ratio;
+          if (r === "free") cropper.setAspectRatio(NaN);
+          else cropper.setAspectRatio(eval(r));
+        });
+      });
+
+      /* 4) Ořez a příprava pro upload */
       document.getElementById("crop-btn").addEventListener("click", () => {
         const canvas = cropper.getCroppedCanvas({
-          width: 1600,
-          height: 1200
+          width: 2000,
+          height: 2000
         });
 
         canvas.toBlob((blob) => {
@@ -133,43 +229,3 @@ let subsections = [
 
   </body>
 </html>
-
-<style>
-  body {
-    background: #050509;
-    color: white;
-    font-family: system-ui;
-  }
-
-  .page {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.4rem;
-    background: rgba(255,255,255,0.05);
-    padding: 2rem;
-    border-radius: 16px;
-  }
-
-  input, textarea, select {
-    padding: 0.8rem;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: white;
-  }
-
-  .btn {
-    padding: 1rem;
-    background: orange;
-    border: none;
-    border-radius: 10px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-</style>
