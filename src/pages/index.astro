@@ -44,19 +44,27 @@ const cards = [
 </div>
 
 <style>
-  /* ------------------------------
-     GLOBAL
-  ------------------------------ */
+  /* -----------------------------------------
+     ANIMACE POZADÍ – gradient wave
+  ----------------------------------------- */
   body {
-    background: radial-gradient(circle at top, #0f0f0f, #050505 60%);
+    background: linear-gradient(120deg, #050505, #0f0f0f, #050505);
+    background-size: 300% 300%;
+    animation: gradientMove 12s ease infinite;
     color: #e6e6e6;
     font-family: system-ui, sans-serif;
     overflow-x: hidden;
   }
 
-  /* ------------------------------
-     HERO SECTION
-  ------------------------------ */
+  @keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* -----------------------------------------
+     HERO
+  ----------------------------------------- */
   .hero {
     text-align: center;
     padding: 4rem 1rem 2rem;
@@ -79,9 +87,9 @@ const cards = [
     color: #aaa;
   }
 
-  /* ------------------------------
-     CARDS GRID
-  ------------------------------ */
+  /* -----------------------------------------
+     GRID KARET
+  ----------------------------------------- */
   .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -91,11 +99,11 @@ const cards = [
     margin: 0 auto 4rem;
   }
 
-  /* ------------------------------
-     CARD
-  ------------------------------ */
+  /* -----------------------------------------
+     KARTA
+  ----------------------------------------- */
   .card {
-    background: rgba(20, 20, 20, 0.9);
+    background: rgba(20, 20, 20, 0.85);
     border: 1px solid #222;
     padding: 1.8rem;
     border-radius: 20px;
@@ -177,9 +185,9 @@ const cards = [
     transform: scale(1.05);
   }
 
-  /* ------------------------------
-     ANIMACE
-  ------------------------------ */
+  /* -----------------------------------------
+     ANIMACE ELEMENTŮ
+  ----------------------------------------- */
   @keyframes fadeUp {
     to {
       opacity: 1;
