@@ -1,8 +1,8 @@
-export default {
-  async fetch(request) {
+export async function onRequestGet(context) {
+  try {
     const sections = [
       { id: 1, name: "Cestování", slug: "cestovani" },
-      { id: 2, name: "Fotografování", slug: "fotografije" },
+      { id: 2, name: "Fotografování", slug: "fotografovani" },
       { id: 3, name: "Moje projekty", slug: "projekty" },
       { id: 4, name: "Zajda", slug: "zajda" }
     ];
@@ -18,5 +18,7 @@ export default {
     return new Response(JSON.stringify({ sections, subsections }), {
       headers: { "Content-Type": "application/json" }
     });
+  } catch (err) {
+    return new Response("Internal error: " + err.message, { status: 500 });
   }
-};
+}
