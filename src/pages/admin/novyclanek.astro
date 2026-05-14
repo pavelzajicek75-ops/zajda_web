@@ -1,0 +1,180 @@
+---
+import { onMount } from 'solid-js';
+
+let sections = [
+  { id: 1, name: "Cestování" },
+  { id: 2, name: "Fotografie" },
+  { id: 3, name: "Projekty" },
+  { id: 4, name: "Zajda" }
+];
+
+let subsections = [
+  { id: 1, section_id: 1, name: "USA 2026" },
+  { id: 2, section_id: 1, name: "Island" },
+  { id: 3, section_id: 1, name: "Tokyo" },
+  { id: 4, section_id: 2, name: "Krajiny" },
+  { id: 5, section_id: 2, name: "Města" }
+];
+
+let previewUrl = "";
+let cropper = null;
+
+onMount(() => {
+  const input = document.getElementById("photo-input");
+  const preview = document.getElementById("photo-preview");
+  const editor = document.getElementById("editor");
+  const cropBtn = document.getElementById("crop-btn");
+
+  input.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    previewUrl = URL.createObjectURL(file);
+    preview.src = previewUrl;
+
+    editor.style.display = "block";
+
+    if (cropper) cropper.destroy();
+    cropper = new Cropper(preview, {
+      aspectRatio: 4 / 3,
+      viewMode: 1,
+      movable: true,
+      zoomable: true,
+      rotatable: true,
+      scalable: true
+    });
+  });
+
+  cropBtn.addEventListener("click", () => {
+    const canvas = cropper.getCroppedCanvas({
+      width: 1600,
+      height: 1200
+    });
+
+    canvas.toBlob((blob) => {
+      const fileInput = document.getElementById("final-photo");
+      const file = new File([blob], "cover.jpg", { type: "image/jpeg" });
+
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      fileInput.files = dataTransfer.files;
+
+      alert("Fotka upravena a připravena k nahrání.");
+    }, "image/jpeg", 0.9);
+  });
+});
+---
+
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <section class="page">
+
+      <h1>Nový článek</h1>
+
+      <form method="post" action="/api/create-post" enctype="multipart/form-data" class="form">
+
+        <label>
+          Název článku
+          <input type="text" name="title" required>
+        </label>
+
+        <label>
+          Krátký popis
+          <input type="text" name="description" required>
+        </label>
+
+        <label>
+          Datum
+          <input type="date" name="date" required>
+        </label>
+
+        <label>
+          Sekce
+          <select name="section_id" required>
+            <option value="">Vyber sekci…</option>
+            {sections.map((s) => (
+              <option value={s.id}>{s.name}</option>
+            ))}
+          </select>
+        </label>
+
+        <label>
+          Podsekce
+          <select name="subsection_id">
+            <option value="">(volitelné)</option>
+            {subsections.map((ss) => (
+              <option value={ss.id}>{ss.name}</option>
+            ))}
+          </select>
+        </label>
+
+        <label>
+          Obsah článku
+          <textarea name="content" rows="10" required></textarea>
+        </label>
+
+        <label>
+          Fotka (cover) – bude upravena
+          <input type="file" id="photo-input" accept="image/*">
+        </label>
+
+        <div id="editor" style="display:none; margin-top:20px;">
+          <h3>Editor fotky</h3>
+          <img id="photo-preview" style="max-width:100%; border-radius:10px;" />
+          <button type="button" id="crop-btn" class="btn">Použít ořez</button>
+        </div>
+
+        <input type="file" id="final-photo" name="photos" style="display:none;">
+
+        <button type="submit" class="btn">Publikovat článek</button>
+
+      </form>
+
+    </section>
+  </body>
+</html>
+
+<style>
+  body {
+    background: #050509;
+    color: white;
+    font-family: system-ui;
+  }
+
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    background: rgba(255,255,255,0.05);
+    padding: 2rem;
+    border-radius: 16px;
+  }
+
+  input, textarea, select {
+    padding: 0.8rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+  }
+
+  .btn {
+    padding: 1rem;
+    background: orange;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+</style>
