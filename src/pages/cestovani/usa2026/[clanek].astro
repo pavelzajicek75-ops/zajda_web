@@ -17,7 +17,6 @@ const { article } = Astro.props;
 </div>
 
 ---
-
 export async function getStaticPaths() {
   const dir = "src/data/cestovani/usa2026";
   const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
@@ -32,3 +31,4 @@ export async function getStaticPaths() {
     };
   });
 }
+---
