@@ -1,167 +1,227 @@
 ---
-const sections = [
-  { id: 1, name: "Cestování" },
-  { id: 2, name: "Fotografie" },
-  { id: 3, name: "Projekty" },
-  { id: 4, name: "Zajda" }
-];
-
-// TODO: načítat subsections dynamicky z API
-const subsections = [
-  { id: 1, section_id: 1, name: "USA 2026" },
-  { id: 2, section_id: 1, name: "Island" },
-  { id: 3, section_id: 1, name: "Tokyo" },
-  { id: 4, section_id: 2, name: "Krajiny" },
-  { id: 5, section_id: 2, name: "Města" }
-];
+/* Načtení číselníků ze serveru */
+const res = await fetch("/api/sections");
+const { sections, subsections } = await res.json();
 ---
 
-<section class="page">
-  <header class="hero">
-    <h1 class="hero-title">NOVÝ ČLÁNEK</h1>
-    <p class="hero-subtitle">Vyplň formulář, nahraj fotky, publikuj. Bez souborů, bez Gitu.</p>
-  </header>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <title>Nový článek</title>
 
-  <form method="post" action="/api/create-post" enctype="multipart/form-data" class="form">
-    <div class="grid">
-      <label>
-        Název článku
-        <input type="text" name="title" required>
-      </label>
+    <!-- CropperJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
 
-      <label>
-        Krátký popis
-        <input type="text" name="description" required>
-      </label>
-    </div>
+    <style>
+      :root { color-scheme: dark; }
+      body {
+        margin: 0;
+        background: #050509;
+        font-family: system-ui, sans-serif;
+        color: #f3f3f3;
+      }
+      .page {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      h1 {
+        font-size: 2.6rem;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(120deg, #ffe8c8, #ff8c3a);
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+      .form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.4rem;
+        background: rgba(255,255,255,0.05);
+        padding: 2rem;
+        border-radius: 16px;
+      }
+      input, textarea, select {
+        padding: 0.8rem;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+      }
+      .btn {
+        padding: 1rem;
+        background: orange;
+        border: none;
+        border-radius: 10px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #ffb870;
+      }
+      .ratio-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin: 1rem 0;
+      }
+      .ratio-buttons button {
+        padding: 0.5rem 1rem;
+        background: #333;
+        border: 1px solid #666;
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .ratio-buttons button:hover {
+        background: #555;
+      }
+    </style>
+  </head>
 
-    <div class="grid">
-      <label>
-        Datum
-        <input type="date" name="date" required>
-      </label>
+  <body>
+    <section class="page">
 
-      <label>
-        Tagy (oddělené čárkou)
-        <input type="text" name="tags">
-      </label>
-    </div>
+      <h1>Nový článek</h1>
 
-    <div class="grid">
-      <label>
-        Sekce
-        <select name="section_id" required>
-          <option value="">Vyber sekci…</option>
-          {sections.map((s) => (
-            <option value={s.id}>{s.name}</option>
-          ))}
-        </select>
-      </label>
+      <form method="post" action="/api/create-post" enctype="multipart/form-data" class="form">
 
-      <label>
-        Podsekce
-        <select name="subsection_id">
-          <option value="">(volitelné)</option>
-          {subsections.map((ss) => (
-            <option value={ss.id}>{ss.name}</option>
-          ))}
-        </select>
-      </label>
-    </div>
+        <label>
+          Název článku
+          <input type="text" name="title" required>
+        </label>
 
-    <label>
-      Obsah článku
-      <textarea name="content" rows="10" required></textarea>
-    </label>
+        <label>
+          Krátký popis
+          <input type="text" name="description" required>
+        </label>
 
-    <label>
-      Fotky (můžeš nahrát více)
-      <input type="file" name="photos" multiple accept="image/*">
-    </label>
+        <label>
+          Datum
+          <input type="date" name="date" required>
+        </label>
 
-    <button type="submit" class="btn">Publikovat článek</button>
-  </form>
-</section>
+        <label>
+          Sekce
+          <select name="section_id" id="section-select" required>
+            <option value="">Vyber sekci…</option>
+            {sections.map((s) => (
+              <option value={s.id}>{s.name}</option>
+            ))}
+          </select>
+        </label>
 
-<style>
-  :root { color-scheme: dark; }
+        <label>
+          Podsekce
+          <select name="subsection_id" id="subsection-select">
+            <option value="">(volitelné)</option>
+          </select>
+        </label>
 
-  body {
-    margin: 0;
-    background:
-      radial-gradient(circle at top, rgba(255, 140, 58, 0.18), transparent 55%),
-      radial-gradient(circle at 10% 90%, rgba(120, 80, 255, 0.18), transparent 55%),
-      #050509;
-    font-family: system-ui, sans-serif;
-    color: #f3f3f3;
-  }
+        <label>
+          Obsah článku
+          <textarea name="content" rows="10" required></textarea>
+        </label>
 
-  .page {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2.5rem 1.5rem 2rem;
-  }
+        <label>
+          Fotka (cover)
+          <input type="file" id="photo-input" accept="image/*">
+        </label>
 
-  .hero-title {
-    font-size: 2.8rem;
-    font-weight: 900;
-    background: linear-gradient(120deg, #ffe8c8, #ff8c3a);
-    -webkit-background-clip: text;
-    color: transparent;
-    text-shadow: 0 0 22px rgba(255, 140, 58, 0.55);
-  }
+        <div id="editor" style="display:none; margin-top:20px;">
+          <h3>Editor fotky</h3>
 
-  .hero-subtitle {
-    color: #d0d0dd;
-    margin-bottom: 2rem;
-  }
+          <div class="ratio-buttons">
+            <button type="button" data-ratio="4/3">4:3</button>
+            <button type="button" data-ratio="3/4">3:4</button>
+            <button type="button" data-ratio="1/1">1:1</button>
+            <button type="button" data-ratio="16/9">16:9</button>
+            <button type="button" data-ratio="free">Volně</button>
+          </div>
 
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.4rem;
-    background: rgba(10, 10, 18, 0.85);
-    padding: 2rem;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(6px);
-  }
+          <img id="photo-preview" style="max-width:100%; border-radius:10px;" />
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-  }
+          <button type="button" id="crop-btn" class="btn" style="margin-top:1rem;">
+            Použít ořez
+          </button>
+        </div>
 
-  label {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    font-size: 0.95rem;
-  }
+        <input type="file" id="final-photo" name="photos" style="display:none;">
 
-  input, textarea, select {
-    padding: 0.8rem;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
-    font-size: 1rem;
-  }
+        <button type="submit" class="btn">Publikovat článek</button>
 
-  .btn {
-    padding: 1rem;
-    border-radius: 12px;
-    background: linear-gradient(120deg, #ff8c3a, #ffb87a);
-    color: #000;
-    font-weight: 700;
-    border: none;
-    cursor: pointer;
-    transition: 0.2s;
-  }
+      </form>
 
-  .btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(255, 140, 58, 0.4);
-  }
-</style>
+    </section>
+
+    <script>
+      /* Dynamické podsekce */
+      const allSubsections = JSON.parse(`<!--${JSON.stringify(subsections)}-->`);
+      const sectionSelect = document.getElementById("section-select");
+      const subsectionSelect = document.getElementById("subsection-select");
+
+      sectionSelect.addEventListener("change", () => {
+        const id = Number(sectionSelect.value);
+        const filtered = allSubsections.filter(s => s.section_id === id);
+
+        subsectionSelect.innerHTML = `<option value="">(volitelné)</option>`;
+        filtered.forEach(ss => {
+          subsectionSelect.innerHTML += `<option value="${ss.id}">${ss.name}</option>`;
+        });
+      });
+
+      /* Editor fotek */
+      let cropper = null;
+
+      document.getElementById("photo-input").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const preview = document.getElementById("photo-preview");
+        const editor = document.getElementById("editor");
+
+        preview.src = URL.createObjectURL(file);
+        editor.style.display = "block";
+
+        if (cropper) cropper.destroy();
+
+        cropper = new Cropper(preview, {
+          aspectRatio: 4 / 3,
+          viewMode: 1,
+          movable: true,
+          zoomable: true,
+          rotatable: true,
+          scalable: true
+        });
+      });
+
+      /* Přepínání poměrů stran */
+      document.querySelectorAll(".ratio-buttons button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const r = btn.dataset.ratio;
+          if (r === "free") cropper.setAspectRatio(NaN);
+          else cropper.setAspectRatio(eval(r));
+        });
+      });
+
+      /* Ořez a příprava pro upload */
+      document.getElementById("crop-btn").addEventListener("click", () => {
+        const canvas = cropper.getCroppedCanvas({
+          width: 2000,
+          height: 2000
+        });
+
+        canvas.toBlob((blob) => {
+          const fileInput = document.getElementById("final-photo");
+          const file = new File([blob], "cover.jpg", { type: "image/jpeg" });
+
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          fileInput.files = dt.files;
+
+          alert("Fotka upravena a připravena k nahrání.");
+        }, "image/jpeg", 0.9);
+      });
+    </script>
+
+  </body>
+</html>
