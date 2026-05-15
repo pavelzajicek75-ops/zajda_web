@@ -44,7 +44,9 @@
 </table>
 
 <script>
-const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
+const token = localStorage.getItem('adminToken');
+if (!token) window.location.href = "/admin/login.html";
+
 const errorEl = document.getElementById('error');
 const tbody = document.querySelector('#articles tbody');
 
@@ -100,4 +102,3 @@ loadArticles();
 
 </body>
 </html>
-
