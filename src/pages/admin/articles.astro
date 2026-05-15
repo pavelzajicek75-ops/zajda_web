@@ -1,7 +1,5 @@
 ---
 import AdminLayout from "../../layouts/AdminLayout.astro";
-
-// Načtení článků ze souboru (zatím JSON)
 import articles from "../../data/articles.json";
 ---
 
@@ -11,6 +9,7 @@ import articles from "../../data/articles.json";
   <table>
     <thead>
       <tr>
+        <th>Obrázek</th>
         <th>Název</th>
         <th>Datum</th>
         <th>ID</th>
@@ -21,9 +20,18 @@ import articles from "../../data/articles.json";
     <tbody>
       {articles.map((a) => (
         <tr>
+          <td>
+            {a.image ? (
+              <img src={a.image} alt={a.title} class="thumb" />
+            ) : (
+              <span class="noimg">—</span>
+            )}
+          </td>
+
           <td>{a.title}</td>
           <td>{a.date}</td>
           <td>{a.id}</td>
+
           <td>
             <a class="edit" href={`/admin/edit/${a.id}`}>Upravit</a>
             <button class="delete" onclick={`deleteArticle('${a.id}')`}>Smazat</button>
@@ -46,11 +54,25 @@ import articles from "../../data/articles.json";
     th, td {
       padding: 12px;
       border-bottom: 1px solid #333;
+      vertical-align: middle;
     }
 
     th {
       background: #2a2a2a;
       text-align: left;
+    }
+
+    .thumb {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #444;
+    }
+
+    .noimg {
+      color: #666;
+      font-size: 14px;
     }
 
     .edit {
