@@ -1,15 +1,60 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-
-if (!import.meta.env.SSR) {
-  const token = localStorage.getItem("admin_token");
-  if (!token) {
-    window.location.href = "/admin/login";
-  }
-}
+import AdminLayout from "../../layouts/AdminLayout.astro";
 ---
 
-<Layout title="Administrace">
+<AdminLayout title="Administrace">
   <h1>Administrace webu</h1>
-  <p>Vítej, Pavle! Vyber sekci, kterou chceš upravit.</p>
-</Layout>
+
+  <div class="grid">
+    <a class="card" href="/admin/articles">
+      <h2>📄 Články</h2>
+      <p>Správa článků, úpravy, mazání, přidávání.</p>
+    </a>
+
+    <a class="card" href="/admin/sections">
+      <h2>📁 Sekce</h2>
+      <p>Uspořádání hlavních sekcí webu.</p>
+    </a>
+
+    <a class="card" href="/admin/subsections">
+      <h2>📂 Podsekce</h2>
+      <p>Správa podsekcí a struktury obsahu.</p>
+    </a>
+
+    <a class="card" href="/admin/novyclanek">
+      <h2>➕ Nový článek</h2>
+      <p>Vytvořit nový článek s obsahem a obrázky.</p>
+    </a>
+  </div>
+
+  <style>
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: white;
+      border: 1px solid #333;
+      transition: 0.2s;
+    }
+
+    .card:hover {
+      background: #2a2a2a;
+      border-color: #4a90e2;
+    }
+
+    .card h2 {
+      margin: 0 0 10px 0;
+    }
+  </style>
+</AdminLayout>
