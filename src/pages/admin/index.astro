@@ -4,9 +4,19 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
 <AdminLayout title="Admin – Dashboard">
   <h1>Admin – Dashboard</h1>
-  <p>Jsi přihlášen. Token: {localStorage.getItem("admin_token")}</p>
+
+  <p id="tokenInfo">Načítám token…</p>
 
   <script>
     console.log("Dashboard – JS běží");
+
+    const token = localStorage.getItem("admin_token");
+    const el = document.getElementById("tokenInfo");
+
+    if (token) {
+      el.textContent = "Jsi přihlášen. Token: " + token;
+    } else {
+      el.textContent = "Token nenalezen.";
+    }
   </script>
 </AdminLayout>
