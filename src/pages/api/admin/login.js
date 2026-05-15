@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 export async function post({ request }) {
   const body = await request.json();
 
-  // 🔐 Základní přihlašovací údaje (můžeš změnit podle sebe)
+  // 🔐 Výchozí přihlašovací údaje
   const USER = "admin";
   const PASS = "admin123";
 
