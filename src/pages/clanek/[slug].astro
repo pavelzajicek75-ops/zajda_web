@@ -2,19 +2,18 @@
 import { readFileSync } from "fs";
 import path from "path";
 
-// 🔹 1) Načteme články z lokálního JSON souboru
-const filePath = path.resolve("src/data/cestovani/usa2026/articles.json");
-const articles = JSON.parse(readFileSync(filePath, "utf-8"));
-
-// 🔹 2) Definujeme getStaticPaths pro Astro
+// 🔹 1) Definujeme getStaticPaths – načítá JSON přímo uvnitř funkce
 export async function getStaticPaths() {
+  const filePath = path.resolve("src/data/cestovani/usa2026/articles.json");
+  const articles = JSON.parse(readFileSync(filePath, "utf-8"));
+
   return articles.map(article => ({
     params: { slug: article.slug },
     props: { article },
   }));
 }
 
-// 🔹 3) Získáme data pro konkrétní článek
+// 🔹 2) Získáme data pro konkrétní článek
 const { article } = Astro.props;
 ---
 
