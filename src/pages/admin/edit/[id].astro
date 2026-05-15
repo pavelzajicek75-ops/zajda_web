@@ -2,6 +2,13 @@
 import AdminLayout from "../../../layouts/AdminLayout.astro";
 import articles from "../../../data/articles.json";
 
+// 🔥 Astro potřebuje seznam ID pro statický build
+export function getStaticPaths() {
+  return articles.map((article) => ({
+    params: { id: article.id }
+  }));
+}
+
 const { id } = Astro.params;
 const article = articles.find((a) => a.id === id);
 
