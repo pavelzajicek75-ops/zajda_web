@@ -5,7 +5,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 <AdminLayout title="Přihlášení" noAuth={true}>
   <h1>Přihlášení</h1>
 
-  <p>Testovací login: <strong>admin / admin123</strong></p>
+  <p>Test login: <strong>admin / admin123</strong></p>
 
   <form
     id="loginForm"
@@ -29,8 +29,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     <button
       type="button"
       id="loginBtn"
-      style="margin-top:10px;padding:10px 16px;background:#4a90e2;border:none;border-radius:4px;color:white;font-weight:600;font-size:15px;pointer-events:auto;opacity:1;cursor:pointer;"
-      onclick="window.__loginClickInline && window.__loginClickInline()"
+      style="margin-top:10px;padding:10px 16px;background:#4a90e2;border:none;border-radius:4px;color:white;font-weight:600;font-size:15px;pointer-events:auto;opacity:1;cursor:pointer;position:relative;z-index:9999;"
     >
       Přihlásit
     </button>
@@ -41,19 +40,13 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
   <script>
     console.log("Login stránka – JS běží");
 
-    window.__loginClickInline = function () {
-      console.log("INLINE KLIK NA TLAČÍTKO");
-    };
-
     const btn = document.getElementById("loginBtn");
     const userInput = document.getElementById("username");
     const passInput = document.getElementById("password");
     const msg = document.getElementById("loginMessage");
 
-    console.log("Našel jsem tlačítko?", !!btn);
-
     btn.addEventListener("click", () => {
-      console.log("EVENT LISTENER KLIK");
+      console.log("KLIK NA LOGIN TLAČÍTKO");
 
       const u = userInput.value.trim();
       const p = passInput.value.trim();
