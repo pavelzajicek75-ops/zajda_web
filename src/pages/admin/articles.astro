@@ -1,4 +1,12 @@
 ---
+if (!import.meta.env.SSR) {
+  const token = localStorage.getItem("admin_token");
+  if (!token) {
+    window.location.href = "/admin/login";
+  }
+}
+---
+
 let sections = [];
 let subsections = [];
 let articles = [];
