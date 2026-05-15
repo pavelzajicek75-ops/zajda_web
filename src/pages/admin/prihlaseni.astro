@@ -1,0 +1,48 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Přihlášení" noAuth={true}>
+  <h1>Přihlášení</h1>
+
+  <form id="loginForm" style="display:flex;flex-direction:column;gap:15px;max-width:300px;">
+    <label>Uživatel</label>
+    <input type="text" id="username" style="padding:10px;" />
+
+    <label>Heslo</label>
+    <input type="password" id="password" style="padding:10px;" />
+
+    <button type="button" id="loginBtn" style="padding:10px;background:#4a90e2;border:none;color:white;">
+      Přihlásit
+    </button>
+  </form>
+
+  <script type="module">
+    console.log("JS běží!");
+
+    async function login() {
+      console.log("Klik!");
+
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+      console.log("API odpověď:", data);
+
+      if (data.success) {
+        localStorage.setItem("admin_token", data.token);
+        window.location.href = "/admin";
+      } else {
+        alert("Špatné přihlašovací údaje");
+      }
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", login);
+  </script>
+</AdminLayout>
