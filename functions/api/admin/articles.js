@@ -1,108 +1,66 @@
-import jwt from "jsonwebtoken";
-
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
-  const method = request.method;
+  const token = request.headers.get("Authorization")?.replace("Bearer ", "");
 
-  // 1) Ověření JWT
-  const authHeader = request.headers.get("Authorization") || "";
-  const token = authHeader.startsWith("Bearer ")
-    ? authHeader.substring(7)
-    : null;
-
-  if (!token) {
-    return jsonResponse({ error: "Missing token" }, 401);
+  if (!token || token !== env.ADMIN_TOKEN) {
+    return new Response(JSON.stringify({ error: "No token" }), { status: 401 });
   }
 
-  try {
-    jwt.verify(token, env.JWT_SECRET);
-  } catch (e) {
-    return jsonResponse({ error: "Invalid token" }, 401);
+  // GET ALL
+  if (request.method === "GET" && url.pathname === "/api/admin/articles") {
+    const list = await env.ARTICLES_KV.list();
+    const items = [];
+
+    for (const key of list.keys) {
+      const value = await env.ARTICLES_KV.get(key.name, { type: "json" });
+      items.push(value);
+    }
+
+    return Response.json(items);
   }
 
-  // 2) Routing podle metody
-  if (method === "GET") {
-    return handleGetArticles(env);
+  // GET ONE
+  if (request.method === "GET" && url.pathname.startsWith("/api/admin/articles/")) {
+    const id = url.pathname.split("/").pop();
+    const article = await env.ARTICLES_KV.get(id, { type: "json" });
+    return Response.json(article || {});
   }
 
-  if (method === "POST") {
-    return handleCreateArticle(request, env);
+  // CREATE
+  if (request.method === "POST") {
+    const body = await request.json();
+    const id = crypto.randomUUID();
+    body.id = id;
+
+    await env.ARTICLES_KV.put(id, JSON.stringify(body));
+    return Response.json({ ok: true, id });
   }
 
-  if (method === "PUT") {
-    const id = url.searchParams.get("id");
-    if (!id) return jsonResponse({ error: "Missing id" }, 400);
-    return handleUpdateArticle(request, env, id);
+  // UPDATE
+  if (request.method === "PUT" && url.pathname.startsWith("/api/admin/articles/")) {
+    const id = url.pathname.split("/").pop();
+    const body = await request.json();
+
+    const existing = await env.ARTICLES_KV.get(id, { type: "json" });
+
+    const updated = {
+      ...existing,
+      ...body,
+      id
+    };
+
+    await env.ARTICLES_KV.put(id, JSON.stringify(updated));
+
+    return Response.json({ ok: true });
   }
 
-  if (method === "DELETE") {
-    const id = url.searchParams.get("id");
-    if (!id) return jsonResponse({ error: "Missing id" }, 400);
-    return handleDeleteArticle(env, id);
+  // DELETE
+  if (request.method === "DELETE" && url.pathname.startsWith("/api/admin/articles/")) {
+    const id = url.pathname.split("/").pop();
+    await env.ARTICLES_KV.delete(id);
+    return Response.json({ ok: true });
   }
 
-  return jsonResponse({ error: "Method not allowed" }, 405);
-}
-
-// ---------- Helpers ----------
-
-function jsonResponse(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { "Content-Type": "application/json" }
-  });
-}
-
-async function handleGetArticles(env) {
-  // Všechny klíče v KV
-  const list = await env.ARTICLES_KV.list();
-  const articles = [];
-
-  for (const key of list.keys) {
-    const value = await env.ARTICLES_KV.get(key.name, { type: "json" });
-    if (value) articles.push(value);
-  }
-
-  return jsonResponse(articles);
-}
-
-async function handleCreateArticle(request, env) {
-  const body = await request.json();
-  const id = crypto.randomUUID();
-
-  const article = {
-    id,
-    title: body.title || "",
-    content: body.content || "",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-
-  await env.ARTICLES_KV.put(id, JSON.stringify(article));
-  return jsonResponse(article, 201);
-}
-
-async function handleUpdateArticle(request, env, id) {
-  const existing = await env.ARTICLES_KV.get(id, { type: "json" });
-  if (!existing) {
-    return jsonResponse({ error: "Article not found" }, 404);
-  }
-
-  const body = await request.json();
-
-  const updated = {
-    ...existing,
-    title: body.title ?? existing.title,
-    content: body.content ?? existing.content,
-    updatedAt: new Date().toISOString()
-  };
-
-  await env.ARTICLES_KV.put(id, JSON.stringify(updated));
-  return jsonResponse(updated);
-}
-
-async function handleDeleteArticle(env, id) {
-  await env.ARTICLES_KV.delete(id);
-  return jsonResponse({ success: true });
+  return new Response("Not found", { status: 404 });
 }
