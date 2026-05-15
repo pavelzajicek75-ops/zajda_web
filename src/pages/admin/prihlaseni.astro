@@ -1,48 +1,48 @@
----
-import AdminLayout from "../../layouts/AdminLayout.astro";
----
-
-<AdminLayout title="Přihlášení" noAuth={true}>
-  <h1>Přihlášení</h1>
-
-  <form id="loginForm" style="display:flex;flex-direction:column;gap:15px;max-width:300px;">
-    <label>Uživatel</label>
-    <input type="text" id="username" style="padding:10px;" />
-
-    <label>Heslo</label>
-    <input type="password" id="password" style="padding:10px;" />
-
-    <button type="button" id="loginBtn" style="padding:10px;background:#4a90e2;border:none;color:white;">
-      Přihlásit
-    </button>
-  </form>
-
-  <script type="module">
-    console.log("JS běží!");
-
-    async function login() {
-      console.log("Klik!");
-
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-
-      const res = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-      });
-
-      const data = await res.json();
-      console.log("API odpověď:", data);
-
-      if (data.success) {
-        localStorage.setItem("admin_token", data.token);
-        window.location.href = "/admin";
-      } else {
-        alert("Špatné přihlašovací údaje");
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <title>Test login</title>
+    <style>
+      /* Zruš jakýkoli globální blok tlačítek */
+      button {
+        pointer-events: auto !important;
+        opacity: 1 !important;
+        cursor: pointer !important;
       }
-    }
 
-    document.getElementById("loginBtn").addEventListener("click", login);
-  </script>
-</AdminLayout>
+      #click-overlay-test {
+        margin-top: 20px;
+        padding: 10px;
+        background: #222;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body style="background:#111;color:#fff;font-family:sans-serif;padding:40px;">
+    <h1>TEST: tlačítko</h1>
+
+    <button
+      id="testBtn"
+      type="button"
+      onclick="alert('INLINE KLIK FUNGUJE');"
+      style="padding:12px 20px;background:#4a90e2;border:none;color:white;font-size:16px;"
+    >
+      TEST TLAČÍTKO
+    </button>
+
+    <div id="click-overlay-test">
+      Pokud se po kliku neukáže alert, něco ti krade kliky (overlay / iframe / div nad tím).
+    </div>
+
+    <script>
+      console.log("JS ve stránce JE načtený");
+
+      const btn = document.getElementById("testBtn");
+      console.log("Našel jsem tlačítko?", !!btn);
+
+      btn.addEventListener("click", () => {
+        console.log("EVENT LISTENER KLIK FUNGUJE");
+      });
+    </script>
+  </body>
+</html>
