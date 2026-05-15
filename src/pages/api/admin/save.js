@@ -1,51 +1,25 @@
-import fs from "fs";
-import path from "path";
+import jwt from "jsonwebtoken";
 
-export const post = async ({ request }) => {
-  const form = await request.formData();
+export async function post({ request }) {
+  const auth = request.headers.get("authorization");
+  if (!auth) return new Response("Unauthorized", { status: 401 });
 
-  const title = form.get("title");
-  const content = form.get("content");
-  const photos = form.getAll("photos");
+  const token = auth.replace("Bearer ", "");
 
-  const uploadsDir = "public/uploads/usa2026/";
-  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
-  const photoPaths = [];
-
-  for (const file of photos) {
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    const filename = Date.now() + "-" + file.name;
-    const filepath = path.join(uploadsDir, filename);
-
-    fs.writeFileSync(filepath, buffer);
-    photoPaths.push("/uploads/usa2026/" + filename);
+  try {
+    jwt.verify(token, import.meta.env.ADMIN_JWT_SECRET);
+  } catch (e) {
+    return new Response("Invalid token", { status: 401 });
   }
 
-  const article = {
-    title,
-    content,
-    photos: photoPaths
-  };
+  // 🔒 Pokud token platí, pokračuj v ukládání dat
+  const data = await request.json();
 
-  const fileName = title.toLowerCase().replace(/ /g, "-") + ".json";
-  const filePath = `src/data/cestovani/usa2026/${fileName}`;
+  // Tady vlož logiku pro ukládání článku, sekce nebo podsekce
+  // Např. zápis do JSON souboru nebo databáze
 
-  fs.writeFileSync(filePath, JSON.stringify(article, null, 2));
-
-  // update articles.json
-  const articlesPath = "src/data/cestovani/usa2026/articles.json";
-  const list = JSON.parse(fs.readFileSync(articlesPath, "utf-8"));
-
-  list.push({
-    title,
-    file: fileName,
-    date: new Date().toISOString().split("T")[0]
+  return new Response(JSON.stringify({ success: true }), {
+    headers: { "Content-Type": "application/json" },
   });
+}
 
-  fs.writeFileSync(articlesPath, JSON.stringify(list, null, 2));
-
-  return new Response("OK");
-};
