@@ -1,0 +1,76 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Nahrát obrázek">
+  <h1>Nahrát obrázek</h1>
+
+  <form id="uploadForm">
+    <label>Vyber obrázek</label>
+    <input type="file" id="fileInput" />
+
+    <button type="button" onclick="uploadImage()">Nahrát</button>
+  </form>
+
+  <img id="preview" style="max-width: 300px; margin-top: 20px;" />
+
+  <style>
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 400px;
+    }
+
+    input {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background: #1e1e1e;
+      color: white;
+    }
+
+    button {
+      padding: 12px;
+      background: #4a90e2;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #357ac8;
+    }
+  </style>
+
+  <script>
+    async function uploadImage() {
+      const fileInput = document.getElementById("fileInput");
+      const file = fileInput.files[0];
+      if (!file) return alert("Vyber soubor");
+
+      const token = localStorage.getItem("admin_token");
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + token
+        },
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        document.getElementById("preview").src = data.url;
+        alert("Obrázek nahrán");
+      } else {
+        alert("Chyba při uploadu");
+      }
+    }
+  </script>
+</AdminLayout>
