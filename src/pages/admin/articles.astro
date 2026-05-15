@@ -1,15 +1,101 @@
 ---
-import Layout from "../../layouts/Layout.astro";
+import AdminLayout from "../../layouts/AdminLayout.astro";
 
-if (!import.meta.env.SSR) {
-  const token = localStorage.getItem("admin_token");
-  if (!token) {
-    window.location.href = "/admin/login";
-  }
-}
+// Načtení článků ze souboru (zatím JSON)
+import articles from "../../data/articles.json";
 ---
 
-<Layout title="Články">
-  <h1>Správa článků</h1>
-  <p>Zde můžeš upravovat, mazat nebo přidávat nové články.</p>
-</Layout>
+<AdminLayout title="Články">
+  <h1>Seznam článků</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Název</th>
+        <th>Datum</th>
+        <th>ID</th>
+        <th>Akce</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {articles.map((a) => (
+        <tr>
+          <td>{a.title}</td>
+          <td>{a.date}</td>
+          <td>{a.id}</td>
+          <td>
+            <a class="edit" href={`/admin/edit/${a.id}`}>Upravit</a>
+            <button class="delete" onclick={`deleteArticle('${a.id}')`}>Smazat</button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #1e1e1e;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #333;
+    }
+
+    th {
+      background: #2a2a2a;
+      text-align: left;
+    }
+
+    .edit {
+      color: #4a90e2;
+      margin-right: 10px;
+      text-decoration: none;
+    }
+
+    .delete {
+      background: #ff6b6b;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .delete:hover {
+      background: #ff4b4b;
+    }
+  </style>
+
+  <script>
+    async function deleteArticle(id) {
+      if (!confirm("Opravdu smazat článek?")) return;
+
+      const token = localStorage.getItem("admin_token");
+
+      const res = await fetch("/api/admin/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({ id })
+      });
+
+      const data = await res.json();
+
+      if (data.deleted) {
+        alert("Článek smazán");
+        location.reload();
+      } else {
+        alert("Chyba při mazání");
+      }
+    }
+  </script>
+</AdminLayout>
