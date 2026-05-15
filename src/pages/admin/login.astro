@@ -2,6 +2,7 @@
 import AdminLayout from "../../layouts/AdminLayout.astro";
 ---
 
+<!-- noAuth = true zajistí, že AdminLayout NEblokuje login stránku -->
 <AdminLayout title="Přihlášení" noAuth={true}>
   <h1>Přihlášení</h1>
 
@@ -15,37 +16,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     <button type="button" id="loginBtn">Přihlásit</button>
   </form>
 
-  <style>
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      max-width: 400px;
-    }
-
-    input {
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #444;
-      background: #1e1e1e;
-      color: white;
-    }
-
-    button {
-      padding: 12px;
-      background: #4a90e2;
-      border: none;
-      border-radius: 8px;
-      color: white;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #357ac8;
-    }
-  </style>
-
-  <!-- 🔥 DŮLEŽITÉ: script musí být typu module -->
   <script type="module">
     async function login() {
       const username = document.getElementById("username").value;
@@ -67,7 +37,8 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       }
     }
 
-    // ✅ Připojíme funkci k tlačítku po načtení stránky
+    // Tohle je klíčové – připojí funkci k tlačítku
     document.getElementById("loginBtn").addEventListener("click", login);
   </script>
 </AdminLayout>
+
