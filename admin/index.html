@@ -2,5 +2,7 @@
 </style><script type="module">console.log("Dashboard – JS běží");const e=localStorage.getItem("admin_token"),n=document.getElementById("tokenInfo");e?n.textContent="Jsi přihlášen. Token: "+e:n.textContent="Token nenalezen.";
 </script></head> <body data-astro-cid-2kanml4j>  <script>
           const token = localStorage.getItem("admin_token");
-          if (!token) window.location.href = "/admin/prihlaseni";
+          if (!token) {
+            window.location.href = "/admin/prihlaseni";
+          }
         </script> <nav data-astro-cid-2kanml4j> <a href="/admin" data-astro-cid-2kanml4j>Dashboard</a> <a href="/admin/articles" data-astro-cid-2kanml4j>Články</a> <a href="/admin/sections" data-astro-cid-2kanml4j>Sekce</a> <a href="/admin/subsections" data-astro-cid-2kanml4j>Podsekce</a> <a href="/admin/logout" data-astro-cid-2kanml4j>Odhlásit</a> </nav>  <h1>Admin – Dashboard</h1> <p id="tokenInfo">Načítám token…</p>    </body></html>

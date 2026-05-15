@@ -3,5 +3,7 @@ form[data-astro-cid-bic5s7gl]{display:flex;flex-direction:column;gap:15px;max-wi
 </style><script type="module">
 </script></head> <body data-astro-cid-2kanml4j>  <script>
           const token = localStorage.getItem("admin_token");
-          if (!token) window.location.href = "/admin/prihlaseni";
+          if (!token) {
+            window.location.href = "/admin/prihlaseni";
+          }
         </script> <nav data-astro-cid-2kanml4j> <a href="/admin" data-astro-cid-2kanml4j>Dashboard</a> <a href="/admin/articles" data-astro-cid-2kanml4j>Články</a> <a href="/admin/sections" data-astro-cid-2kanml4j>Sekce</a> <a href="/admin/subsections" data-astro-cid-2kanml4j>Podsekce</a> <a href="/admin/logout" data-astro-cid-2kanml4j>Odhlásit</a> </nav>  <h1 data-astro-cid-bic5s7gl>Nahrát obrázek</h1> <form id="uploadForm" data-astro-cid-bic5s7gl> <label data-astro-cid-bic5s7gl>Vyber obrázek</label> <input type="file" id="fileInput" data-astro-cid-bic5s7gl> <button type="button" onclick="uploadImage()" data-astro-cid-bic5s7gl>Nahrát</button> </form> <img id="preview" style="max-width: 300px; margin-top: 20px;" data-astro-cid-bic5s7gl>     </body></html>
