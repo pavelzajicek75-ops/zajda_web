@@ -4,10 +4,9 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
 <AdminLayout title="Admin – Dashboard">
   <h1>Admin – Dashboard</h1>
-  <p>Pokud tohle vidíš, jsi přihlášen (v localStorage je admin_token).</p>
+  <p>Jsi přihlášen. Token: {localStorage.getItem("admin_token")}</p>
 
   <script>
     console.log("Dashboard – JS běží");
-    console.log("admin_token:", localStorage.getItem("admin_token"));
   </script>
 </AdminLayout>
