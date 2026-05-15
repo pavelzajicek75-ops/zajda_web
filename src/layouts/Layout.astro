@@ -1,0 +1,14 @@
+---
+const { title } = Astro.props;
+---
+
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+  </head>
+  <body style="background:#121212; color:white; margin:0; font-family:system-ui;">
+    <slot />
+  </body>
+</html>
