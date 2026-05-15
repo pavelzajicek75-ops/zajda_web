@@ -1,25 +1,21 @@
 ---
-const { slug } = Astro.params;
+import { readFileSync } from "fs";
+import path from "path";
 
-// Načteme data z API
-const articlesRes = await fetch("https://zajda-web.pages.dev/api/articles");
-const sectionsRes = await fetch("https://zajda-web.pages.dev/api/sections");
-const subsectionsRes = await fetch("https://zajda-web.pages.dev/api/subsections");
+// 🔹 1) Načteme články z lokálního JSON souboru
+const filePath = path.resolve("src/data/cestovani/usa2026/articles.json");
+const articles = JSON.parse(readFileSync(filePath, "utf-8"));
 
-const { articles } = await articlesRes.json();
-const { sections } = await sectionsRes.json();
-const { subsections } = await subsectionsRes.json();
-
-// Najdeme článek podle slugu
-const article = articles.find(a => a.slug === slug);
-
-if (!article) {
-  throw new Error("Článek nenalezen");
+// 🔹 2) Definujeme getStaticPaths pro Astro
+export async function getStaticPaths() {
+  return articles.map(article => ({
+    params: { slug: article.slug },
+    props: { article },
+  }));
 }
 
-// Najdeme sekci a podsekci
-const section = sections.find(s => s.id === article.section_id);
-const subsection = subsections.find(s => s.id === article.subsection_id);
+// 🔹 3) Získáme data pro konkrétní článek
+const { article } = Astro.props;
 ---
 
 <html lang="cs">
@@ -30,21 +26,13 @@ const subsection = subsections.find(s => s.id === article.subsection_id);
 
   <body>
     <h1>{article.title}</h1>
-
-    <p>
-      <strong>Sekce:</strong> {section?.name}<br />
-      <strong>Podsekce:</strong> {subsection?.name}<br />
-      <strong>Datum:</strong> {article.created}
-    </p>
-
-    <hr />
+    <p><strong>Datum:</strong> {article.date}</p>
+    <p><strong>Sekce:</strong> {article.section}</p>
 
     <article>
       <p>{article.content}</p>
     </article>
 
-    <p>
-      <a href={`/${section.slug}/clanky`}>← Zpět na články</a>
-    </p>
+    <p><a href="/cestovani/clanky">← Zpět na seznam článků</a></p>
   </body>
 </html>
