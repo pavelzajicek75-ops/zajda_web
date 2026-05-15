@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Přihlášení do administrace</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 400px;
+      margin: 60px auto;
+      padding: 20px;
+      background: #f5f5f5;
+      border-radius: 8px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #555;
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 20px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Přihlášení do administrace</h2>
+
+<input id="username" placeholder="Uživatel">
+<input id="password" type="password" placeholder="Heslo">
+<button onclick="login()">Přihlásit</button>
+
+<pre id="output"></pre>
+
+<script>
+async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch("/api/admin/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+
+  const data = await res.json();
+  document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+
+  if (data.token) {
+    localStorage.setItem("jwt", data.token);
+    window.location.href = "/admin/index.html"; 
+  }
+}
+</script>
+
+</body>
+</html>
