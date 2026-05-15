@@ -12,7 +12,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     <label>Heslo</label>
     <input type="password" id="password" />
 
-    <button type="button" onclick="login()">Přihlásit</button>
+    <button type="button" id="loginBtn">Přihlásit</button>
   </form>
 
   <style>
@@ -45,7 +45,8 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     }
   </style>
 
-  <script>
+  <!-- 🔥 DŮLEŽITÉ: script musí být typu module -->
+  <script type="module">
     async function login() {
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
@@ -65,5 +66,8 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         alert("Špatné přihlašovací údaje");
       }
     }
+
+    // ✅ Připojíme funkci k tlačítku po načtení stránky
+    document.getElementById("loginBtn").addEventListener("click", login);
   </script>
 </AdminLayout>
