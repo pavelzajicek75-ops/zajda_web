@@ -1,12 +1,12 @@
 [
   {
-    "title": "Den 1 – New York",
-    "file": "usa2026-den01.json",
-    "date": "2026-07-15"
+    "id": "1",
+    "title": "První článek",
+    "date": "2026-05-01"
   },
   {
-    "title": "Den 2 – San Francisco",
-    "file": "usa2026-den02.json",
-    "date": "2026-07-16"
+    "id": "2",
+    "title": "Druhý článek",
+    "date": "2026-05-10"
   }
 ]
