@@ -9,9 +9,11 @@ const { title, noAuth = false } = Astro.props;
 
   <body>
     {noAuth ? (
+      // 🔥 Login stránka – žádná kontrola tokenu
       <slot />
     ) : (
       <>
+        <!-- 🔥 Admin stránky – kontrola tokenu -->
         <script type="module">
           const token = localStorage.getItem("admin_token");
           if (!token) {
