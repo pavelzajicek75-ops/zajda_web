@@ -52,11 +52,6 @@
   const errorEl = document.getElementById('error');
   const tbody = document.getElementById('articles-body');
 
-  if (!token) {
-    errorEl.style.display = 'block';
-    errorEl.textContent = 'Chybí token – přihlas se znovu v /admin/login.html';
-  }
-
   async function loadArticles() {
     try {
       const res = await fetch('/api/admin/articles', {
@@ -93,7 +88,10 @@
         <td>${created}</td>
         <td><span class="tag">${a.id || '(bez ID)'}</span></td>
         <td><span class="status">OK</span></td>
-        <td><button class="btn btn-danger" onclick="deleteArticle('${a.id}')">Smazat</button></td>
+        <td>
+          <a href="/admin/edit-article.html?id=${a.id}" class="btn btn-primary">Upravit</a>
+          <button class="btn btn-danger" onclick="deleteArticle('${a.id}')">Smazat</button>
+        </td>
       `;
       tbody.appendChild(tr);
     });
