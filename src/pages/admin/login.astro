@@ -2,7 +2,6 @@
 import AdminLayout from "../../layouts/AdminLayout.astro";
 ---
 
-<!-- noAuth = true zajistí, že AdminLayout NEblokuje login stránku -->
 <AdminLayout title="Přihlášení" noAuth={true}>
   <h1>Přihlášení</h1>
 
@@ -37,8 +36,6 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       }
     }
 
-    // Tohle je klíčové – připojí funkci k tlačítku
     document.getElementById("loginBtn").addEventListener("click", login);
   </script>
 </AdminLayout>
-
