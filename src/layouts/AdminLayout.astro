@@ -33,7 +33,6 @@ const { title, noAuth = false } = Astro.props;
         text-decoration: underline;
       }
 
-      /* ZRUŠÍME JAKÉKOLI BLOKOVÁNÍ TLAČÍTEK */
       button {
         pointer-events: auto !important;
         opacity: 1 !important;
@@ -49,7 +48,9 @@ const { title, noAuth = false } = Astro.props;
       <>
         <script>
           const token = localStorage.getItem("admin_token");
-          if (!token) window.location.href = "/admin/prihlaseni";
+          if (!token) {
+            window.location.href = "/admin/prihlaseni";
+          }
         </script>
 
         <nav>
