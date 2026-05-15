@@ -1,6 +1,11 @@
 ---
 import AdminLayout from "../../layouts/AdminLayout.astro";
-import articles from "../../data/articles.json";
+import articlesData from "../../data/articles.json";
+
+// 🔥 Seřadíme články podle data (nejnovější nahoře)
+const articles = [...articlesData].sort((a, b) => {
+  return new Date(b.date) - new Date(a.date);
+});
 ---
 
 <AdminLayout title="Články">
