@@ -8,13 +8,11 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
   <p id="tokenInfo">Načítám token…</p>
 
   <script>
-    console.log("Dashboard – JS běží");
-
-    const token = localStorage.getItem("admin_token");
     const el = document.getElementById("tokenInfo");
+    const token = localStorage.getItem("admin_token");
 
     if (token) {
-      el.textContent = "Jsi přihlášen. Token: " + token;
+      el.textContent = "Jsi přihlášen. Token je uložen v prohlížeči.";
     } else {
       el.textContent = "Token nenalezen.";
     }
