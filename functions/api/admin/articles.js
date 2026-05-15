@@ -1,35 +1,108 @@
-import { verifyJWT } from "../../_utils/auth";
+import jwt from "jsonwebtoken";
 
-export const onRequestGet = async (context) => {
+export async function onRequest(context) {
   const { request, env } = context;
-  const auth = request.headers.get("Authorization") || "";
-  const JWT_SECRET = env.JWT_SECRET;
+  const url = new URL(request.url);
+  const method = request.method;
 
-  if (!auth.startsWith("Bearer ")) {
-    return new Response(JSON.stringify({ error: "No token" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
+  // 1) Ověření JWT
+  const authHeader = request.headers.get("Authorization") || "";
+  const token = authHeader.startsWith("Bearer ")
+    ? authHeader.substring(7)
+    : null;
+
+  if (!token) {
+    return jsonResponse({ error: "Missing token" }, 401);
   }
 
-  const token = auth.slice("Bearer ".length).trim();
-  const payload = await verifyJWT(token, JWT_SECRET).catch(() => null);
-
-  if (!payload || payload.role !== "admin") {
-    return new Response(JSON.stringify({ error: "Invalid token" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
+  try {
+    jwt.verify(token, env.JWT_SECRET);
+  } catch (e) {
+    return jsonResponse({ error: "Invalid token" }, 401);
   }
 
-  // Tady bys normálně načetl články z JSON / KV / DB
-  const articles = [
-    { id: 1, title: "Test článek 1" },
-    { id: 2, title: "Test článek 2" },
-  ];
+  // 2) Routing podle metody
+  if (method === "GET") {
+    return handleGetArticles(env);
+  }
 
-  return new Response(JSON.stringify({ articles }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
+  if (method === "POST") {
+    return handleCreateArticle(request, env);
+  }
+
+  if (method === "PUT") {
+    const id = url.searchParams.get("id");
+    if (!id) return jsonResponse({ error: "Missing id" }, 400);
+    return handleUpdateArticle(request, env, id);
+  }
+
+  if (method === "DELETE") {
+    const id = url.searchParams.get("id");
+    if (!id) return jsonResponse({ error: "Missing id" }, 400);
+    return handleDeleteArticle(env, id);
+  }
+
+  return jsonResponse({ error: "Method not allowed" }, 405);
+}
+
+// ---------- Helpers ----------
+
+function jsonResponse(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "Content-Type": "application/json" }
   });
-};
+}
+
+async function handleGetArticles(env) {
+  // Všechny klíče v KV
+  const list = await env.ARTICLES_KV.list();
+  const articles = [];
+
+  for (const key of list.keys) {
+    const value = await env.ARTICLES_KV.get(key.name, { type: "json" });
+    if (value) articles.push(value);
+  }
+
+  return jsonResponse(articles);
+}
+
+async function handleCreateArticle(request, env) {
+  const body = await request.json();
+  const id = crypto.randomUUID();
+
+  const article = {
+    id,
+    title: body.title || "",
+    content: body.content || "",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  await env.ARTICLES_KV.put(id, JSON.stringify(article));
+  return jsonResponse(article, 201);
+}
+
+async function handleUpdateArticle(request, env, id) {
+  const existing = await env.ARTICLES_KV.get(id, { type: "json" });
+  if (!existing) {
+    return jsonResponse({ error: "Article not found" }, 404);
+  }
+
+  const body = await request.json();
+
+  const updated = {
+    ...existing,
+    title: body.title ?? existing.title,
+    content: body.content ?? existing.content,
+    updatedAt: new Date().toISOString()
+  };
+
+  await env.ARTICLES_KV.put(id, JSON.stringify(updated));
+  return jsonResponse(updated);
+}
+
+async function handleDeleteArticle(env, id) {
+  await env.ARTICLES_KV.delete(id);
+  return jsonResponse({ success: true });
+}
