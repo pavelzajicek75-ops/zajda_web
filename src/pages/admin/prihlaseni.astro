@@ -1,48 +1,74 @@
-<html lang="cs">
-  <head>
-    <meta charset="utf-8" />
-    <title>Test login</title>
-    <style>
-      /* Zruš jakýkoli globální blok tlačítek */
-      button {
-        pointer-events: auto !important;
-        opacity: 1 !important;
-        cursor: pointer !important;
-      }
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
 
-      #click-overlay-test {
-        margin-top: 20px;
-        padding: 10px;
-        background: #222;
-        color: #fff;
-      }
-    </style>
-  </head>
-  <body style="background:#111;color:#fff;font-family:sans-serif;padding:40px;">
-    <h1>TEST: tlačítko</h1>
+<AdminLayout title="Přihlášení" noAuth={true}>
+  <h1>Přihlášení</h1>
+
+  <p>Testovací login: <strong>admin / admin123</strong></p>
+
+  <form
+    id="loginForm"
+    style="display:flex;flex-direction:column;gap:12px;max-width:320px;margin-top:20px;"
+    onsubmit="return false;"
+  >
+    <label for="username">Uživatel</label>
+    <input
+      type="text"
+      id="username"
+      style="padding:10px;border-radius:4px;border:1px solid #444;background:#222;color:#fff;"
+    />
+
+    <label for="password">Heslo</label>
+    <input
+      type="password"
+      id="password"
+      style="padding:10px;border-radius:4px;border:1px solid #444;background:#222;color:#fff;"
+    />
 
     <button
-      id="testBtn"
       type="button"
-      onclick="alert('INLINE KLIK FUNGUJE');"
-      style="padding:12px 20px;background:#4a90e2;border:none;color:white;font-size:16px;"
+      id="loginBtn"
+      style="margin-top:10px;padding:10px 16px;background:#4a90e2;border:none;border-radius:4px;color:white;font-weight:600;font-size:15px;pointer-events:auto;opacity:1;cursor:pointer;"
+      onclick="window.__loginClickInline && window.__loginClickInline()"
     >
-      TEST TLAČÍTKO
+      Přihlásit
     </button>
+  </form>
 
-    <div id="click-overlay-test">
-      Pokud se po kliku neukáže alert, něco ti krade kliky (overlay / iframe / div nad tím).
-    </div>
+  <div id="loginMessage" style="margin-top:16px;color:#f66;"></div>
 
-    <script>
-      console.log("JS ve stránce JE načtený");
+  <script>
+    console.log("Login stránka – JS běží");
 
-      const btn = document.getElementById("testBtn");
-      console.log("Našel jsem tlačítko?", !!btn);
+    window.__loginClickInline = function () {
+      console.log("INLINE KLIK NA TLAČÍTKO");
+    };
 
-      btn.addEventListener("click", () => {
-        console.log("EVENT LISTENER KLIK FUNGUJE");
-      });
-    </script>
-  </body>
-</html>
+    const btn = document.getElementById("loginBtn");
+    const userInput = document.getElementById("username");
+    const passInput = document.getElementById("password");
+    const msg = document.getElementById("loginMessage");
+
+    console.log("Našel jsem tlačítko?", !!btn);
+
+    btn.addEventListener("click", () => {
+      console.log("EVENT LISTENER KLIK");
+
+      const u = userInput.value.trim();
+      const p = passInput.value.trim();
+
+      if (u === "admin" && p === "admin123") {
+        msg.style.color = "#6f6";
+        msg.textContent = "Přihlášení OK, přesměrovávám…";
+        localStorage.setItem("admin_token", "TEST_TOKEN");
+        setTimeout(() => {
+          window.location.href = "/admin";
+        }, 700);
+      } else {
+        msg.style.color = "#f66";
+        msg.textContent = "Špatné přihlašovací údaje.";
+      }
+    });
+  </script>
+</AdminLayout>
