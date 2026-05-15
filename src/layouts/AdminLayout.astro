@@ -1,12 +1,11 @@
 ---
 const { title, noAuth = false } = Astro.props;
 ---
-
-<html>
+<html lang="cs">
   <head>
+    <meta charset="utf-8" />
     <title>{title}</title>
   </head>
-
   <body>
     {noAuth ? (
       <slot />
@@ -14,11 +13,8 @@ const { title, noAuth = false } = Astro.props;
       <>
         <script type="module">
           const token = localStorage.getItem("admin_token");
-          if (!token) {
-            window.location.href = "/admin/prihlaseni";
-          }
+          if (!token) window.location.href = "/admin/prihlaseni";
         </script>
-
         <nav>
           <a href="/admin">Dashboard</a>
           <a href="/admin/articles">Články</a>
@@ -26,7 +22,6 @@ const { title, noAuth = false } = Astro.props;
           <a href="/admin/subsections">Podsekce</a>
           <a href="/admin/logout">Odhlásit</a>
         </nav>
-
         <slot />
       </>
     )}
