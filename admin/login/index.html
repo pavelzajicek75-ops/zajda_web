@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- noAuth = true zajistí, že AdminLayout NEblokuje login stránku --><html> <head><title>Přihlášení</title></head> <body>  <h1>Přihlášení</h1> <form id="loginForm"> <label>Uživatel</label> <input type="text" id="username"> <label>Heslo</label> <input type="password" id="password"> <button type="button" id="loginBtn">Přihlásit</button> </form> <script type="module">
+<!DOCTYPE html><html> <head><title>Přihlášení</title></head> <body>  <h1>Přihlášení</h1> <form id="loginForm"> <label>Uživatel</label> <input type="text" id="username"> <label>Heslo</label> <input type="password" id="password"> <button type="button" id="loginBtn">Přihlásit</button> </form> <script type="module">
     async function login() {
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
@@ -19,6 +19,5 @@
       }
     }
 
-    // Tohle je klíčové – připojí funkci k tlačítku
     document.getElementById("loginBtn").addEventListener("click", login);
   </script>  </body></html>
