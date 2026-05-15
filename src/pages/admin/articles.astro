@@ -1,4 +1,6 @@
 ---
+import Layout from "../../layouts/Layout.astro";
+
 if (!import.meta.env.SSR) {
   const token = localStorage.getItem("admin_token");
   if (!token) {
@@ -7,101 +9,7 @@ if (!import.meta.env.SSR) {
 }
 ---
 
-let sections = [];
-let subsections = [];
-let articles = [];
-
-// Během buildu (SSR) nesmíme volat API
-if (!import.meta.env.SSR) {
-  const sectionsRes = await fetch("/api/sections");
-  const subsectionsRes = await fetch("/api/subsections");
-  const articlesRes = await fetch("/api/articles");
-
-  const s = await sectionsRes.json();
-  const sub = await subsectionsRes.json();
-  const art = await articlesRes.json();
-
-  sections = s.sections;
-  subsections = sub.subsections;
-  articles = art.articles;
-}
----
-
-<html lang="cs">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Admin – Články</title>
-
-    <!-- TinyMCE editor -->
-    {!import.meta.env.SSR && (
-      <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-    )}
-
-    {!import.meta.env.SSR && (
-      <script>
-        tinymce.init({
-          selector: '#editor',
-          height: 400,
-          menubar: false,
-          plugins: 'link lists code table',
-          toolbar:
-            'undo redo | bold italic underline | bullist numlist | link | table | code'
-        });
-      </script>
-    )}
-  </head>
-
-  <body>
-    <h1>Správa článků</h1>
-
-    {import.meta.env.SSR ? (
-      <p>Admin nelze renderovat během buildu.</p>
-    ) : (
-      <>
-        <h2>Existující články</h2>
-        <ul>
-          {articles.map(article => (
-            <li>
-              <strong>{article.title}</strong> ({article.slug})
-              – sekce: {sections.find(s => s.id === article.section_id)?.name}
-              – podsekce: {subsections.find(s => s.id === article.subsection_id)?.name}
-
-              <form method="post" action="/api/articles/delete" style="display:inline;">
-                <input type="hidden" name="id" value={article.id} />
-                <button>Smazat</button>
-              </form>
-            </li>
-          ))}
-        </ul>
-
-        <h2>Přidat nový článek</h2>
-        <form method="post" action="/api/articles/add">
-          <label>Název:</label><br />
-          <input name="title" /><br /><br />
-
-          <label>Slug:</label><br />
-          <input name="slug" /><br /><br />
-
-          <label>Obsah článku:</label><br />
-          <textarea id="editor" name="content"></textarea><br /><br />
-
-          <label>Sekce:</label><br />
-          <select name="section_id">
-            {sections.map(section => (
-              <option value={section.id}>{section.name}</option>
-            ))}
-          </select><br /><br />
-
-          <label>Podsekce:</label><br />
-          <select name="subsection_id">
-            {subsections.map(sub => (
-              <option value={sub.id}>{sub.name}</option>
-            ))}
-          </select><br /><br />
-
-          <button>Přidat článek</button>
-        </form>
-      </>
-    )}
-  </body>
-</html>
+<Layout title="Články">
+  <h1>Správa článků</h1>
+  <p>Zde můžeš upravovat, mazat nebo přidávat nové články.</p>
+</Layout>
