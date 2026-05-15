@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Články – Admin</title>
+  <style>
+    body {
+      background: #111;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1 { margin-bottom: 20px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #444;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      background: #222;
+      color: #eee;
+      border: 1px solid #444;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background: #555;
+    }
+    .row-actions button {
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Správa článků</h1>
+
+<div>
+  <h2>Nový článek</h2>
+  <input id="title" placeholder="Název článku">
+  <textarea id="content" placeholder="Obsah článku" rows="6"></textarea>
+  <button onclick="createArticle()">Přidat článek</button>
+</div>
+
+<h2>Seznam článků</h2>
+<table id="articlesTable">
+  <thead>
+    <tr>
+      <th>Název</th>
+      <th>Obsah</th>
+      <th>Akce</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+const token = localStorage.getItem("jwt");
+if (!token) {
+  window.location.href = "/admin/login.html";
+}
+
+async function loadArticles() {
+  const res = await fetch("/api/admin/articles", {
+    headers: { "Authorization": "Bearer " + token }
+  });
+  const articles = await res.json();
+
+  const tbody = document.querySelector("#articlesTable tbody");
+  tbody.innerHTML = "";
+
+  articles.forEach(article => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${article.title}</td>
+      <td>${article.content.substring(0, 80)}...</td>
+      <td class="row-actions">
+        <button onclick="editArticle('${article.id}')">Upravit</button>
+        <button onclick="deleteArticle('${article.id}')">Smazat</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+async function createArticle() {
+  const title = document.getElementById("title").value;
+  const content = document.getElementById("content").value;
+
+  await fetch("/api/admin/articles", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({ title, content })
+  });
+
+  loadArticles();
+}
+
+async function deleteArticle(id) {
+  await fetch("/api/admin/articles?id=" + id, {
+    method: "DELETE",
+    headers: { "Authorization": "Bearer " + token }
+  });
+  loadArticles();
+}
+
+function editArticle(id) {
+  alert("Úprava článku bude doplněna – backend připravíme hned.");
+}
+
+loadArticles();
+</script>
+
+</body>
+</html>
