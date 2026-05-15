@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin – Seznam článků</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background:#0b0c10; color:#e5e5e5; font-family:system-ui; padding:20px; margin:0; }
+    h1 { margin-top:0; }
+    .top-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    .btn { padding:8px 14px; border-radius:6px; text-decoration:none; font-weight:600; font-size:14px; cursor:pointer; border:none; }
+    .btn-primary { background:#22c55e; color:#0b0c10; }
+    .btn-primary:hover { background:#16a34a; }
+    .btn-danger { background:#ef4444; color:white; }
+    .btn-danger:hover { background:#dc2626; }
+    table { width:100%; border-collapse:collapse; background:#111827; border-radius:8px; overflow:hidden; }
+    th,td { padding:10px 12px; border-bottom:1px solid:#1f2937; font-size:14px; }
+    th { background:#020617; text-align:left; }
+    tr:last-child td { border-bottom:none; }
+    .tag { background:#1f2937; padding:2px 8px; border-radius:999px; font-size:11px; color:#9ca3af; }
+    .status { background:#022c22; color:#6ee7b7; padding:2px 8px; border-radius:999px; font-size:11px; }
+    .muted { color:#9ca3af; font-size:13px; }
+    .error { color:#fca5a5; margin-bottom:10px; font-size:13px; }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <h1>Seznam článků</h1>
+    <a href="/admin/new-article.html" class="btn btn-primary">➕ Nový článek</a>
+  </div>
+
+  <div id="error" class="error" style="display:none;"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Název</th>
+        <th>Datum</th>
+        <th>ID</th>
+        <th>Stav</th>
+        <th>Akce</th>
+      </tr>
+    </thead>
+    <tbody id="articles-body">
+      <tr><td colspan="5" class="muted">Načítám…</td></tr>
+    </tbody>
+  </table>
+
+<script>
+  const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
+  const errorEl = document.getElementById('error');
+  const tbody = document.getElementById('articles-body');
+
+  if (!token) {
+    errorEl.style.display = 'block';
+    errorEl.textContent = 'Chybí token – přihlas se znovu v /admin/login.html';
+  }
+
+  async function loadArticles() {
+    try {
+      const res = await fetch('/api/admin/articles', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error('Chyba načítání: ' + text);
+      }
+
+      const data = await res.json();
+      renderArticles(data);
+    } catch (err) {
+      errorEl.style.display = 'block';
+      errorEl.textContent = err.message;
+      tbody.innerHTML = '<tr><td colspan="5" class="muted">Nepodařilo se načíst články.</td></tr>';
+    }
+  }
+
+  function renderArticles(articles) {
+    if (!articles || !articles.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="muted">Zatím žádné články.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = '';
+    articles.forEach(a => {
+      const tr = document.createElement('tr');
+      const created = a.createdAt ? new Date(a.createdAt).toLocaleString('cs-CZ') : '—';
+
+      tr.innerHTML = `
+        <td>${a.title || '(bez názvu)'}</td>
+        <td>${created}</td>
+        <td><span class="tag">${a.id || '(bez ID)'}</span></td>
+        <td><span class="status">OK</span></td>
+        <td><button class="btn btn-danger" onclick="deleteArticle('${a.id}')">Smazat</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function deleteArticle(id) {
+    if (!confirm('Opravdu smazat tento článek?')) return;
+
+    try {
+      const res = await fetch('/api/admin/articles/' + encodeURIComponent(id), {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error('Chyba mazání: ' + text);
+      }
+
+      loadArticles();
+    } catch (err) {
+      errorEl.style.display = 'block';
+      errorEl.textContent = err.message;
+    }
+  }
+
+  loadArticles();
+</script>
+
+</body>
+</html>
