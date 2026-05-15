@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1",
+    "title": "První článek",
+    "date": "2026-05-01",
+    "content": "Obsah prvního článku..."
+  },
+  {
+    "id": "2",
+    "title": "Druhý článek",
+    "date": "2026-05-10",
+    "content": "Obsah druhého článku..."
+  }
+]
