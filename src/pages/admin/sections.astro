@@ -1,54 +1,15 @@
 ---
-let sections = [];
+import Layout from "../../layouts/Layout.astro";
 
 if (!import.meta.env.SSR) {
-  try {
-    const res = await fetch("/api/sections");
-    const data = await res.json();
-    sections = data.sections;
-  } catch (err) {
-    console.error("API error:", err);
+  const token = localStorage.getItem("admin_token");
+  if (!token) {
+    window.location.href = "/admin/login";
   }
 }
 ---
 
-<html lang="cs">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Admin – Sekce</title>
-  </head>
-
-  <body>
-    <h1>Správa sekcí</h1>
-
-    {import.meta.env.SSR ? (
-      <p>Obsah se načte až na serveru.</p>
-    ) : (
-      <>
-        <ul>
-          {sections.map(section => (
-            <li>
-              {section.name} ({section.slug})
-              <form method="post" action="/api/sections/delete" style="display:inline;">
-                <input type="hidden" name="id" value={section.id} />
-                <button>Smazat</button>
-              </form>
-            </li>
-          ))}
-        </ul>
-
-        <h2>Přidat sekci</h2>
-        <form method="post" action="/api/sections/add">
-          <label>Název:</label><br />
-          <input name="name" /><br /><br />
-
-          <label>Slug:</label><br />
-          <input name="slug" /><br /><br />
-
-          <button>Přidat</button>
-        </form>
-      </>
-    )}
-  </body>
-</html>
-
+<Layout title="Sekce">
+  <h1>Správa sekcí</h1>
+  <p>Zde můžeš upravovat strukturu sekcí webu.</p>
+</Layout>
