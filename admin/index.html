@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="cs" data-astro-cid-2kanml4j> <head><meta charset="utf-8"><title>Admin – Dashboard</title><style>body{margin:0;padding:20px;background:#111;color:#fff;font-family:system-ui,sans-serif}nav[data-astro-cid-2kanml4j]{display:flex;gap:16px;padding:12px 20px;background:#222;margin:-20px -20px 20px}nav[data-astro-cid-2kanml4j] a[data-astro-cid-2kanml4j]{color:#4a90e2;text-decoration:none}nav[data-astro-cid-2kanml4j] a[data-astro-cid-2kanml4j]:hover{text-decoration:underline}button[data-astro-cid-2kanml4j]{pointer-events:auto!important;opacity:1!important;cursor:pointer!important}
-</style><script type="module">console.log("Dashboard – JS běží");const e=localStorage.getItem("admin_token"),n=document.getElementById("tokenInfo");e?n.textContent="Jsi přihlášen. Token: "+e:n.textContent="Token nenalezen.";
+</style><script type="module">const e=document.getElementById("tokenInfo"),n=localStorage.getItem("admin_token");n?e.textContent="Jsi přihlášen. Token je uložen v prohlížeči.":e.textContent="Token nenalezen.";
 </script></head> <body data-astro-cid-2kanml4j>  <script>
           const token = localStorage.getItem("admin_token");
           if (!token) {
