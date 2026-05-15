@@ -1,20 +1,59 @@
 ---
 const { title, noAuth = false } = Astro.props;
 ---
+
 <html lang="cs">
   <head>
     <meta charset="utf-8" />
     <title>{title}</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        background: #111;
+        color: #fff;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+
+      nav {
+        display: flex;
+        gap: 16px;
+        padding: 12px 20px;
+        background: #222;
+        margin: -20px -20px 20px -20px;
+      }
+
+      nav a {
+        color: #4a90e2;
+        text-decoration: none;
+        font-size: 14px;
+      }
+
+      nav a:hover {
+        text-decoration: underline;
+      }
+
+      /* ZRUŠ JAKÉKOLI GLOBÁLNÍ BLOKOVÁNÍ TLAČÍTEK */
+      button {
+        pointer-events: auto !important;
+        opacity: 1 !important;
+        cursor: pointer !important;
+      }
+    </style>
   </head>
   <body>
     {noAuth ? (
       <slot />
     ) : (
       <>
-        <script type="module">
+        <script>
           const token = localStorage.getItem("admin_token");
-          if (!token) window.location.href = "/admin/prihlaseni";
+          if (!token) {
+            window.location.href = "/admin/prihlaseni";
+          }
         </script>
+
         <nav>
           <a href="/admin">Dashboard</a>
           <a href="/admin/articles">Články</a>
@@ -22,6 +61,7 @@ const { title, noAuth = false } = Astro.props;
           <a href="/admin/subsections">Podsekce</a>
           <a href="/admin/logout">Odhlásit</a>
         </nav>
+
         <slot />
       </>
     )}
