@@ -1,24 +1,63 @@
 ---
-const response = await fetch("https://zajda-web.pages.dev/api/sections");
-const data = await response.json();
+let section = null;
+let subsections = [];
 
-const section = data.sections.find(s => s.slug === "cestovani");
-const subsections = data.subsections.filter(sub => sub.section_id === section.id);
+if (!import.meta.env.SSR) {
+  try {
+    const sectionsRes = await fetch("/api/sections");
+    const subsectionsRes = await fetch("/api/subsections");
+
+    const { sections } = await sectionsRes.json();
+    const { subsections: subs } = await subsectionsRes.json();
+
+    // Bezpečné hledání sekce
+    section = sections.find(s => s.slug === "cestovani") || null;
+
+    // Pokud sekce existuje, filtrujeme podsekce
+    if (section) {
+      subsections = subs.filter(sub => sub.section_id === section.id);
+    }
+  } catch (err) {
+    console.error("API error:", err);
+  }
+}
 ---
 
 <html lang="cs">
   <head>
     <meta charset="UTF-8" />
-    <title>{section.name}</title>
+    <title>Cestování</title>
   </head>
 
   <body>
-    <h1>{section.name}</h1>
+    <h1>Cestování</h1>
 
-    <ul>
-      {subsections.map(sub => (
-        <li>{sub.name}</li>
-      ))}
-    </ul>
+    {import.meta.env.SSR ? (
+      <p>Obsah se načte až na serveru.</p>
+    ) : (
+      <>
+        {!section ? (
+          <p>Sekce „cestování“ nebyla nalezena v sections.json.</p>
+        ) : (
+          <>
+            <h2>Podsekce</h2>
+
+            {subsections.length === 0 ? (
+              <p>Zatím zde nejsou žádné podsekce.</p>
+            ) : (
+              <ul>
+                {subsections.map(sub => (
+                  <li><a href={`/podsekce/${sub.slug}`}>{sub.name}</a></li>
+                ))}
+              </ul>
+            )}
+
+            <p>
+              <a href="/cestovani/clanky">→ Zobrazit všechny články</a>
+            </p>
+          </>
+        )}
+      </>
+    )}
   </body>
 </html>
