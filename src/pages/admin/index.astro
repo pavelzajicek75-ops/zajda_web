@@ -1,74 +1,15 @@
 ---
-const menu = [
-  { href: "/admin/novyclanek", label: "📝 Nový článek" },
-  { href: "/admin/clanky", label: "📚 Správa článků" },
-  { href: "/admin/foto", label: "📷 Správa fotek" },
-  { href: "/admin/sekce", label: "🗂 Správa sekcí" }
-];
+import Layout from "../../layouts/Layout.astro";
+
+if (!import.meta.env.SSR) {
+  const token = localStorage.getItem("admin_token");
+  if (!token) {
+    window.location.href = "/admin/login";
+  }
+}
 ---
 
-<html lang="cs">
-  <head>
-    <meta charset="utf-8" />
-    <title>Admin rozhraní</title>
-    <style>
-      :root { color-scheme: dark; }
-      body {
-        margin: 0;
-        background:
-          radial-gradient(circle at top, rgba(255, 140, 58, 0.18), transparent 55%),
-          radial-gradient(circle at 10% 90%, rgba(120, 80, 255, 0.18), transparent 55%),
-          #050509;
-        font-family: system-ui, sans-serif;
-        color: #f3f3f3;
-      }
-      .admin-menu {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 3rem 1.5rem;
-        text-align: center;
-      }
-      h1 {
-        font-size: 2.8rem;
-        font-weight: 900;
-        background: linear-gradient(120deg, #ffe8c8, #ff8c3a);
-        -webkit-background-clip: text;
-        color: transparent;
-        text-shadow: 0 0 22px rgba(255, 140, 58, 0.55);
-        margin-bottom: 2rem;
-      }
-      nav {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1rem;
-      }
-      .btn {
-        display: inline-block;
-        padding: 1rem 1.5rem;
-        background: linear-gradient(120deg, #ff8c3a, #ffb87a);
-        color: #000;
-        font-weight: 700;
-        border-radius: 12px;
-        text-decoration: none;
-        transition: 0.2s;
-      }
-      .btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(255, 140, 58, 0.4);
-      }
-    </style>
-  </head>
-
-  <body>
-    <section class="admin-menu">
-      <h1>Admin rozhraní</h1>
-      <nav>
-        {menu.map((item) => (
-          <a href={item.href} class="btn">{item.label}</a>
-        ))}
-      </nav>
-    </section>
-  </body>
-</html>
-
+<Layout title="Administrace">
+  <h1>Administrace webu</h1>
+  <p>Vítej, Pavle! Vyber sekci, kterou chceš upravit.</p>
+</Layout>
