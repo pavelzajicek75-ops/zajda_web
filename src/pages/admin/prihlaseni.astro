@@ -5,7 +5,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 <AdminLayout title="Přihlášení" noAuth={true}>
   <h1>Přihlášení</h1>
 
-  <p>Test login: <strong>admin / admin123</strong></p>
+  <p>Login přes server (Cloudflare Worker + JWT).</p>
 
   <form
     id="loginForm"
@@ -16,6 +16,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     <input
       type="text"
       id="username"
+      autocomplete="username"
       style="padding:10px;border-radius:4px;border:1px solid #444;background:#222;color:#fff;"
     />
 
@@ -23,6 +24,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     <input
       type="password"
       id="password"
+      autocomplete="current-password"
       style="padding:10px;border-radius:4px;border:1px solid #444;background:#222;color:#fff;"
     />
 
@@ -45,22 +47,42 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     const passInput = document.getElementById("password");
     const msg = document.getElementById("loginMessage");
 
-    btn.addEventListener("click", () => {
-      console.log("KLIK NA LOGIN TLAČÍTKO");
+    btn.addEventListener("click", async () => {
+      msg.style.color = "#f66";
+      msg.textContent = "Přihlašuji…";
 
-      const u = userInput.value.trim();
-      const p = passInput.value.trim();
+      const username = userInput.value.trim();
+      const password = passInput.value.trim();
 
-      if (u === "admin" && p === "admin123") {
+      if (!username || !password) {
+        msg.textContent = "Vyplň uživatele i heslo.";
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/admin/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          msg.textContent = data.error || "Chyba přihlášení.";
+          return;
+        }
+
+        localStorage.setItem("admin_token", data.token);
         msg.style.color = "#6f6";
         msg.textContent = "Přihlášení OK, přesměrovávám…";
-        localStorage.setItem("admin_token", "TEST_TOKEN");
+
         setTimeout(() => {
           window.location.href = "/admin";
         }, 700);
-      } else {
-        msg.style.color = "#f66";
-        msg.textContent = "Špatné přihlašovací údaje.";
+      } catch (e) {
+        console.error(e);
+        msg.textContent = "Chyba spojení se serverem.";
       }
     });
   </script>
