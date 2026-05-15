@@ -61,24 +61,24 @@ import Layout from "../../layouts/Layout.astro";
 
   <script>
     async function login() {
-      const password = document.getElementById("password").value;
-      const errorBox = document.getElementById("error");
-      errorBox.textContent = "";
+      async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
 
-      const res = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password })
-      });
+  const res = await fetch("/api/admin/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
 
-      const data = await res.json();
+  const data = await res.json();
 
-      if (data.token) {
-        localStorage.setItem("admin_token", data.token);
-        window.location.href = "/admin";
-      } else {
-        errorBox.textContent = "Špatné heslo";
-      }
-    }
+  if (data.success) {
+    localStorage.setItem("admin_token", data.token);
+    window.location.href = "/admin";
+  } else {
+    alert("Špatné přihlašovací údaje");
+  }
+}
   </script>
 </Layout>
