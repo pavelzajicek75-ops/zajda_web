@@ -6,7 +6,7 @@ const id = Astro.url.searchParams.get("id");
 let article = null;
 
 if (id) {
-  article = articles.find(a => a.id === id);
+  article = articles.find(a => a.id === Number(id));
 }
 ---
 
