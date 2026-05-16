@@ -1,8 +1,6 @@
 ---
 import AdminLayout from "../../layouts/AdminLayout.astro";
 import articles from "../../../data/articles.json";
-
-const articlesData = JSON.stringify(articles);
 ---
 
 <AdminLayout title="Články">
@@ -56,13 +54,17 @@ const articlesData = JSON.stringify(articles);
   </form>
 
   <script>
-    const articles = JSON.parse(String.raw`{articlesData}`);
+    // 🔥 TADY JE OPRAVA – správné vložení JSONu
+    const articles = {JSON.stringify(articles)};
 
     let currentImageUrl = "";
 
     function editArticle(id) {
       const a = articles.find(x => String(x.id) === String(id));
-      if (!a) return;
+      if (!a) {
+        alert("Článek nenalezen!");
+        return;
+      }
 
       document.getElementById("articleId").value = a.id;
       document.getElementById("title").value = a.title;
