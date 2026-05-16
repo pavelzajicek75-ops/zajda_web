@@ -15,18 +15,30 @@
 <body>
   <div class="container">
     <h2>Seznam článků</h2>
-    <p><a class="btn" href="/admin/new-article.html">+ Nový článek</a></p>
+
+    <p>
+      <a class="btn" href="/admin/new-article.html">+ Nový článek</a>
+    </p>
+
     <div id="list"></div>
   </div>
 
   <script>
     async function loadArticles() {
       const token = localStorage.getItem("admin_token");
-      if (!token) { window.location.href = "/admin/login.html"; return; }
+      if (!token) {
+        window.location.href = "/admin/login.html";
+        return;
+      }
 
       const res = await fetch("/api/admin/posts/list", {
         headers: { "Authorization": `Bearer ${token}` }
       });
+
+      if (!res.ok) {
+        alert("Nepodařilo se načíst články");
+        return;
+      }
 
       const articles = await res.json();
       const box = document.getElementById("list");
