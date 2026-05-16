@@ -3,115 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seznam článků</title>
-
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #0d0d0d;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
-            background: #1a1a1a;
-            border-radius: 10px;
-        }
-
-        h2 {
-            margin-bottom: 20px;
-        }
-
-        .article-item {
-            padding: 15px;
-            background: #262626;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .article-item h3 {
-            margin: 0 0 10px 0;
-        }
-
-        .article-item a {
-            color: #4CAF50;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .article-item a:hover {
-            text-decoration: underline;
-        }
-
-        .top-buttons {
-            margin-bottom: 20px;
-        }
-
-        .top-buttons a {
-            display: inline-block;
-            padding: 10px 15px;
-            background: #4CAF50;
-            color: white;
-            border-radius: 6px;
-            text-decoration: none;
-            margin-right: 10px;
-        }
-
-        .top-buttons a:hover {
-            background: #45a049;
-        }
-    </style>
+    <title>Články</title>
 </head>
 
 <body>
-    <div class="container">
+    <script src="/admin/auth.js"></script>
+    <script>const token = requireAuth();</script>
 
-        <div class="top-buttons">
-            <a href="/admin/new-article.html">+ Nový článek</a>
-        </div>
+    <h2>Seznam článků</h2>
 
-        <h2>Seznam článků</h2>
+    <a href="/admin/new-article.html">+ Nový článek</a>
 
-        <div id="articles"></div>
-
-    </div>
+    <div id="articles"></div>
 
     <script>
         async function loadArticles() {
-            const token = localStorage.getItem("admin_token");
-            if (!token) return window.location.href = "/admin/login.html";
-
             const res = await fetch("/api/admin/posts/list", {
                 headers: { "Authorization": `Bearer ${token}` }
             });
 
-            if (!res.ok) {
-                alert("Nepodařilo se načíst články.");
-                return;
-            }
-
             const articles = await res.json();
-            const container = document.getElementById("articles");
-            container.innerHTML = "";
+            const box = document.getElementById("articles");
 
-            articles.forEach(article => {
-                const item = document.createElement("div");
-                item.className = "article-item";
-
-                item.innerHTML = `
-                    <h3>${article.title}</h3>
-                    <p>${article.excerpt || ""}</p>
-
-                    <a href="/admin/edit-article.html?id=${article.id}">
-                        Upravit článek
-                    </a>
+            articles.forEach(a => {
+                box.innerHTML += `
+                    <div>
+                        <h3>${a.title}</h3>
+                        <a href="/admin/edit-article.html?id=${a.id}">Upravit</a>
+                    </div>
                 `;
-
-                container.appendChild(item);
             });
         }
 
