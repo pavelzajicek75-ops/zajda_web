@@ -5,8 +5,9 @@ import articles from "../../data/articles.json";
 const id = Astro.url.searchParams.get("id");
 let article = null;
 
+// 100% funkční porovnání ID
 if (id) {
-  article = articles.find(a => a.id === Number(id));
+  article = articles.find(a => String(a.id) === String(id));
 }
 ---
 
