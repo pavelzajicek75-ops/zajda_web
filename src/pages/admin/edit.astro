@@ -1,120 +1,100 @@
 ---
 import AdminLayout from "../../layouts/AdminLayout.astro";
 import articles from "../../data/articles.json";
-
-const id = Astro.url.searchParams.get("id");
-
-// Pokud není ID → build nesmí spadnout
-let article = null;
-if (id) {
-  article = articles.find(a => a.id === id);
-}
 ---
 
-<AdminLayout title="Upravit článek">
+<AdminLayout title="Seznam článků">
+  <h1>Seznam článků</h1>
 
-  {id && article ? (
-    <>
-      <h1>Upravit článek: {article.title}</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Obrázek</th>
+        <th>Název</th>
+        <th>Datum</th>
+        <th>ID</th>
+        <th>Akce</th>
+      </tr>
+    </thead>
 
-      <form id="editForm">
-        <label>Název</label>
-        <input type="text" id="title" value={article.title} />
+    <tbody>
+      {articles.map(article => (
+        <tr>
+          <td>
+            <img 
+              src={article.image || "/admin/no-image.png"} 
+              style="width:80px;height:50px;object-fit:cover;border-radius:6px;" 
+            />
+          </td>
 
-        <label>Datum</label>
-        <input type="date" id="date" value={article.date} />
+          <td>{article.title}</td>
+          <td>{article.date}</td>
+          <td>{article.id}</td>
 
-        <label>Obsah</label>
-        <textarea id="content" rows="12">{article.content}</textarea>
+          <td>
+            <a 
+              href={`/admin/edit?id=${article.id}`} 
+              class="btn-edit"
+            >
+              Upravit
+            </a>
 
-        <label>Obrázek</label>
-        <input type="file" id="image" accept="image/*" />
-
-        <img id="preview" src={article.image || "/admin/no-image.png"} style="max-width:200px;margin-top:10px;border-radius:6px;" />
-
-        <button type="button" onclick="saveArticle()">Uložit změny</button>
-      </form>
-    </>
-  ) : (
-    <p style="color:#aaa;">Nebyl vybrán žádný článek. Otevři editor přes seznam článků.</p>
-  )}
+            <a 
+              href={`/admin/delete?id=${article.id}`} 
+              class="btn-delete"
+            >
+              Smazat
+            </a>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
 
   <style>
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      max-width: 700px;
+    h1 {
+      margin-bottom: 20px;
     }
 
-    input, textarea {
-      padding: 12px;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #1a1a1a;
       border-radius: 8px;
-      border: 1px solid #444;
-      background: #1e1e1e;
-      color: white;
-      font-size: 16px;
+      overflow: hidden;
     }
 
-    button {
+    th, td {
       padding: 12px;
+      border-bottom: 1px solid #333;
+      text-align: left;
+      color: #ddd;
+    }
+
+    th {
+      background: #222;
+      font-weight: bold;
+    }
+
+    tr:hover {
+      background: #2a2a2a;
+    }
+
+    .btn-edit {
+      padding: 6px 10px;
       background: #4a90e2;
-      border: none;
-      border-radius: 8px;
       color: white;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
+      border-radius: 4px;
+      text-decoration: none;
+      margin-right: 6px;
     }
 
-    button:hover {
-      background: #357ac8;
+    .btn-delete {
+      padding: 6px 10px;
+      background: #b30000;
+      color: white;
+      border-radius: 4px;
+      text-decoration: none;
     }
   </style>
-
-  <script>
-    const preview = document.getElementById("preview");
-    const imageInput = document.getElementById("image");
-
-    if (imageInput) {
-      imageInput.addEventListener("change", () => {
-        const file = imageInput.files[0];
-        if (file) {
-          preview.src = URL.createObjectURL(file);
-        }
-      });
-    }
-
-    async function saveArticle() {
-      const token = localStorage.getItem("admin_token");
-
-      const formData = new FormData();
-      formData.append("id", "{id}");
-      formData.append("title", document.getElementById("title").value);
-      formData.append("date", document.getElementById("date").value);
-      formData.append("content", document.getElementById("content").value);
-
-      if (imageInput.files[0]) {
-        formData.append("image", imageInput.files[0]);
-      }
-
-      const res = await fetch("/api/admin/save", {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer " + token
-        },
-        body: formData
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        alert("Článek uložen");
-        window.location.href = "/admin/articles/";
-      } else {
-        alert("Chyba při ukládání");
-      }
-    }
-  </script>
-
 </AdminLayout>
