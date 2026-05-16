@@ -4,84 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
-
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #0d0d0d;
-            color: white;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .login-box {
-            background: #1a1a1a;
-            padding: 40px;
-            border-radius: 10px;
-            width: 320px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 6px;
-            border: none;
-            background: #333;
-            color: white;
-            font-size: 15px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #4CAF50;
-            border: none;
-            border-radius: 6px;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        button:hover {
-            background: #45a049;
-        }
-
-        .error {
-            color: #ff4444;
-            margin-top: 10px;
-            text-align: center;
-        }
-    </style>
 </head>
-
 <body>
-    <div class="login-box">
-        <h2>Přihlášení</h2>
+    <h2>Přihlášení</h2>
 
-        <input type="text" id="username" placeholder="Uživatel">
-        <input type="password" id="password" placeholder="Heslo">
-
-        <button onclick="login()">Přihlásit se</button>
-
-        <div id="error" class="error"></div>
-    </div>
+    <input id="username" placeholder="Uživatel">
+    <input id="password" type="password" placeholder="Heslo">
+    <button onclick="login()">Přihlásit</button>
 
     <script>
         async function login() {
-            const username = document.getElementById("username").value.trim();
-            const password = document.getElementById("password").value.trim();
-            const errorBox = document.getElementById("error");
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
 
-            error
+            const res = await fetch("/api/admin/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert("Špatné přihlášení");
+                return;
+            }
+
+            localStorage.setItem("admin_token", data.token);
+
+            window.location.href = "/admin/edit-article.html?id=1";
+        }
+    </script>
+</body>
+</html>
