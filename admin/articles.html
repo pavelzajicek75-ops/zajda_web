@@ -35,11 +35,6 @@
         headers: { "Authorization": `Bearer ${token}` }
       });
 
-      if (!res.ok) {
-        alert("Nepodařilo se načíst články");
-        return;
-      }
-
       const articles = await res.json();
       const box = document.getElementById("list");
       box.innerHTML = "";
