@@ -4,52 +4,98 @@ import articles from "../../../data/articles.json";
 ---
 
 <AdminLayout title="Články">
+  <div class="page">
+    <h1>Články</h1>
 
-  <h1>Články</h1>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Foto</th>
-        <th>Název</th>
-        <th>Datum</th>
-        <th>ID</th>
-        <th>Akce</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      {articles.map((a) => (
+    <table class="table">
+      <thead>
         <tr>
-          <td>
-            {a.image && (
-              <img
-                src={a.image}
-                alt={a.title}
-                style="width:80px;height:50px;object-fit:cover;border-radius:6px;"
-              />
-            )}
-          </td>
-          <td>{a.title}</td>
-          <td>{a.date}</td>
-          <td>{a.id}</td>
-          <td>
-            <a
-              href={`/admin/edit/${a.id}`}
-              style="
-                padding:6px 12px;
-                background:#4a90e2;
-                color:white;
-                border-radius:6px;
-                text-decoration:none;
-              "
-            >
-              Upravit
-            </a>
-          </td>
+          <th>Foto</th>
+          <th>Název</th>
+          <th>Sekce</th>
+          <th>Datum</th>
+          <th>ID</th>
+          <th>Akce</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
+      </thead>
 
+      <tbody>
+        {articles.map((a) => (
+          <tr>
+            <td>
+              {a.image && (
+                <img
+                  src={a.image}
+                  alt={a.title}
+                  class="thumb"
+                />
+              )}
+            </td>
+            <td>{a.title}</td>
+            <td>{a.section || "—"}</td>
+            <td>{a.date}</td>
+            <td>{a.id}</td>
+            <td>
+              <a href={`/admin/edit/${a.id}`} class="btn">
+                Upravit
+              </a>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <style>
+    .page {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      color: #f5f5f5;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #1e1e1e;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .table th,
+    .table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #333;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .table thead {
+      background: #111;
+    }
+
+    .thumb {
+      width: 80px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      background: #4a90e2;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .btn:hover {
+      background: #357ac9;
+    }
+  </style>
 </AdminLayout>
