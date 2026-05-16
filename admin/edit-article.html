@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editace článku</title>
+</head>
+<body>
+    <h2>Editace článku</h2>
+
+    <input id="title" placeholder="Název článku">
+    <textarea id="content" placeholder="Obsah článku"></textarea>
+
+    <button onclick="saveArticle()">Uložit</button>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const articleId = urlParams.get("id");
+
+        async function loadArticle() {
+            const token = localStorage.getItem("admin_token");
+            if (!token) return window.location.href = "/admin/login.html";
+
+            const res = await fetch(`/api/admin/posts/get?id=${articleId}`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            const article = await res.json();
+
+            document.getElementById("title").value = article.title;
+            document.getElementById("content").value = article.content;
+        }
+
+        async function saveArticle() {
+            const token = localStorage.getItem("admin_token");
+
+            const body = {
+                id: articleId,
+                title: document.getElementById("title").value,
+                content: document.getElementById("content").value
+            };
+
+            await fetch("/api/admin/posts/update", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(body)
+            });
+
+            alert("Uloženo");
+            window.location.href = "/admin/articles.html";
+        }
+
+        loadArticle();
+    </script>
+</body>
+</html>
