@@ -19,117 +19,37 @@ import articles from "../../../data/articles.json";
     </thead>
 
     <tbody>
-      {articles.map(a => (
+      {articles.map((a) => (
         <tr>
           <td>
-            <img src={a.image} style="width:80px;height:50px;object-fit:cover;border-radius:6px;" />
+            {a.image && (
+              <img
+                src={a.image}
+                alt={a.title}
+                style="width:80px;height:50px;object-fit:cover;border-radius:6px;"
+              />
+            )}
           </td>
           <td>{a.title}</td>
           <td>{a.date}</td>
           <td>{a.id}</td>
           <td>
-            <button onclick={`editArticle('${a.id}')`}>Upravit</button>
+            <a
+              href={`/admin/edit/${a.id}`}
+              style="
+                padding:6px 12px;
+                background:#4a90e2;
+                color:white;
+                border-radius:6px;
+                text-decoration:none;
+              "
+            >
+              Upravit
+            </a>
           </td>
         </tr>
       ))}
     </tbody>
   </table>
-
-  <h2 style="margin-top:40px;">Editor článku</h2>
-
-  <form id="editForm">
-    <input type="hidden" id="articleId" />
-
-    <label>Název</label>
-    <input type="text" id="title" />
-
-    <label>Datum</label>
-    <input type="date" id="date" />
-
-    <label>Obsah</label>
-    <textarea id="content" rows="10"></textarea>
-
-    <label>Obrázek</label>
-    <input type="file" id="imageFile" accept="image/*" />
-
-    <img id="preview" style="max-width:250px;margin-top:10px;border-radius:8px;display:none;" />
-
-    <button type="button" onclick="saveArticle()">Uložit</button>
-  </form>
-
-  <script>
-    // 🔥 Tohle je jediný správný způsob, jak dostat JSON do scriptu v Astro
-    const articles = {articles};
-
-    let currentImageUrl = "";
-
-    function editArticle(id) {
-      const a = articles.find(x => String(x.id) === String(id));
-      if (!a) return;
-
-      document.getElementById("articleId").value = a.id;
-      document.getElementById("title").value = a.title;
-      document.getElementById("date").value = a.date;
-      document.getElementById("content").value = a.content;
-
-      currentImageUrl = a.image;
-
-      const preview = document.getElementById("preview");
-      preview.src = currentImageUrl;
-      preview.style.display = currentImageUrl ? "block" : "none";
-
-      document.getElementById("editForm").scrollIntoView({ behavior: "smooth" });
-    }
-
-    async function uploadImage(file) {
-      const form = new FormData();
-      form.append("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: form
-      });
-
-      const data = await res.json();
-      return data.url;
-    }
-
-    async function saveArticle() {
-      const token = localStorage.getItem("admin_token");
-
-      const file = document.getElementById("imageFile").files[0];
-      let imageUrl = currentImageUrl;
-
-      if (file) {
-        imageUrl = await uploadImage(file);
-      }
-
-      const body = {
-        id: document.getElementById("articleId").value,
-        title: document.getElementById("title").value,
-        date: document.getElementById("date").value,
-        content: document.getElementById("content").value,
-        image: imageUrl
-      };
-
-      const res = await fetch("/api/admin/save", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + token
-        },
-        body: JSON.stringify(body)
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        alert("Uloženo");
-        window.location.href = "/admin/articles";
-      } else {
-        alert("Chyba");
-      }
-    }
-  </script>
 
 </AdminLayout>
