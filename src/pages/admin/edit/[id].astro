@@ -14,6 +14,11 @@ const article = articles.find((a) => String(a.id) === id);
 if (!article) {
   throw new Error("Článek nenalezen");
 }
+
+// převod data do formátu YYYY-MM-DD
+const formattedDate = article.date
+  ? new Date(article.date).toISOString().split("T")[0]
+  : "";
 ---
 
 <AdminLayout title={`Upravit: ${article.title}`}>
@@ -24,13 +29,17 @@ if (!article) {
     <input type="text" id="title" value={article.title} />
 
     <label>Datum</label>
-    <input type="date" id="date" value={article.date} />
+    <input type="date" id="date" value={formattedDate} />
 
     <label>Obsah</label>
     <textarea id="content" rows="12">{article.content || ""}</textarea>
 
     <label>Obrázek</label>
     <input type="file" id="image" accept="image/*" />
+
+    {article.image && (
+      <img src={article.image} alt="Náhled" style="max-width:200px;margin-top:10px;" />
+    )}
 
     <button type="button" onclick="saveArticle()">Uložit</button>
   </form>
