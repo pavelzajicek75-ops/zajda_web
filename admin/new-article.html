@@ -28,7 +28,6 @@
   <script>
     async function createArticle() {
       const token = localStorage.getItem("admin_token");
-      if (!token) { window.location.href = "/admin/login.html"; return; }
 
       const body = {
         title: document.getElementById("title").value,
@@ -43,8 +42,6 @@
         },
         body: JSON.stringify(body)
       });
-
-      if (!res.ok) { alert("Nepodařilo se vytvořit článek"); return; }
 
       alert("Článek vytvořen");
       window.location.href = "/admin/articles.html";
