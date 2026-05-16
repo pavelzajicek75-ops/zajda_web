@@ -3,7 +3,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 import articles from "../../data/articles.json";
 ---
 
-<AdminLayout title="Články">
+<AdminLayout title="Seznam článků">
   <h1>Seznam článků</h1>
 
   <table>
@@ -18,34 +18,33 @@ import articles from "../../data/articles.json";
     </thead>
 
     <tbody>
-      {articles.map((a) => (
+      {articles.map(article => (
         <tr>
           <td>
-            {a.image ? (
-              <img src={a.image} alt={a.title} class="thumb" />
-            ) : (
-              <span class="noimg">—</span>
-            )}
+            <img 
+              src={article.image || "/admin/no-image.png"} 
+              style="width:80px;height:50px;object-fit:cover;border-radius:6px;" 
+            />
           </td>
 
-          <td>{a.title}</td>
-          <td>{a.date}</td>
-          <td>{a.id}</td>
+          <td>{article.title}</td>
+          <td>{article.date}</td>
+          <td>{article.id}</td>
 
           <td>
             <a 
-              class="edit" 
-              href={`https://zajda-web.pages.dev/admin/edit?id=${a.id}`}
+              href={`/admin/edit?id=${article.id}`} 
+              class="btn-edit"
             >
               Upravit
             </a>
 
-            <button 
-              class="delete" 
-              onclick={`deleteArticle('${a.id}')`}
+            <a 
+              href={`/admin/delete?id=${article.id}`} 
+              class="btn-delete"
             >
               Smazat
-            </button>
+            </a>
           </td>
         </tr>
       ))}
@@ -53,11 +52,14 @@ import articles from "../../data/articles.json";
   </table>
 
   <style>
+    h1 {
+      margin-bottom: 20px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
-      background: #1e1e1e;
+      background: #1a1a1a;
       border-radius: 8px;
       overflow: hidden;
     }
@@ -65,70 +67,34 @@ import articles from "../../data/articles.json";
     th, td {
       padding: 12px;
       border-bottom: 1px solid #333;
-      vertical-align: middle;
+      text-align: left;
+      color: #ddd;
     }
 
     th {
+      background: #222;
+      font-weight: bold;
+    }
+
+    tr:hover {
       background: #2a2a2a;
-      text-align: left;
     }
 
-    .thumb {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 6px;
-      border: 1px solid #444;
+    .btn-edit {
+      padding: 6px 10px;
+      background: #4a90e2;
+      color: white;
+      border-radius: 4px;
+      text-decoration: none;
+      margin-right: 6px;
     }
 
-    .noimg {
-      color: #666;
-      font-size: 14px;
-    }
-
-    .edit {
-      color: #4a90e2;
-      margin-right: 10px;
+    .btn-delete {
+      padding: 6px 10px;
+      background: #b30000;
+      color: white;
+      border-radius: 4px;
       text-decoration: none;
     }
-
-    .delete {
-      background: #ff6b6b;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
-    }
-
-    .delete:hover {
-      background: #ff4b4b;
-    }
   </style>
-
-  <script>
-    async function deleteArticle(id) {
-      if (!confirm("Opravdu smazat článek?")) return;
-
-      const token = localStorage.getItem("admin_token");
-
-      const res = await fetch("/api/admin/delete", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + token
-        },
-        body: JSON.stringify({ id })
-      });
-
-      const data = await res.json();
-
-      if (data.deleted) {
-        alert("Článek smazán");
-        location.reload();
-      } else {
-        alert("Chyba při mazání");
-      }
-    }
-  </script>
 </AdminLayout>
