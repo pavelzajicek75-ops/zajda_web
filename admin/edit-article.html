@@ -8,93 +8,51 @@
     body { background:#0d0d0d; color:white; font-family:Arial; margin:0; padding:0; }
     .container { max-width:900px; margin:40px auto; padding:20px; background:#1a1a1a; border-radius:10px; }
     input, textarea { width:100%; padding:12px; margin:10px 0; border-radius:6px; border:none; background:#333; color:white; font-size:15px; }
-    #editor { background:#333; padding:15px; min-height:300px; border-radius:6px; }
-    button { padding:12px 20px; background:#4CAF50; border:none; border-radius:6px; color:white; cursor:pointer; margin-top:10px; }
+    textarea { min-height:260px; }
+    button { padding:12px 20px; background:#4CAF50; border:none; border-radius:6px; color:white; cursor:pointer; }
     button:hover { background:#45a049; }
-    .toolbar { background:#222; padding:10px; border-radius:6px; margin-bottom:10px; }
-    .toolbar button { background:#333; color:white; border:none; padding:8px 12px; margin-right:5px; border-radius:4px; cursor:pointer; }
-    .toolbar button:hover { background:#444; }
+    a { color:#aaa; text-decoration:none; }
   </style>
 </head>
-
 <body>
   <div class="container">
-    <a href="/admin/articles.html" style="color:#aaa;">← Zpět</a>
+    <a href="/admin/articles.html">← Zpět na články</a>
     <h2>Editace článku</h2>
 
     <input id="title" placeholder="Název článku" />
+    <textarea id="content" placeholder="Obsah článku"></textarea>
 
-    <div class="toolbar">
-      <button onclick="exec('bold')"><b>B</b></button>
-      <button onclick="exec('italic')"><i>I</i></button>
-      <button onclick="exec('underline')"><u>U</u></button>
-      <button onclick="execArg('formatBlock','<h2>')">H2</button>
-      <button onclick="execArg('formatBlock','<h3>')">H3</button>
-      <button onclick="exec('insertUnorderedList')">• List</button>
-      <button onclick="exec('insertOrderedList')">1. List</button>
-      <button onclick="uploadImage()">📷 Obrázek</button>
-    </div>
-
-    <div id="editor" contenteditable="true"></div>
-
-    <button onclick="saveArticle()">Uložit změny</button>
+    <button id="saveBtn">Uložit změny</button>
   </div>
 
   <script>
-    // === WYSIWYG ===
-    function exec(cmd) { document.execCommand(cmd, false, null); }
-    function execArg(cmd, arg) { document.execCommand(cmd, false, arg); }
-
-    // === IMAGE UPLOAD ===
-    async function uploadImage() {
-      const token = localStorage.getItem("admin_token");
-      if (!token) return alert("Nejsi přihlášen.");
-
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-
-      input.onchange = async () => {
-        const file = input.files[0];
-        if (!file) return;
-
-        const form = new FormData();
-        form.append("image", file);
-
-        const res = await fetch("/api/admin/upload", {
-          method: "POST",
-          headers: { "Authorization": `Bearer ${token}` },
-          body: form
-        });
-
-        if (!res.ok) return alert("Nahrání obrázku selhalo.");
-        const data = await res.json();
-        execArg("insertImage", data.url);
-      };
-
-      input.click();
-    }
-
-    // === LOAD & SAVE ===
-    const id = new URLSearchParams(window.location.search).get("id");
+    const params = new URLSearchParams(window.location.search);
+    const articleId = params.get("id");
 
     async function loadArticle() {
       const token = localStorage.getItem("admin_token");
-      const res = await fetch(`/api/admin/posts/get?id=${id}`, {
+      if (!token) { window.location.href = "/admin/login.html"; return; }
+
+      const res = await fetch(`/api/admin/posts/get?id=${articleId}`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
-      const a = await res.json();
-      document.getElementById("title").value = a.title;
-      document.getElementById("editor").innerHTML = a.content;
+      if (!res.ok) { alert("Nepodařilo se načíst článek"); return; }
+
+      const article = await res.json();
+      document.getElementById("title").value = article.title || "";
+      document.getElementById("content").value = article.content || "";
     }
 
     async function saveArticle() {
       const token = localStorage.getItem("admin_token");
+      if (!token) { window.location.href = "/admin/login.html"; return; }
+
       const body = {
-        id,
+        id: articleId,
         title: document.getElementById("title").value,
-        content: document.getElementById("editor").innerHTML
+        content: document.getElementById("content").value
       };
+
       const res = await fetch("/api/admin/posts/update", {
         method: "POST",
         headers: {
@@ -103,11 +61,14 @@
         },
         body: JSON.stringify(body)
       });
-      if (!res.ok) return alert("Chyba při ukládání.");
-      alert("Článek uložen!");
+
+      if (!res.ok) { alert("Nepodařilo se uložit změny"); return; }
+
+      alert("Článek uložen");
       window.location.href = "/admin/articles.html";
     }
 
+    document.getElementById("saveBtn").addEventListener("click", saveArticle);
     loadArticle();
   </script>
 </body>
