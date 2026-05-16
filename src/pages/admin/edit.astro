@@ -1,0 +1,109 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import articles from "../../data/articles.json";
+
+const id = Astro.url.searchParams.get("id");
+const article = articles.find(a => a.id === id);
+
+if (!article) {
+  throw new Error("Článek nenalezen");
+}
+---
+
+<AdminLayout title={`Upravit článek: ${article.title}`}>
+  <h1>Upravit článek</h1>
+
+  <form id="editForm">
+    <label>Název</label>
+    <input type="text" id="title" value={article.title} />
+
+    <label>Datum</label>
+    <input type="date" id="date" value={article.date} />
+
+    <label>Obsah</label>
+    <textarea id="content" rows="12">{article.content}</textarea>
+
+    <label>Obrázek</label>
+    <input type="file" id="image" accept="image/*" />
+
+    <img id="preview" src={article.image || "/admin/no-image.png"} style="max-width:200px;margin-top:10px;border-radius:6px;" />
+
+    <button type="button" onclick="saveArticle()">Uložit změny</button>
+  </form>
+
+  <style>
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 700px;
+    }
+
+    input, textarea {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background: #1e1e1e;
+      color: white;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px;
+      background: #4a90e2;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #357ac8;
+    }
+  </style>
+
+  <script>
+    const preview = document.getElementById("preview");
+    const imageInput = document.getElementById("image");
+
+    imageInput.addEventListener("change", () => {
+      const file = imageInput.files[0];
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+      }
+    });
+
+    async function saveArticle() {
+      const token = localStorage.getItem("admin_token");
+
+      const formData = new FormData();
+      formData.append("id", "{id}");
+      formData.append("title", document.getElementById("title").value);
+      formData.append("date", document.getElementById("date").value);
+      formData.append("content", document.getElementById("content").value);
+
+      if (imageInput.files[0]) {
+        formData.append("image", imageInput.files[0]);
+      }
+
+      const res = await fetch("/api/admin/save", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + token
+        },
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Článek uložen");
+        window.location.href = "/admin/articles/";
+      } else {
+        alert("Chyba při ukládání");
+      }
+    }
+  </script>
+</AdminLayout>
