@@ -1,135 +1,121 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8">
-  <title>Články – Admin</title>
-  <style>
-    body {
-      background: #111;
-      color: #eee;
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    h1 { margin-bottom: 20px; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    table, th, td {
-      border: 1px solid #444;
-    }
-    th, td {
-      padding: 10px;
-      text-align: left;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      background: #222;
-      color: #eee;
-      border: 1px solid #444;
-      border-radius: 4px;
-    }
-    button {
-      padding: 10px 20px;
-      background: #333;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-    button:hover {
-      background: #555;
-    }
-    .row-actions button {
-      margin-right: 5px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seznam článků</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0d0d0d;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 10px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .article-item {
+            padding: 15px;
+            background: #262626;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .article-item h3 {
+            margin: 0 0 10px 0;
+        }
+
+        .article-item a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .article-item a:hover {
+            text-decoration: underline;
+        }
+
+        .top-buttons {
+            margin-bottom: 20px;
+        }
+
+        .top-buttons a {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        .top-buttons a:hover {
+            background: #45a049;
+        }
+    </style>
 </head>
+
 <body>
+    <div class="container">
 
-<h1>Správa článků</h1>
+        <div class="top-buttons">
+            <a href="/admin/new-article.html">+ Nový článek</a>
+        </div>
 
-<div>
-  <h2>Nový článek</h2>
-  <input id="title" placeholder="Název článku">
-  <textarea id="content" placeholder="Obsah článku" rows="6"></textarea>
-  <button onclick="createArticle()">Přidat článek</button>
-</div>
+        <h2>Seznam článků</h2>
 
-<h2>Seznam článků</h2>
-<table id="articlesTable">
-  <thead>
-    <tr>
-      <th>Název</th>
-      <th>Obsah</th>
-      <th>Akce</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+        <div id="articles"></div>
 
-<script>
-const token = localStorage.getItem("jwt");
-if (!token) {
-  window.location.href = "/admin/login.html";
-}
+    </div>
 
-async function loadArticles() {
-  const res = await fetch("/api/admin/articles", {
-    headers: { "Authorization": "Bearer " + token }
-  });
-  const articles = await res.json();
+    <script>
+        async function loadArticles() {
+            const token = localStorage.getItem("admin_token");
+            if (!token) return window.location.href = "/admin/login.html";
 
-  const tbody = document.querySelector("#articlesTable tbody");
-  tbody.innerHTML = "";
+            const res = await fetch("/api/admin/posts/list", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
 
-  articles.forEach(article => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${article.title}</td>
-      <td>${article.content.substring(0, 80)}...</td>
-      <td class="row-actions">
-        <button onclick="editArticle('${article.id}')">Upravit</button>
-        <button onclick="deleteArticle('${article.id}')">Smazat</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
+            if (!res.ok) {
+                alert("Nepodařilo se načíst články.");
+                return;
+            }
 
-async function createArticle() {
-  const title = document.getElementById("title").value;
-  const content = document.getElementById("content").value;
+            const articles = await res.json();
+            const container = document.getElementById("articles");
+            container.innerHTML = "";
 
-  await fetch("/api/admin/articles", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + token
-    },
-    body: JSON.stringify({ title, content })
-  });
+            articles.forEach(article => {
+                const item = document.createElement("div");
+                item.className = "article-item";
 
-  loadArticles();
-}
+                item.innerHTML = `
+                    <h3>${article.title}</h3>
+                    <p>${article.excerpt || ""}</p>
 
-async function deleteArticle(id) {
-  await fetch("/api/admin/articles?id=" + id, {
-    method: "DELETE",
-    headers: { "Authorization": "Bearer " + token }
-  });
-  loadArticles();
-}
+                    <a href="/admin/edit-article.html?id=${article.id}">
+                        Upravit článek
+                    </a>
+                `;
 
-function editArticle(id) {
-  alert("Úprava článku bude doplněna – backend připravíme hned.");
-}
+                container.appendChild(item);
+            });
+        }
 
-loadArticles();
-</script>
-
+        loadArticles();
+    </script>
 </body>
 </html>
