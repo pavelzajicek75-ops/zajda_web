@@ -1,0 +1,31 @@
+<div class="toolbar">
+    <button onclick="exec('bold')"><b>B</b></button>
+    <button onclick="exec('italic')"><i>I</i></button>
+    <button onclick="exec('underline')"><u>U</u></button>
+    <button onclick="execArg('formatBlock','<h2>')">H2</button>
+    <button onclick="execArg('formatBlock','<h3>')">H3</button>
+    <button onclick="exec('insertUnorderedList')">• List</button>
+    <button onclick="exec('insertOrderedList')">1. List</button>
+    <button onclick="uploadImage()">📷 Obrázek</button>
+</div>
+
+<style>
+.toolbar {
+    background: #222;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+.toolbar button {
+    background: #333;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    margin-right: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.toolbar button:hover {
+    background: #444;
+}
+</style>
