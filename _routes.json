@@ -1,13 +1,5 @@
 {
   "version": 1,
-  "include": ["/*"],
-  "exclude": [],
-  "trailingSlash": "never"
-}
-{
-  "version": 1,
-  "include": ["/*"],
-  "exclude": [],
   "trailingSlash": "never",
   "routes": [
     {
