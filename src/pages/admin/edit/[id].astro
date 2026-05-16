@@ -16,17 +16,6 @@ if (!article) {
 }
 ---
 
-import AdminLayout from "../../../layouts/AdminLayout.astro";
-import articles from "../../../data/articles.json";
-
-const { id } = Astro.params;
-const article = articles.find((a) => a.id === id);
-
-if (!article) {
-  throw new Error("Článek nenalezen");
-}
----
-
 <AdminLayout title={`Upravit: ${article.title}`}>
   <h1>Upravit článek</h1>
 
