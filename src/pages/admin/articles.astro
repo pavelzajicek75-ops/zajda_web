@@ -1,15 +1,18 @@
 ---
 import AdminLayout from "../../layouts/AdminLayout.astro";
-import articles from "../../data/articles.json";
+import articles from "../../../data/articles.json";
+
+const articlesData = JSON.stringify(articles);
 ---
 
-<AdminLayout title="Seznam článků">
-  <h1>Seznam článků</h1>
+<AdminLayout title="Články">
+
+  <h1>Články</h1>
 
   <table>
     <thead>
       <tr>
-        <th>Obrázek</th>
+        <th>Foto</th>
         <th>Název</th>
         <th>Datum</th>
         <th>ID</th>
@@ -18,83 +21,112 @@ import articles from "../../data/articles.json";
     </thead>
 
     <tbody>
-      {articles.map(article => (
+      {articles.map(a => (
         <tr>
-          <td>
-            <img 
-              src={article.image || "/admin/no-image.png"} 
-              style="width:80px;height:50px;object-fit:cover;border-radius:6px;" 
-            />
-          </td>
-
-          <td>{article.title}</td>
-          <td>{article.date}</td>
-          <td>{article.id}</td>
-
-          <td>
-            <a 
-              href={`/admin/edit?id=${article.id}`} 
-              class="btn-edit"
-            >
-              Upravit
-            </a>
-
-            <a 
-              href={`/admin/delete?id=${article.id}`} 
-              class="btn-delete"
-            >
-              Smazat
-            </a>
-          </td>
+          <td><img src={a.image} style="width:80px;height:50px;object-fit:cover;border-radius:6px;" /></td>
+          <td>{a.title}</td>
+          <td>{a.date}</td>
+          <td>{a.id}</td>
+          <td><button onclick={`editArticle('${a.id}')`}>Upravit</button></td>
         </tr>
       ))}
     </tbody>
   </table>
 
-  <style>
-    h1 {
-      margin-bottom: 20px;
+  <h2 style="margin-top:40px;">Editor článku</h2>
+
+  <form id="editForm">
+    <input type="hidden" id="articleId" />
+
+    <label>Název</label>
+    <input type="text" id="title" />
+
+    <label>Datum</label>
+    <input type="date" id="date" />
+
+    <label>Obsah</label>
+    <textarea id="content" rows="10"></textarea>
+
+    <label>Obrázek</label>
+    <input type="file" id="imageFile" accept="image/*" />
+
+    <img id="preview" style="max-width:250px;margin-top:10px;border-radius:8px;display:none;" />
+
+    <button type="button" onclick="saveArticle()">Uložit</button>
+  </form>
+
+  <script>
+    const articles = JSON.parse(String.raw`{articlesData}`);
+
+    let currentImageUrl = "";
+
+    function editArticle(id) {
+      const a = articles.find(x => String(x.id) === String(id));
+      if (!a) return;
+
+      document.getElementById("articleId").value = a.id;
+      document.getElementById("title").value = a.title;
+      document.getElementById("date").value = a.date;
+      document.getElementById("content").value = a.content;
+
+      currentImageUrl = a.image;
+
+      const preview = document.getElementById("preview");
+      preview.src = currentImageUrl;
+      preview.style.display = currentImageUrl ? "block" : "none";
+
+      document.getElementById("editForm").scrollIntoView({ behavior: "smooth" });
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #1a1a1a;
-      border-radius: 8px;
-      overflow: hidden;
+    async function uploadImage(file) {
+      const form = new FormData();
+      form.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: form
+      });
+
+      const data = await res.json();
+      return data.url;
     }
 
-    th, td {
-      padding: 12px;
-      border-bottom: 1px solid #333;
-      text-align: left;
-      color: #ddd;
-    }
+    async function saveArticle() {
+      const token = localStorage.getItem("admin_token");
 
-    th {
-      background: #222;
-      font-weight: bold;
-    }
+      const file = document.getElementById("imageFile").files[0];
+      let imageUrl = currentImageUrl;
 
-    tr:hover {
-      background: #2a2a2a;
-    }
+      if (file) {
+        imageUrl = await uploadImage(file);
+      }
 
-    .btn-edit {
-      padding: 6px 10px;
-      background: #4a90e2;
-      color: white;
-      border-radius: 4px;
-      text-decoration: none;
-      margin-right: 6px;
-    }
+      const body = {
+        id: document.getElementById("articleId").value,
+        title: document.getElementById("title").value,
+        date: document.getElementById("date").value,
+        content: document.getElementById("content").value,
+        image: imageUrl
+      };
 
-    .btn-delete {
-      padding: 6px 10px;
-      background: #b30000;
-      color: white;
-      border-radius: 4px;
-      text-decoration: none;
+      const res = await fetch("/api/admin/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Uloženo");
+        window.location.href = "/admin/articles";
+      } else {
+        alert("Chyba");
+      }
     }
-  </style>
+  </script>
+
 </AdminLayout>
