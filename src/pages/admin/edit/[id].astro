@@ -1,7 +1,6 @@
 ---
 import AdminLayout from "../../../layouts/AdminLayout.astro";
 import articles from "../../../../data/articles.json";
-import sections from "../../../../data/sections.json"; // ← musíš mít sections.json
 
 export function getStaticPaths() {
   return articles.map((article) => ({
@@ -22,30 +21,31 @@ const formattedDate = article.date
 ---
 
 <AdminLayout title={`Upravit článek`}>
-  <div class="editor-container">
-
+  <div class="editor-wrap">
     <h1>Upravit článek</h1>
 
-    <form id="editForm">
+    <form id="editForm" class="card">
       <input type="hidden" id="articleId" value={article.id} />
 
-      <label>Název</label>
+      <label class="label">Název</label>
       <input type="text" id="title" value={article.title} class="input" />
 
-      <label>Sekce</label>
+      <label class="label">Sekce</label>
       <select id="section" class="input">
-        {sections.map(s => (
-          <option value={s.id} selected={article.section === s.id}>{s.name}</option>
-        ))}
+        <option value="general" selected={article.section === "general"}>Obecné</option>
+        <option value="travel" selected={article.section === "travel"}>Cestování</option>
+        <option value="health" selected={article.section === "health"}>Zdraví</option>
+        <option value="life" selected={article.section === "life"}>Život</option>
+        <option value="tech" selected={article.section === "tech"}>Technologie</option>
       </select>
 
-      <label>Datum</label>
+      <label class="label">Datum</label>
       <input type="date" id="date" value={formattedDate} class="input" />
 
-      <label>Obsah</label>
+      <label class="label">Obsah</label>
       <div id="editor" class="wysiwyg"></div>
 
-      <label>Obrázek</label>
+      <label class="label">Obrázek</label>
       <input type="file" id="imageFile" accept="image/*" class="input" />
 
       {article.image && (
@@ -57,7 +57,9 @@ const formattedDate = article.date
         />
       )}
 
-      <button type="button" onclick="saveArticle()" class="save-btn">Uložit</button>
+      <button type="button" onclick="saveArticle()" class="save-btn">
+        Uložit
+      </button>
     </form>
   </div>
 
@@ -72,7 +74,7 @@ const formattedDate = article.date
 
     quill.root.innerHTML = `{article.content}`;
 
-    let currentImageUrl = `{article.image}`;
+    let currentImageUrl = `{article.image || ""}`;
 
     async function uploadImage(file) {
       const form = new FormData();
@@ -127,52 +129,69 @@ const formattedDate = article.date
   </script>
 
   <style>
-    .editor-container {
-      max-width: 800px;
-      margin: auto;
+    .editor-wrap {
+      max-width: 900px;
+      margin: 0 auto;
       padding: 20px;
+      color: #f5f5f5;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .card {
       background: #1e1e1e;
       border-radius: 12px;
-      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .label {
+      font-size: 13px;
+      color: #ccc;
     }
 
     .input {
       width: 100%;
       padding: 10px;
-      margin-bottom: 15px;
       border-radius: 6px;
       border: 1px solid #444;
       background: #2a2a2a;
-      color: white;
+      color: #f5f5f5;
+      font-size: 14px;
     }
 
     .wysiwyg {
-      background: white;
-      color: black;
+      background: #fff;
+      color: #000;
       border-radius: 6px;
-      margin-bottom: 20px;
+      min-height: 200px;
     }
 
     .preview {
-      max-width: 250px;
-      margin-top: 10px;
+      max-width: 260px;
+      margin-top: 8px;
       border-radius: 8px;
       display: block;
     }
 
     .save-btn {
-      padding: 12px 20px;
+      margin-top: 10px;
+      align-self: flex-start;
+      padding: 10px 18px;
       background: #4a90e2;
-      border: none;
-      color: white;
       border-radius: 8px;
+      border: none;
+      color: #fff;
+      font-size: 14px;
       cursor: pointer;
-      font-size: 16px;
     }
 
     .save-btn:hover {
       background: #357ac9;
     }
   </style>
-
 </AdminLayout>
