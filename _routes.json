@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "include": ["/*"],
+  "exclude": [],
+  "trailingSlash": "never"
+}
+{
+  "version": 1,
+  "include": ["/*"],
+  "exclude": [],
+  "trailingSlash": "never",
+  "routes": [
+    {
+      "pattern": "/admin/edit/:id",
+      "path": "/admin/edit-article.html?id=:id"
+    }
+  ]
+}
