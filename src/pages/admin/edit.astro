@@ -3,33 +3,41 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 import articles from "../../data/articles.json";
 
 const id = Astro.url.searchParams.get("id");
-const article = articles.find(a => a.id === id);
 
-if (!article) {
-  throw new Error("Článek nenalezen");
+// Pokud není ID → build nesmí spadnout
+let article = null;
+if (id) {
+  article = articles.find(a => a.id === id);
 }
 ---
 
-<AdminLayout title={`Upravit článek: ${article.title}`}>
-  <h1>Upravit článek</h1>
+<AdminLayout title="Upravit článek">
 
-  <form id="editForm">
-    <label>Název</label>
-    <input type="text" id="title" value={article.title} />
+  {id && article ? (
+    <>
+      <h1>Upravit článek: {article.title}</h1>
 
-    <label>Datum</label>
-    <input type="date" id="date" value={article.date} />
+      <form id="editForm">
+        <label>Název</label>
+        <input type="text" id="title" value={article.title} />
 
-    <label>Obsah</label>
-    <textarea id="content" rows="12">{article.content}</textarea>
+        <label>Datum</label>
+        <input type="date" id="date" value={article.date} />
 
-    <label>Obrázek</label>
-    <input type="file" id="image" accept="image/*" />
+        <label>Obsah</label>
+        <textarea id="content" rows="12">{article.content}</textarea>
 
-    <img id="preview" src={article.image || "/admin/no-image.png"} style="max-width:200px;margin-top:10px;border-radius:6px;" />
+        <label>Obrázek</label>
+        <input type="file" id="image" accept="image/*" />
 
-    <button type="button" onclick="saveArticle()">Uložit změny</button>
-  </form>
+        <img id="preview" src={article.image || "/admin/no-image.png"} style="max-width:200px;margin-top:10px;border-radius:6px;" />
+
+        <button type="button" onclick="saveArticle()">Uložit změny</button>
+      </form>
+    </>
+  ) : (
+    <p style="color:#aaa;">Nebyl vybrán žádný článek. Otevři editor přes seznam článků.</p>
+  )}
 
   <style>
     form {
@@ -68,12 +76,14 @@ if (!article) {
     const preview = document.getElementById("preview");
     const imageInput = document.getElementById("image");
 
-    imageInput.addEventListener("change", () => {
-      const file = imageInput.files[0];
-      if (file) {
-        preview.src = URL.createObjectURL(file);
-      }
-    });
+    if (imageInput) {
+      imageInput.addEventListener("change", () => {
+        const file = imageInput.files[0];
+        if (file) {
+          preview.src = URL.createObjectURL(file);
+        }
+      });
+    }
 
     async function saveArticle() {
       const token = localStorage.getItem("admin_token");
@@ -106,4 +116,5 @@ if (!article) {
       }
     }
   </script>
+
 </AdminLayout>
