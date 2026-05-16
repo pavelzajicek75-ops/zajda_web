@@ -1,43 +1,31 @@
 ---
 import AdminLayout from "../../../layouts/AdminLayout.astro";
-import articles from "../../../data/articles.json";
+import articles from "../../../../data/articles.json";
 
-// STATIC BUILD – generujeme cesty
 export function getStaticPaths() {
   return articles.map((article) => ({
     params: { id: String(article.id) }
   }));
 }
 
-// ID z URL
 const { id } = Astro.params;
-
-// Najdeme článek
 const article = articles.find((a) => String(a.id) === String(id));
 
 if (!article) {
   throw new Error("Článek nenalezen");
 }
 
-// Datum do formátu YYYY-MM-DD
 const formattedDate = article.date
   ? new Date(article.date).toISOString().split("T")[0]
   : "";
 ---
 
-<!-- DEBUG BANNER – uvidíš ho v prohlížeči -->
-<div style="background:#222;padding:10px;color:#0f0;margin-bottom:20px;">
-  <strong>DEBUG:</strong> Editor načetl článek ID: {id}<br>
-  <strong>Title:</strong> {article.title}<br>
-  <strong>Date:</strong> {article.date}<br>
-  <strong>Image:</strong> {article.image}<br>
-  <strong>Content:</strong> {article.content}
-</div>
-
 <AdminLayout title={`Upravit: ${article.title}`}>
-  <h1>Upravit článek</h1>
+  <h1>Editor článku</h1>
 
   <form id="editForm">
+    <input type="hidden" id="articleId" value={article.id} />
+
     <label>Název</label>
     <input type="text" id="title" value={article.title} />
 
@@ -45,13 +33,17 @@ const formattedDate = article.date
     <input type="date" id="date" value={formattedDate} />
 
     <label>Obsah</label>
-    <textarea id="content" rows="12">{article.content}</textarea>
+    <textarea id="content" rows="10">{article.content}</textarea>
 
     <label>Obrázek</label>
-    <input type="file" id="image" accept="image/*" />
+    <input type="file" id="imageFile" accept="image/*" />
 
     {article.image && (
-      <img src={article.image} alt="Náhled" style="max-width:200px;margin-top:10px;" />
+      <img
+        src={article.image}
+        alt={article.title}
+        style="max-width:250px;margin-top:10px;border-radius:8px;"
+      />
     )}
 
     <button type="button" onclick="saveArticle()">Uložit</button>
@@ -62,7 +54,7 @@ const formattedDate = article.date
       const token = localStorage.getItem("admin_token");
 
       const body = {
-        id: "{id}",
+        id: document.getElementById("articleId").value,
         title: document.getElementById("title").value,
         date: document.getElementById("date").value,
         content: document.getElementById("content").value
