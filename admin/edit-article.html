@@ -51,7 +51,7 @@
         content: document.getElementById("content").value
       };
 
-      const res = await fetch("/api/admin/posts/update", {
+      await fetch("/api/admin/posts/update", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
