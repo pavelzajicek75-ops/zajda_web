@@ -1,86 +1,114 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editace článku</title>
-
-    <style>
-        body { background:#0d0d0d; color:white; font-family:Arial; margin:0; padding:0; }
-        .container { max-width:900px; margin:40px auto; padding:20px; background:#1a1a1a; border-radius:10px; }
-        #editor { background:#333; padding:15px; min-height:300px; border-radius:6px; }
-        input { width:100%; padding:12px; margin:10px 0; border-radius:6px; border:none; background:#333; color:white; }
-        button { padding:12px 20px; background:#4CAF50; border:none; border-radius:6px; color:white; cursor:pointer; }
-        button:hover { background:#45a049; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Editace článku</title>
+  <style>
+    body { background:#0d0d0d; color:white; font-family:Arial; margin:0; padding:0; }
+    .container { max-width:900px; margin:40px auto; padding:20px; background:#1a1a1a; border-radius:10px; }
+    input, textarea { width:100%; padding:12px; margin:10px 0; border-radius:6px; border:none; background:#333; color:white; font-size:15px; }
+    #editor { background:#333; padding:15px; min-height:300px; border-radius:6px; }
+    button { padding:12px 20px; background:#4CAF50; border:none; border-radius:6px; color:white; cursor:pointer; margin-top:10px; }
+    button:hover { background:#45a049; }
+    .toolbar { background:#222; padding:10px; border-radius:6px; margin-bottom:10px; }
+    .toolbar button { background:#333; color:white; border:none; padding:8px 12px; margin-right:5px; border-radius:4px; cursor:pointer; }
+    .toolbar button:hover { background:#444; }
+  </style>
 </head>
 
 <body>
-    <div class="container">
+  <div class="container">
+    <a href="/admin/articles.html" style="color:#aaa;">← Zpět</a>
+    <h2>Editace článku</h2>
 
-        <a href="/admin/articles.html" style="color:#aaa;">← Zpět</a>
+    <input id="title" placeholder="Název článku" />
 
-        <h2>Editace článku</h2>
-
-        <input id="title" placeholder="Název článku">
-
-        <!-- Toolbar -->
-        <div id="toolbar"></div>
-
-        <!-- Editor -->
-        <div id="editor" contenteditable="true"></div>
-
-        <button onclick="saveArticle()">Uložit změny</button>
+    <div class="toolbar">
+      <button onclick="exec('bold')"><b>B</b></button>
+      <button onclick="exec('italic')"><i>I</i></button>
+      <button onclick="exec('underline')"><u>U</u></button>
+      <button onclick="execArg('formatBlock','<h2>')">H2</button>
+      <button onclick="execArg('formatBlock','<h3>')">H3</button>
+      <button onclick="exec('insertUnorderedList')">• List</button>
+      <button onclick="exec('insertOrderedList')">1. List</button>
+      <button onclick="uploadImage()">📷 Obrázek</button>
     </div>
 
-    <script src="/admin/editor.js"></script>
+    <div id="editor" contenteditable="true"></div>
 
-    <script>
-        // vloží toolbar
-        fetch("/admin/editor-toolbar.html")
-            .then(r => r.text())
-            .then(html => document.getElementById("toolbar").innerHTML = html);
+    <button onclick="saveArticle()">Uložit změny</button>
+  </div>
 
-        const id = new URLSearchParams(window.location.search).get("id");
+  <script>
+    // === WYSIWYG ===
+    function exec(cmd) { document.execCommand(cmd, false, null); }
+    function execArg(cmd, arg) { document.execCommand(cmd, false, arg); }
 
-        async function loadArticle() {
-            const token = localStorage.getItem("admin_token");
+    // === IMAGE UPLOAD ===
+    async function uploadImage() {
+      const token = localStorage.getItem("admin_token");
+      if (!token) return alert("Nejsi přihlášen.");
 
-            const res = await fetch(`/api/admin/posts/get?id=${id}`, {
-                headers: { "Authorization": `Bearer ${token}` }
-            });
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
 
-            const a = await res.json();
+      input.onchange = async () => {
+        const file = input.files[0];
+        if (!file) return;
 
-            document.getElementById("title").value = a.title;
-            document.getElementById("editor").innerHTML = a.content;
-        }
+        const form = new FormData();
+        form.append("image", file);
 
-        async function saveArticle() {
-            const token = localStorage.getItem("admin_token");
+        const res = await fetch("/api/admin/upload", {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${token}` },
+          body: form
+        });
 
-            const body = {
-                id,
-                title: document.getElementById("title").value,
-                content: document.getElementById("editor").innerHTML
-            };
+        if (!res.ok) return alert("Nahrání obrázku selhalo.");
+        const data = await res.json();
+        execArg("insertImage", data.url);
+      };
 
-            const res = await fetch("/api/admin/posts/update", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(body)
-            });
+      input.click();
+    }
 
-            if (!res.ok) return alert("Chyba při ukládání.");
+    // === LOAD & SAVE ===
+    const id = new URLSearchParams(window.location.search).get("id");
 
-            alert("Uloženo!");
-            window.location.href = "/admin/articles.html";
-        }
+    async function loadArticle() {
+      const token = localStorage.getItem("admin_token");
+      const res = await fetch(`/api/admin/posts/get?id=${id}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const a = await res.json();
+      document.getElementById("title").value = a.title;
+      document.getElementById("editor").innerHTML = a.content;
+    }
 
-        loadArticle();
-    </script>
+    async function saveArticle() {
+      const token = localStorage.getItem("admin_token");
+      const body = {
+        id,
+        title: document.getElementById("title").value,
+        content: document.getElementById("editor").innerHTML
+      };
+      const res = await fetch("/api/admin/posts/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) return alert("Chyba při ukládání.");
+      alert("Článek uložen!");
+      window.location.href = "/admin/articles.html";
+    }
+
+    loadArticle();
+  </script>
 </body>
 </html>
