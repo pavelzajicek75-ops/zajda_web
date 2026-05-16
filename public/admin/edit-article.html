@@ -36,7 +36,6 @@
       const res = await fetch(`/api/admin/posts/get?id=${articleId}`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
-      if (!res.ok) { alert("Nepodařilo se načíst článek"); return; }
 
       const article = await res.json();
       document.getElementById("title").value = article.title || "";
@@ -45,7 +44,6 @@
 
     async function saveArticle() {
       const token = localStorage.getItem("admin_token");
-      if (!token) { window.location.href = "/admin/login.html"; return; }
 
       const body = {
         id: articleId,
@@ -61,8 +59,6 @@
         },
         body: JSON.stringify(body)
       });
-
-      if (!res.ok) { alert("Nepodařilo se uložit změny"); return; }
 
       alert("Článek uložen");
       window.location.href = "/admin/articles.html";
