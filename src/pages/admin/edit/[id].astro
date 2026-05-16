@@ -1,6 +1,7 @@
 ---
 import AdminLayout from "../../../layouts/AdminLayout.astro";
 import articles from "../../../../data/articles.json";
+import sections from "../../../../data/sections.json"; // ← musíš mít sections.json
 
 export function getStaticPaths() {
   return articles.map((article) => ({
@@ -20,44 +21,89 @@ const formattedDate = article.date
   : "";
 ---
 
-<AdminLayout title={`Upravit: ${article.title}`}>
-  <h1>Editor článku</h1>
+<AdminLayout title={`Upravit článek`}>
+  <div class="editor-container">
 
-  <form id="editForm">
-    <input type="hidden" id="articleId" value={article.id} />
+    <h1>Upravit článek</h1>
 
-    <label>Název</label>
-    <input type="text" id="title" value={article.title} />
+    <form id="editForm">
+      <input type="hidden" id="articleId" value={article.id} />
 
-    <label>Datum</label>
-    <input type="date" id="date" value={formattedDate} />
+      <label>Název</label>
+      <input type="text" id="title" value={article.title} class="input" />
 
-    <label>Obsah</label>
-    <textarea id="content" rows="10">{article.content}</textarea>
+      <label>Sekce</label>
+      <select id="section" class="input">
+        {sections.map(s => (
+          <option value={s.id} selected={article.section === s.id}>{s.name}</option>
+        ))}
+      </select>
 
-    <label>Obrázek</label>
-    <input type="file" id="imageFile" accept="image/*" />
+      <label>Datum</label>
+      <input type="date" id="date" value={formattedDate} class="input" />
 
-    {article.image && (
-      <img
-        src={article.image}
-        alt={article.title}
-        style="max-width:250px;margin-top:10px;border-radius:8px;"
-      />
-    )}
+      <label>Obsah</label>
+      <div id="editor" class="wysiwyg"></div>
 
-    <button type="button" onclick="saveArticle()">Uložit</button>
-  </form>
+      <label>Obrázek</label>
+      <input type="file" id="imageFile" accept="image/*" class="input" />
+
+      {article.image && (
+        <img
+          id="preview"
+          src={article.image}
+          alt="Náhled"
+          class="preview"
+        />
+      )}
+
+      <button type="button" onclick="saveArticle()" class="save-btn">Uložit</button>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
 
   <script>
+    const quill = new Quill("#editor", {
+      theme: "snow",
+      placeholder: "Napište obsah článku...",
+    });
+
+    quill.root.innerHTML = `{article.content}`;
+
+    let currentImageUrl = `{article.image}`;
+
+    async function uploadImage(file) {
+      const form = new FormData();
+      form.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: form
+      });
+
+      const data = await res.json();
+      return data.url;
+    }
+
     async function saveArticle() {
       const token = localStorage.getItem("admin_token");
+
+      const file = document.getElementById("imageFile").files[0];
+      let imageUrl = currentImageUrl;
+
+      if (file) {
+        imageUrl = await uploadImage(file);
+      }
 
       const body = {
         id: document.getElementById("articleId").value,
         title: document.getElementById("title").value,
         date: document.getElementById("date").value,
-        content: document.getElementById("content").value
+        section: document.getElementById("section").value,
+        content: quill.root.innerHTML,
+        image: imageUrl
       };
 
       const res = await fetch("/api/admin/save", {
@@ -79,4 +125,54 @@ const formattedDate = article.date
       }
     }
   </script>
+
+  <style>
+    .editor-container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      background: #1e1e1e;
+      border-radius: 12px;
+      color: white;
+    }
+
+    .input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #444;
+      background: #2a2a2a;
+      color: white;
+    }
+
+    .wysiwyg {
+      background: white;
+      color: black;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+
+    .preview {
+      max-width: 250px;
+      margin-top: 10px;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .save-btn {
+      padding: 12px 20px;
+      background: #4a90e2;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .save-btn:hover {
+      background: #357ac9;
+    }
+  </style>
+
 </AdminLayout>
