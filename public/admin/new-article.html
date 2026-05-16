@@ -34,7 +34,7 @@
         content: document.getElementById("content").value
       };
 
-      const res = await fetch("/api/admin/posts/create", {
+      await fetch("/api/admin/posts/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
