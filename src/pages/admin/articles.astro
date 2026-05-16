@@ -21,11 +21,15 @@ import articles from "../../../data/articles.json";
     <tbody>
       {articles.map(a => (
         <tr>
-          <td><img src={a.image} style="width:80px;height:50px;object-fit:cover;border-radius:6px;" /></td>
+          <td>
+            <img src={a.image} style="width:80px;height:50px;object-fit:cover;border-radius:6px;" />
+          </td>
           <td>{a.title}</td>
           <td>{a.date}</td>
           <td>{a.id}</td>
-          <td><button onclick={`editArticle('${a.id}')`}>Upravit</button></td>
+          <td>
+            <button onclick={`editArticle('${a.id}')`}>Upravit</button>
+          </td>
         </tr>
       ))}
     </tbody>
@@ -54,17 +58,14 @@ import articles from "../../../data/articles.json";
   </form>
 
   <script>
-    // 🔥 TADY JE OPRAVA – správné vložení JSONu
-    const articles = {JSON.stringify(articles)};
+    // 🔥 Tohle je jediný správný způsob, jak dostat JSON do scriptu v Astro
+    const articles = {articles};
 
     let currentImageUrl = "";
 
     function editArticle(id) {
       const a = articles.find(x => String(x.id) === String(id));
-      if (!a) {
-        alert("Článek nenalezen!");
-        return;
-      }
+      if (!a) return;
 
       document.getElementById("articleId").value = a.id;
       document.getElementById("title").value = a.title;
