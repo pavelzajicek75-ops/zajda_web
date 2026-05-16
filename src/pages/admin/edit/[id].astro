@@ -1,0 +1,62 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import articles from "../../../data/articles.json";
+
+const { id } = Astro.params;
+const article = articles.find((a) => a.id === id);
+
+if (!article) {
+  throw new Error("Článek nenalezen");
+}
+---
+
+<AdminLayout title={`Upravit: ${article.title}`}>
+  <h1>Upravit článek</h1>
+
+  <form id="editForm">
+    <label>Název</label>
+    <input type="text" id="title" value={article.title} />
+
+    <label>Datum</label>
+    <input type="date" id="date" value={article.date} />
+
+    <label>Obsah</label>
+    <textarea id="content" rows="12">{article.content || ""}</textarea>
+
+    <label>Obrázek</label>
+    <input type="file" id="image" accept="image/*" />
+
+    <button type="button" onclick="saveArticle()">Uložit</button>
+  </form>
+
+  <script>
+    async function saveArticle() {
+      const token = localStorage.getItem("admin_token");
+
+      const body = {
+        id: "{id}",
+        title: document.getElementById("title").value,
+        date: document.getElementById("date").value,
+        content: document.getElementById("content").value
+      };
+
+      const res = await fetch("/api/admin/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Článek uložen");
+        window.location.href = "/admin/articles";
+      } else {
+        alert("Chyba při ukládání");
+      }
+    }
+  </script>
+</AdminLayout>
