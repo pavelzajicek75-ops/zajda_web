@@ -87,15 +87,10 @@
                 headers: { "Authorization": `Bearer ${token}` }
             });
 
-            if (!res.ok) {
-                alert("Článek se nepodařilo načíst.");
-                return;
-            }
-
             const article = await res.json();
 
-            document.getElementById("title").value = article.title;
-            document.getElementById("content").value = article.content;
+            document.getElementById("title").value = article.title || "";
+            document.getElementById("content").value = article.content || "";
         }
 
         async function saveArticle() {
