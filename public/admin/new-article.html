@@ -6,89 +6,45 @@
     <title>Nový článek</title>
 
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #0d0d0d;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
-            background: #1a1a1a;
-            border-radius: 10px;
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 6px;
-            border: none;
-            background: #333;
-            color: white;
-            font-size: 15px;
-        }
-
-        textarea {
-            height: 300px;
-            resize: vertical;
-        }
-
-        button {
-            padding: 12px 20px;
-            background: #4CAF50;
-            border: none;
-            border-radius: 6px;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        button:hover {
-            background: #45a049;
-        }
-
-        .back {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #aaa;
-            text-decoration: none;
-        }
+        body { background:#0d0d0d; color:white; font-family:Arial; margin:0; padding:0; }
+        .container { max-width:900px; margin:40px auto; padding:20px; background:#1a1a1a; border-radius:10px; }
+        #editor { background:#333; padding:15px; min-height:300px; border-radius:6px; }
+        input { width:100%; padding:12px; margin:10px 0; border-radius:6px; border:none; background:#333; color:white; }
+        button { padding:12px 20px; background:#4CAF50; border:none; border-radius:6px; color:white; cursor:pointer; }
+        button:hover { background:#45a049; }
     </style>
 </head>
 
 <body>
     <div class="container">
 
-        <a href="/admin/articles.html" class="back">← Zpět na seznam článků</a>
+        <a href="/admin/articles.html" style="color:#aaa;">← Zpět</a>
 
         <h2>Nový článek</h2>
 
-        <input type="text" id="title" placeholder="Název článku">
-        <textarea id="content" placeholder="Obsah článku"></textarea>
+        <input id="title" placeholder="Název článku">
+
+        <div id="toolbar"></div>
+
+        <div id="editor" contenteditable="true"></div>
 
         <button onclick="createArticle()">Vytvořit článek</button>
     </div>
 
+    <script src="/admin/editor.js"></script>
+
     <script>
+        fetch("/admin/editor-toolbar.html")
+            .then(r => r.text())
+            .then(html => document.getElementById("toolbar").innerHTML = html);
+
         async function createArticle() {
             const token = localStorage.getItem("admin_token");
-            if (!token) return window.location.href = "/admin/login.html";
 
-            const title = document.getElementById("title").value.trim();
-            const content = document.getElementById("content").value.trim();
-
-            if (!title || !content) {
-                alert("Vyplň název i obsah článku.");
-                return;
-            }
-
-            const body = { title, content };
+            const body = {
+                title: document.getElementById("title").value,
+                content: document.getElementById("editor").innerHTML
+            };
 
             const res = await fetch("/api/admin/posts/create", {
                 method: "POST",
@@ -99,10 +55,7 @@
                 body: JSON.stringify(body)
             });
 
-            if (!res.ok) {
-                alert("Nepodařilo se vytvořit článek.");
-                return;
-            }
+            if (!res.ok) return alert("Chyba při vytváření.");
 
             alert("Článek vytvořen!");
             window.location.href = "/admin/articles.html";
