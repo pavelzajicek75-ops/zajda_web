@@ -3,17 +3,12 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 import articles from "../../data/articles.json";
 
 const id = Astro.url.searchParams.get("id");
-let article = null;
-
-// 100% funkční porovnání ID
-if (id) {
-  article = articles.find(a => String(a.id) === String(id));
-}
+const article = articles.find(a => String(a.id) === String(id));
 ---
 
 <AdminLayout title="Upravit článek">
 
-  {id && article ? (
+  {article ? (
     <>
       <h1>Upravit článek: {article.title}</h1>
 
@@ -33,39 +28,6 @@ if (id) {
   ) : (
     <p style="color:#aaa;">Nebyl vybrán žádný článek. Otevři editor přes seznam článků.</p>
   )}
-
-  <style>
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      max-width: 700px;
-    }
-
-    input, textarea {
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #444;
-      background: #1e1e1e;
-      color: white;
-      font-size: 16px;
-    }
-
-    button {
-      padding: 12px;
-      background: #4a90e2;
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    button:hover {
-      background: #357ac8;
-    }
-  </style>
 
   <script>
     async function saveArticle() {
