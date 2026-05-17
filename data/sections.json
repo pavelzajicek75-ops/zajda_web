@@ -1,8 +1,6 @@
 {
-  "sections": [
-    { "id": 1, "name": "Cestování", "slug": "cestovani" },
-    { "id": 2, "name": "Fotografování", "slug": "fotografovani" },
-    { "id": 3, "name": "Moje projekty", "slug": "projekty" },
-    { "id": 4, "name": "Zajda", "slug": "zajda" }
-  ]
+  "Cestování": ["USA 2026", "Evropa", "Asie", "Česko"],
+  "Fotografie": ["Krajina", "Portréty", "Města"],
+  "Osobní": ["Blog", "Myšlenky", "Denník"]
 }
+
