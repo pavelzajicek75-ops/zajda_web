@@ -1,101 +1,278 @@
 ---
-import AdminLayout from "../../layouts/AdminLayout.astro";
-import articles from "../../../data/articles.json";
+import AdminLayout from '../../components/admin/AdminLayout.astro';
+import articles from '../../data/articles.json';
+
+const sortedArticles = [...articles].sort((a, b) => {
+  const da = new Date(a.date || a.createdAt || 0).getTime();
+  const db = new Date(b.date || b.createdAt || 0).getTime();
+  return db - da;
+});
 ---
 
 <AdminLayout title="Články">
-  <div class="page">
-    <h1>Články</h1>
+  <section class="header">
+    <div>
+      <h1>Články</h1>
+      <p>Správa všech článků na webu. Můžeš je upravovat, mazat nebo přidávat nové.</p>
+    </div>
+    <a href="/admin/articles/new" class="btn-primary">
+      + Nový článek
+    </a>
+  </section>
 
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Foto</th>
-          <th>Název</th>
-          <th>Sekce</th>
-          <th>Datum</th>
-          <th>ID</th>
-          <th>Akce</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {articles.map((a) => (
+  {sortedArticles.length === 0 ? (
+    <div class="empty">
+      <p>Ještě nemáš žádné články.</p>
+      <a href="/admin/articles/new" class="btn-primary">Vytvořit první článek</a>
+    </div>
+  ) : (
+    <div class="table-wrapper">
+      <table>
+        <thead>
           <tr>
-            <td>
-              {a.image && (
-                <img
-                  src={a.image}
-                  alt={a.title}
-                  class="thumb"
-                />
-              )}
-            </td>
-            <td>{a.title}</td>
-            <td>{a.section || "—"}</td>
-            <td>{a.date}</td>
-            <td>{a.id}</td>
-            <td>
-              <a href={`/admin/edit/${a.id}`} class="btn">
-                Upravit
-              </a>
-            </td>
+            <th>Název</th>
+            <th>Sekce</th>
+            <th>Podsekce</th>
+            <th>Datum</th>
+            <th>Stav</th>
+            <th></th>
           </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody>
+          {sortedArticles.map((article) => (
+            <tr>
+              <td class="title-cell">
+                <span class="title">{article.title}</span>
+                {article.slug && (
+                  <span class="slug">/{article.slug}</span>
+                )}
+              </td>
+              <td>{article.section || '—'}</td>
+              <td>{article.subsection || '—'}</td>
+              <td>
+                {article.date
+                  ? new Date(article.date).toLocaleDateString('cs-CZ')
+                  : '—'}
+              </td>
+              <td>
+                <span class={`status ${article.published ? 'published' : 'draft'}`}>
+                  {article.published ? 'Publikováno' : 'Koncept'}
+                </span>
+              </td>
+              <td class="actions">
+                <a href={`/admin/articles/${article.id}`} class="link">
+                  Upravit
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</AdminLayout>
 
-  <style>
-    .page {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 20px;
-      color: #f5f5f5;
+<style>
+  :global(body) {
+    background: #05060a;
+    color: #f5f5f5;
+  }
+
+  section.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  section.header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+  }
+
+  section.header p {
+    margin: 0;
+    color: #9ca3af;
+    font-size: 0.95rem;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #020617;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.35);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+    white-space: nowrap;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 26px rgba(34, 197, 94, 0.5);
+    opacity: 0.95;
+  }
+
+  .empty {
+    border-radius: 1rem;
+    border: 1px dashed #1f2937;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.08), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 55%);
+  }
+
+  .empty p {
+    margin: 0 0 1rem 0;
+    color: #9ca3af;
+  }
+
+  .table-wrapper {
+    border-radius: 1rem;
+    border: 1px solid #111827;
+    background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.06), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.06), transparent 55%),
+                #020617;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  thead {
+    background: rgba(15, 23, 42, 0.95);
+  }
+
+  thead th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    color: #9ca3af;
+    border-bottom: 1px solid #111827;
+    white-space: nowrap;
+  }
+
+  tbody tr:nth-child(even) {
+    background: rgba(15, 23, 42, 0.6);
+  }
+
+  tbody tr:nth-child(odd) {
+    background: rgba(15, 23, 42, 0.3);
+  }
+
+  tbody td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid #020617;
+    vertical-align: middle;
+  }
+
+  .title-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .title {
+    font-weight: 500;
+    color: #e5e7eb;
+  }
+
+  .slug {
+    font-size: 0.8rem;
+    color: #6b7280;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .status.published {
+    background: rgba(34, 197, 94, 0.12);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.4);
+  }
+
+  .status.draft {
+    background: rgba(148, 163, 184, 0.12);
+    color: #e5e7eb;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+  }
+
+  .actions {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .actions .link {
+    color: #60a5fa;
+    text-decoration: none;
+    font-size: 0.85rem;
+  }
+
+  .actions .link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 800px) {
+    section.header {
+      flex-direction: column;
+      align-items: flex-start;
     }
 
-    h1 {
-      margin-bottom: 20px;
+    .table-wrapper {
+      border-radius: 0.75rem;
     }
 
-    .table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #1e1e1e;
-      border-radius: 10px;
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+      display: block;
+    }
+
+    thead {
+      display: none;
+    }
+
+    tbody tr {
+      margin: 0.5rem 0;
+      border-radius: 0.75rem;
       overflow: hidden;
     }
 
-    .table th,
-    .table td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #333;
-      text-align: left;
-      font-size: 14px;
+    tbody td {
+      border: none;
+      padding: 0.4rem 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
     }
 
-    .table thead {
-      background: #111;
+    tbody td::before {
+      content: attr(data-label);
+      font-weight: 500;
+      color: #9ca3af;
     }
 
-    .thumb {
-      width: 80px;
-      height: 50px;
-      object-fit: cover;
-      border-radius: 6px;
+    .actions {
+      justify-content: flex-end;
     }
-
-    .btn {
-      padding: 6px 12px;
-      background: #4a90e2;
-      color: white;
-      border-radius: 6px;
-      text-decoration: none;
-      font-size: 13px;
-    }
-
-    .btn:hover {
-      background: #357ac9;
-    }
-  </style>
-</AdminLayout>
+  }
+</style>
