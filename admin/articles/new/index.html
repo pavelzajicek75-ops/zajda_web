@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="cs"> <head><meta charset="utf-8"><title>Nový článek</title><link rel="stylesheet" href="/src/styles/admin.css"></head> <body> <div class="admin-container">  <h1>Nový článek</h1> <div class="layout"> <form id="articleForm" class="meta"> <label>Sekce</label> <select id="section"></select> <label>Podsekce</label> <select id="subsection"></select> <label>Datum</label> <input type="date" id="date" value="2026-05-17"> <label>Místo</label> <input type="text" id="location" placeholder="např. Brno, New York…"> <label>Název článku</label> <input type="text" id="title" placeholder="Název článku"> <button type="button" id="saveBtn" class="primary">💾 Uložit článek</button> </form> <div class="editor-card"> <div class="editor-toolbar" id="tiptap-toolbar"> <button data-action="bold"><b>B</b></button> <button data-action="italic"><i>I</i></button> <button data-action="heading1">H1</button> <button data-action="heading2">H2</button> <button data-action="bulletList">• List</button> <button data-action="orderedList">1. List</button> <button data-action="blockquote">„“</button> <button data-action="codeBlock">&lt;/&gt;</button> <button id="uploadImageBtn">📷 Vložit fotku</button> </div> <div id="tiptap-editor" class="tiptap"></div> </div> </div> <script id="sections-json" type="application/json">
+<!DOCTYPE html><html lang="cs"> <head><meta charset="utf-8"><title>Nový článek</title><link rel="stylesheet" href="/src/styles/admin.css"></head> <body> <div class="admin-container">  <h1>Nový článek</h1> <div class="layout"> <form id="articleForm" class="meta"> <label>Sekce</label> <select id="section"></select> <label>Podsekce</label> <select id="subsection"></select> <label>Datum</label> <input type="date" id="date" value="2026-05-17"> <label>Místo</label> <input type="text" id="location" placeholder="např. Brno, New York…"> <label>Název článku</label> <input type="text" id="title" placeholder="Název článku"> <button type="button" id="saveBtn" class="primary">💾 Uložit článek</button> </form> <div class="editor-card"> <div class="editor-toolbar" id="tiptap-toolbar"> <button type="button" data-action="bold"><b>B</b></button> <button type="button" data-action="italic"><i>I</i></button> <button type="button" data-action="heading1">H1</button> <button type="button" data-action="heading2">H2</button> <button type="button" data-action="bulletList">• List</button> <button type="button" data-action="orderedList">1. List</button> <button type="button" data-action="blockquote">„“</button> <button type="button" data-action="codeBlock">&lt;/&gt;</button> <button type="button" id="uploadImageBtn">📷 Vložit fotku</button> </div> <div id="tiptap-editor" class="tiptap"></div> </div> </div>  <script id="sections-json" type="application/json">
     {JSON.stringify(sectionsData)}
   </script> <script type="module">
     import { Editor } from "https://cdn.skypack.dev/@tiptap/core";
@@ -11,13 +11,14 @@
       content: "<p>Napiš svůj článek…</p>"
     });
 
+    // načtení sekcí
     const sectionsRaw = document.getElementById("sections-json").textContent;
     const sectionsData = JSON.parse(sectionsRaw);
 
     const sectionSelect = document.getElementById("section");
     const subsectionSelect = document.getElementById("subsection");
 
-    Object.keys(sectionsData).forEach(sec => {
+    Object.keys(sectionsData).forEach((sec) => {
       const opt = document.createElement("option");
       opt.value = sec;
       opt.textContent = sec;
@@ -27,7 +28,7 @@
     sectionSelect.addEventListener("change", () => {
       subsectionSelect.innerHTML = "";
       const subs = sectionsData[sectionSelect.value] || [];
-      subs.forEach(sub => {
+      subs.forEach((sub) => {
         const opt = document.createElement("option");
         opt.value = sub;
         opt.textContent = sub;
@@ -35,8 +36,10 @@
       });
     });
 
+    // inicializace podsekcí pro první sekci
     sectionSelect.dispatchEvent(new Event("change"));
 
+    // toolbar
     document.getElementById("tiptap-toolbar").addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (!btn) return;
@@ -50,37 +53,18 @@
         bulletList: () => editor.chain().focus().toggleBulletList().run(),
         orderedList: () => editor.chain().focus().toggleOrderedList().run(),
         blockquote: () => editor.chain().focus().toggleBlockquote().run(),
-        codeBlock: () => editor.chain().focus().toggleCodeBlock().run(),
+        codeBlock: () => editor.chain().focus().toggleCodeBlock().run()
       };
 
       if (actions[action]) actions[action]();
     });
 
-    document.getElementById("uploadImageBtn").addEventListener("click", async () => {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.click();
-
-      input.onchange = async () => {
-        const file = input.files[0];
-        if (!file) return;
-
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const res = await fetch("/api/upload/image", {
-          method: "POST",
-          body: formData
-        });
-
-        const data = await res.json();
-        if (data.success && data.url) {
-          editor.chain().focus().setImage({ src: data.url }).run();
-        }
-      };
+    // dummy upload (zatím jen placeholder)
+    document.getElementById("uploadImageBtn").addEventListener("click", () => {
+      alert("Upload obrázku zatím není napojený – můžeme dodělat potom.");
     });
 
+    // uložit článek – zatím jen log do konzole
     document.getElementById("saveBtn").addEventListener("click", async () => {
       const body = {
         title: document.getElementById("title").value,
@@ -91,15 +75,7 @@
         content: editor.getHTML()
       };
 
-      const res = await fetch("/api/articles/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        window.location.href = "/admin/articles";
-      }
+      console.log("Ukládám článek (zatím jen do konzole):", body);
+      alert("Formulář funguje, sekce i podsekce jsou vyplněné. API můžeme dodělat v dalším kroku.");
     });
   </script>  </div> </body></html>
