@@ -2,17 +2,13 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import articles from '../../../../data/articles.json';
 
-// Dynamic route param
 const { id } = Astro.params;
-
-// Najdeme článek podle ID
 const article = articles.find(a => String(a.id) === String(id));
 
 if (!article) {
   throw new Error(`Článek s ID ${id} nebyl nalezen.`);
 }
 
-// STATIC BUILD: vygenerujeme všechny cesty
 export async function getStaticPaths() {
   return articles.map(a => ({
     params: { id: String(a.id) }
@@ -21,111 +17,114 @@ export async function getStaticPaths() {
 ---
 
 <AdminLayout title={`Upravit: ${article.title}`}>
-  <section class="header">
-    <h1>Upravit článek</h1>
-    <p>ID: {id}</p>
-  </section>
 
-  <form id="editForm">
-    <label>
-      Název článku
-      <input type="text" name="title" value={article.title} required />
-    </label>
+  <h1>Upravit článek</h1>
 
-    <label>
-      Slug (URL)
-      <input type="text" name="slug" value={article.slug} />
-    </label>
+  <div class="layout">
+    <form id="editForm" class="meta">
 
-    <label>
-      Sekce
-      <input type="text" name="section" value={article.section} />
-    </label>
+      <label>Sekce</label>
+      <select id="section"></select>
 
-    <label>
-      Podsekce
-      <input type="text" name="subsection" value={article.subsection} />
-    </label>
+      <label>Podsekce</label>
+      <select id="subsection"></select>
 
-    <label>
-      Datum
-      <input type="date" name="date" value={article.date} />
-    </label>
+      <label>Datum</label>
+      <input type="date" id="date" value={article.date} />
 
-    <label>
-      Obsah článku
-      <textarea name="content" rows="10">{article.content}</textarea>
-    </label>
+      <label>Místo</label>
+      <input type="text" id="location" value={article.location || ""} />
 
-    <button type="submit" class="btn-primary">Uložit změny</button>
-  </form>
+      <label>Název článku</label>
+      <input type="text" id="title" value={article.title} />
 
-  <script>
-    const form = document.getElementById('editForm');
+      <button type="button" id="saveBtn" class="primary">💾 Uložit změny</button>
+    </form>
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    <div class="editor-card">
+      <div id="tiptap-editor" class="tiptap"></div>
+    </div>
+  </div>
 
-      const data = Object.fromEntries(new FormData(form).entries());
-      data.id = {id};
+  <script type="module">
+    import { Editor } from "https://cdn.skypack.dev/@tiptap/core";
+    import StarterKit from "https://cdn.skypack.dev/@tiptap/starter-kit";
 
-      const response = await fetch('/api/articles/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+    const editor = new Editor({
+      element: document.querySelector("#tiptap-editor"),
+      extensions: [StarterKit],
+      content: `{article.content}`
+    });
+
+    // 🔥 Načtení sekcí
+    const res = await fetch("/data/sections.json");
+    const sectionsData = await res.json();
+
+    const sectionSelect = document.getElementById("section");
+    const subsectionSelect = document.getElementById("subsection");
+
+    // Naplnění sekcí
+    Object.keys(sectionsData).forEach(sec => {
+      const opt = document.createElement("option");
+      opt.value = sec;
+      opt.textContent = sec;
+      sectionSelect.appendChild(opt);
+    });
+
+    // Nastavení aktuální sekce
+    sectionSelect.value = "{article.section}";
+
+    // Naplnění podsekcí
+    function fillSubsections() {
+      subsectionSelect.innerHTML = "";
+      const subs = sectionsData[sectionSelect.value] || [];
+      subs.forEach(sub => {
+        const opt = document.createElement("option");
+        opt.value = sub;
+        opt.textContent = sub;
+        subsectionSelect.appendChild(opt);
+      });
+    }
+
+    fillSubsections();
+
+    // Nastavení aktuální podsekce
+    subsectionSelect.value = "{article.subsection}";
+
+    sectionSelect.addEventListener("change", fillSubsections);
+
+    // Uložení
+    document.getElementById("saveBtn").onclick = async () => {
+      const token = localStorage.getItem("admin_token");
+
+      const body = {
+        id: "{id}",
+        title: document.getElementById("title").value,
+        date: document.getElementById("date").value,
+        location: document.getElementById("location").value,
+        section: sectionSelect.value,
+        subsection: subsectionSelect.value,
+        content: editor.getHTML()
+      };
+
+      const res = await fetch("/api/admin/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(body)
       });
 
-      if (response.ok) {
-        window.location.href = '/admin/articles';
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Článek uložen");
+        window.location.href = "/admin/articles";
       } else {
-        alert('Nepodařilo se uložit změny.');
+        alert("Chyba při ukládání");
       }
-    });
+    };
   </script>
+
 </AdminLayout>
-
-<style>
-  :global(body) {
-    background: #05060a;
-    color: #f5f5f5;
-  }
-
-  .header {
-    margin-bottom: 2rem;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-top: 2rem;
-  }
-
-  label {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    font-weight: 500;
-  }
-
-  input, textarea {
-    background: #0f172a;
-    border: 1px solid #1e293b;
-    padding: 0.7rem 1rem;
-    border-radius: 0.5rem;
-    color: #f5f5f5;
-  }
-
-  .btn-primary {
-    padding: 0.8rem 1.4rem;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-    color: #020617;
-    font-weight: 600;
-    text-decoration: none;
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.35);
-    border: none;
-    cursor: pointer;
-    margin-top: 1rem;
-  }
-</style>
