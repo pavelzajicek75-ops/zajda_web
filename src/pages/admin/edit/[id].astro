@@ -2,7 +2,7 @@
 import AdminLayout from '../../../layouts/AdminLayout.astro';
 import articles from '../../../../data/articles.json';
 
-// Získáme ID z URL
+// Dynamic route param
 const { id } = Astro.params;
 
 // Najdeme článek podle ID
@@ -10,6 +10,13 @@ const article = articles.find(a => String(a.id) === String(id));
 
 if (!article) {
   throw new Error(`Článek s ID ${id} nebyl nalezen.`);
+}
+
+// STATIC BUILD: vygenerujeme všechny cesty
+export async function getStaticPaths() {
+  return articles.map(a => ({
+    params: { id: String(a.id) }
+  }));
 }
 ---
 
