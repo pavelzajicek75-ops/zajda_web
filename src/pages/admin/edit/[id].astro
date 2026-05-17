@@ -1,197 +1,124 @@
 ---
-import AdminLayout from "../../../layouts/AdminLayout.astro";
-import articles from "../../../../data/articles.json";
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import articles from '../../../../data/articles.json';
 
-export function getStaticPaths() {
-  return articles.map((article) => ({
-    params: { id: String(article.id) }
-  }));
-}
-
+// Získáme ID z URL
 const { id } = Astro.params;
-const article = articles.find((a) => String(a.id) === String(id));
+
+// Najdeme článek podle ID
+const article = articles.find(a => String(a.id) === String(id));
 
 if (!article) {
-  throw new Error("Článek nenalezen");
+  throw new Error(`Článek s ID ${id} nebyl nalezen.`);
 }
-
-const formattedDate = article.date
-  ? new Date(article.date).toISOString().split("T")[0]
-  : "";
 ---
 
-<AdminLayout title={`Upravit článek`}>
-  <div class="editor-wrap">
+<AdminLayout title={`Upravit: ${article.title}`}>
+  <section class="header">
     <h1>Upravit článek</h1>
+    <p>ID: {id}</p>
+  </section>
 
-    <form id="editForm" class="card">
-      <input type="hidden" id="articleId" value={article.id} />
+  <form id="editForm">
+    <label>
+      Název článku
+      <input type="text" name="title" value={article.title} required />
+    </label>
 
-      <label class="label">Název</label>
-      <input type="text" id="title" value={article.title} class="input" />
+    <label>
+      Slug (URL)
+      <input type="text" name="slug" value={article.slug} />
+    </label>
 
-      <label class="label">Sekce</label>
-      <select id="section" class="input">
-        <option value="general" selected={article.section === "general"}>Obecné</option>
-        <option value="travel" selected={article.section === "travel"}>Cestování</option>
-        <option value="health" selected={article.section === "health"}>Zdraví</option>
-        <option value="life" selected={article.section === "life"}>Život</option>
-        <option value="tech" selected={article.section === "tech"}>Technologie</option>
-      </select>
+    <label>
+      Sekce
+      <input type="text" name="section" value={article.section} />
+    </label>
 
-      <label class="label">Datum</label>
-      <input type="date" id="date" value={formattedDate} class="input" />
+    <label>
+      Podsekce
+      <input type="text" name="subsection" value={article.subsection} />
+    </label>
 
-      <label class="label">Obsah</label>
-      <div id="editor" class="wysiwyg"></div>
+    <label>
+      Datum
+      <input type="date" name="date" value={article.date} />
+    </label>
 
-      <label class="label">Obrázek</label>
-      <input type="file" id="imageFile" accept="image/*" class="input" />
+    <label>
+      Obsah článku
+      <textarea name="content" rows="10">{article.content}</textarea>
+    </label>
 
-      {article.image && (
-        <img
-          id="preview"
-          src={article.image}
-          alt="Náhled"
-          class="preview"
-        />
-      )}
-
-      <button type="button" onclick="saveArticle()" class="save-btn">
-        Uložit
-      </button>
-    </form>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+    <button type="submit" class="btn-primary">Uložit změny</button>
+  </form>
 
   <script>
-    const quill = new Quill("#editor", {
-      theme: "snow",
-      placeholder: "Napište obsah článku...",
-    });
+    const form = document.getElementById('editForm');
 
-    quill.root.innerHTML = `{article.content}`;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    let currentImageUrl = `{article.image || ""}`;
+      const data = Object.fromEntries(new FormData(form).entries());
+      data.id = {id};
 
-    async function uploadImage(file) {
-      const form = new FormData();
-      form.append("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: form
+      const response = await fetch('/api/articles/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
       });
 
-      const data = await res.json();
-      return data.url;
-    }
-
-    async function saveArticle() {
-      const token = localStorage.getItem("admin_token");
-
-      const file = document.getElementById("imageFile").files[0];
-      let imageUrl = currentImageUrl;
-
-      if (file) {
-        imageUrl = await uploadImage(file);
-      }
-
-      const body = {
-        id: document.getElementById("articleId").value,
-        title: document.getElementById("title").value,
-        date: document.getElementById("date").value,
-        section: document.getElementById("section").value,
-        content: quill.root.innerHTML,
-        image: imageUrl
-      };
-
-      const res = await fetch("/api/admin/save", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + token
-        },
-        body: JSON.stringify(body)
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        alert("Článek uložen");
-        window.location.href = "/admin/articles";
+      if (response.ok) {
+        window.location.href = '/admin/articles';
       } else {
-        alert("Chyba při ukládání");
+        alert('Nepodařilo se uložit změny.');
       }
-    }
+    });
   </script>
-
-  <style>
-    .editor-wrap {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 20px;
-      color: #f5f5f5;
-    }
-
-    h1 {
-      margin-bottom: 20px;
-    }
-
-    .card {
-      background: #1e1e1e;
-      border-radius: 12px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .label {
-      font-size: 13px;
-      color: #ccc;
-    }
-
-    .input {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #444;
-      background: #2a2a2a;
-      color: #f5f5f5;
-      font-size: 14px;
-    }
-
-    .wysiwyg {
-      background: #fff;
-      color: #000;
-      border-radius: 6px;
-      min-height: 200px;
-    }
-
-    .preview {
-      max-width: 260px;
-      margin-top: 8px;
-      border-radius: 8px;
-      display: block;
-    }
-
-    .save-btn {
-      margin-top: 10px;
-      align-self: flex-start;
-      padding: 10px 18px;
-      background: #4a90e2;
-      border-radius: 8px;
-      border: none;
-      color: #fff;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .save-btn:hover {
-      background: #357ac9;
-    }
-  </style>
 </AdminLayout>
+
+<style>
+  :global(body) {
+    background: #05060a;
+    color: #f5f5f5;
+  }
+
+  .header {
+    margin-bottom: 2rem;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-weight: 500;
+  }
+
+  input, textarea {
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    padding: 0.7rem 1rem;
+    border-radius: 0.5rem;
+    color: #f5f5f5;
+  }
+
+  .btn-primary {
+    padding: 0.8rem 1.4rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #020617;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.35);
+    border: none;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+</style>
