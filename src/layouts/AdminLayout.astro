@@ -7,43 +7,6 @@ const { title, noAuth = false } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
-
-    <style>
-      body {
-        margin: 0;
-        background: #121212;
-        color: white;
-        font-family: system-ui, sans-serif;
-      }
-
-      header {
-        background: #1e1e1e;
-        padding: 15px 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #333;
-      }
-
-      nav a {
-        color: #ccc;
-        margin-right: 20px;
-        text-decoration: none;
-      }
-
-      nav a:hover {
-        color: white;
-      }
-
-      .logout {
-        cursor: pointer;
-        color: #ff6b6b;
-      }
-
-      main {
-        padding: 20px;
-      }
-    </style>
   </head>
 
   <body>
@@ -54,7 +17,8 @@ const { title, noAuth = false } = Astro.props;
     ) : (
       <>
         <script>
-          document.addEventListener("DOMContentLoaded", () => {
+          // Kontrola tokenu až po načtení stránky
+          window.addEventListener("load", () => {
             const token = localStorage.getItem("admin_token");
             if (!token) {
               window.location.href = "/admin/login";
@@ -62,27 +26,17 @@ const { title, noAuth = false } = Astro.props;
           });
         </script>
 
-        <header>
+        <header style="background:#1e1e1e;padding:15px;color:white;">
           <nav>
-            <a href="/admin">Dashboard</a>
-            <a href="/admin/articles">Články</a>
-            <a href="/admin/sections">Sekce</a>
-            <a href="/admin/subsections">Podsekce</a>
+            <a href="/admin" style="color:white;margin-right:20px;">Dashboard</a>
+            <a href="/admin/articles" style="color:white;margin-right:20px;">Články</a>
+            <a href="/admin/upload" style="color:white;">Upload</a>
           </nav>
-
-          <div class="logout" onclick="logout()">Odhlásit</div>
         </header>
 
-        <main>
+        <main style="padding:20px;">
           <slot />
         </main>
-
-        <script>
-          function logout() {
-            localStorage.removeItem("admin_token");
-            window.location.href = "/admin/login";
-          }
-        </script>
       </>
     )}
   </body>
