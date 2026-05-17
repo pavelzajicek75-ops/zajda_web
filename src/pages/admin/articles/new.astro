@@ -1,13 +1,13 @@
 ---
-import AdminLayout from "../../../layouts/AdminLayout.astro";
+import AdminLayout from '../../../layouts/AdminLayout.astro';
 ---
-<h1 style="color:red">TEST — TOTO JE SPRÁVNÝ SOUBOR</h1>
+
 <AdminLayout title="Nový článek">
 
   <h1>Nový článek</h1>
 
   <div class="layout">
-    <form id="articleForm" class="meta">
+    <form id="newForm" class="meta">
 
       <label>Sekce</label>
       <select id="section"></select>
@@ -28,32 +28,23 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
     </form>
 
     <div class="editor-card">
-      <div class="editor-toolbar" id="tiptap-toolbar">
-        <button data-action="bold"><b>B</b></button>
-        <button data-action="italic"><i>I</i></button>
-        <button data-action="heading1">H1</button>
-        <button data-action="heading2">H2</button>
-        <button data-action="bulletList">• List</button>
-        <button data-action="orderedList">1. List</button>
-        <button data-action="blockquote">„“</button>
-        <button data-action="codeBlock">{`</>`}</button>
-      </div>
-
       <div id="tiptap-editor" class="tiptap"></div>
     </div>
   </div>
 
+  <!-- 🔥 MUSÍ být type="module", jinak se JS nespustí -->
   <script type="module">
     import { Editor } from "https://cdn.skypack.dev/@tiptap/core";
     import StarterKit from "https://cdn.skypack.dev/@tiptap/starter-kit";
 
+    // Tiptap editor
     const editor = new Editor({
       element: document.querySelector("#tiptap-editor"),
       extensions: [StarterKit],
-      content: "<p>Napiš svůj článek…</p>"
+      content: "<p>Začni psát…</p>"
     });
 
-    // 🔥 FUNKČNÍ FETCH PRO CLOUDFLARE PAGES
+    // 🔥 Načtení sekcí
     const res = await fetch("/data/sections.json");
     const sectionsData = await res.json();
 
@@ -69,7 +60,7 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
     });
 
     // Naplnění podsekcí
-    sectionSelect.addEventListener("change", () => {
+    function fillSubsections() {
       subsectionSelect.innerHTML = "";
       const subs = sectionsData[sectionSelect.value] || [];
       subs.forEach(sub => {
@@ -78,10 +69,97 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
         opt.textContent = sub;
         subsectionSelect.appendChild(opt);
       });
-    });
+    }
 
-    // Inicializace
-    sectionSelect.dispatchEvent(new Event("change"));
+    fillSubsections();
+    sectionSelect.addEventListener("change", fillSubsections);
+
+    // Uložení článku
+    document.getElementById("saveBtn").onclick = async () => {
+      const token = localStorage.getItem("admin_token");
+
+      const body = {
+        title: document.getElementById("title").value,
+        date: document.getElementById("date").value,
+        location: document.getElementById("location").value,
+        section: sectionSelect.value,
+        subsection: subsectionSelect.value,
+        content: editor.getHTML()
+      };
+
+      const res = await fetch("/api/admin/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Článek uložen");
+        window.location.href = "/admin/articles";
+      } else {
+        alert("Chyba při ukládání");
+      }
+    };
   </script>
+
+  <style>
+    :global(body) {
+      background: #05060a;
+      color: #f5f5f5;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    label {
+      font-weight: 500;
+    }
+
+    input, select {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 0.7rem 1rem;
+      border-radius: 0.5rem;
+      color: #f5f5f5;
+    }
+
+    .editor-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 1rem;
+      border-radius: 0.5rem;
+    }
+
+    .tiptap {
+      min-height: 400px;
+      color: white;
+    }
+
+    .primary {
+      padding: 0.8rem 1.4rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #020617;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+  </style>
 
 </AdminLayout>
