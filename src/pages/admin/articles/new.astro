@@ -53,7 +53,7 @@ const newId = Math.max(0, ...articles.map(a => a.id || 0)) + 1;
       e.preventDefault();
 
       const data = Object.fromEntries(new FormData(form).entries());
-      data.id = ${newId};
+      data.id = newId;
       data.published = false;
 
       const response = await fetch('/api/articles/new', {
@@ -75,6 +75,10 @@ const newId = Math.max(0, ...articles.map(a => a.id || 0)) + 1;
   :global(body) {
     background: #05060a;
     color: #f5f5f5;
+  }
+
+  .header {
+    margin-bottom: 2rem;
   }
 
   form {
