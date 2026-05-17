@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="cs"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Nový článek</title><style>h1[data-astro-cid-y7wmjtyx]{margin-bottom:20px}.layout[data-astro-cid-y7wmjtyx]{display:grid;grid-template-columns:minmax(260px,320px) minmax(0,1fr);gap:24px}.meta[data-astro-cid-y7wmjtyx]{display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:12px;background:#141414;border:1px solid #2a2a2a}label[data-astro-cid-y7wmjtyx]{font-size:.85rem;color:#aaa}input[data-astro-cid-y7wmjtyx],select[data-astro-cid-y7wmjtyx]{padding:10px 12px;border-radius:8px;border:1px solid #333;background:#1b1b1b;color:#f5f5f5;font-size:.95rem}.primary[data-astro-cid-y7wmjtyx]{margin-top:10px;padding:10px 14px;border-radius:8px;border:none;background:#4a90e2;color:#fff;font-weight:500;cursor:pointer}.editor-card[data-astro-cid-y7wmjtyx]{border-radius:12px;background:#101010;border:1px solid #2a2a2a;overflow:hidden;display:flex;flex-direction:column}.editor-toolbar[data-astro-cid-y7wmjtyx]{display:flex;gap:6px;padding:8px;border-bottom:1px solid #2a2a2a;background:#151515;position:sticky;top:0;z-index:5}.editor-toolbar[data-astro-cid-y7wmjtyx] button[data-astro-cid-y7wmjtyx]{background:#1f1f1f;border:1px solid #333;color:#ddd;padding:6px 10px;border-radius:6px;font-size:.8rem;cursor:pointer}.tiptap[data-astro-cid-y7wmjtyx]{min-height:380px;padding:14px 16px;color:#f5f5f5;font-size:.95rem}.tiptap[data-astro-cid-y7wmjtyx] img[data-astro-cid-y7wmjtyx]{max-width:100%;border-radius:8px;margin:10px 0}
-</style></head> <body>  <script>
+<!DOCTYPE html><html lang="cs"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Nový článek</title></head> <body>  <script>
           // Kontrola tokenu až po načtení stránky
           window.addEventListener("DOMContentLoaded", () => {
             const token = localStorage.getItem("admin_token");
@@ -7,9 +6,9 @@
               window.location.href = "/admin/login";
             }
           });
-        </script> <header style="background:#1e1e1e;padding:15px;color:white;"> <nav> <a href="/admin" style="color:white;margin-right:20px;">Dashboard</a> <a href="/admin/articles" style="color:white;margin-right:20px;">Články</a> <a href="/admin/upload" style="color:white;">Upload</a> </nav> </header> <main style="padding:20px;">  <h1 data-astro-cid-y7wmjtyx>Nový článek</h1> <div class="layout" data-astro-cid-y7wmjtyx> <!-- LEVÝ PANEL – META --> <form id="articleForm" class="meta" data-astro-cid-y7wmjtyx> <label data-astro-cid-y7wmjtyx>Sekce</label> <select id="section" data-astro-cid-y7wmjtyx></select> <label data-astro-cid-y7wmjtyx>Podsekce</label> <select id="subsection" data-astro-cid-y7wmjtyx></select> <label data-astro-cid-y7wmjtyx>Datum</label> <input type="date" id="date" value="2026-05-17" data-astro-cid-y7wmjtyx> <label data-astro-cid-y7wmjtyx>Místo</label> <input type="text" id="location" placeholder="např. Brno, New York…" data-astro-cid-y7wmjtyx> <label data-astro-cid-y7wmjtyx>Název článku</label> <input type="text" id="title" placeholder="Název článku" data-astro-cid-y7wmjtyx> <button type="button" id="saveBtn" class="primary" data-astro-cid-y7wmjtyx>💾 Uložit článek</button> </form> <!-- PRAVÝ PANEL – TIPTAP --> <div class="editor-card" data-astro-cid-y7wmjtyx> <div class="editor-toolbar" id="tiptap-toolbar" data-astro-cid-y7wmjtyx> <button type="button" data-action="bold" data-astro-cid-y7wmjtyx><b data-astro-cid-y7wmjtyx>B</b></button> <button type="button" data-action="italic" data-astro-cid-y7wmjtyx><i data-astro-cid-y7wmjtyx>I</i></button> <button type="button" data-action="heading1" data-astro-cid-y7wmjtyx>H1</button> <button type="button" data-action="heading2" data-astro-cid-y7wmjtyx>H2</button> <button type="button" data-action="bulletList" data-astro-cid-y7wmjtyx>• List</button> <button type="button" data-action="orderedList" data-astro-cid-y7wmjtyx>1. List</button> <button type="button" data-action="blockquote" data-astro-cid-y7wmjtyx>„“</button> <button type="button" data-action="codeBlock" data-astro-cid-y7wmjtyx>&lt;/&gt;</button> <button type="button" id="uploadImageBtn" data-astro-cid-y7wmjtyx>📷 Vložit fotku</button> </div> <div id="tiptap-editor" class="tiptap" data-astro-cid-y7wmjtyx></div> </div> </div>  <script id="sections-json" type="application/json">
+        </script> <header style="background:#1e1e1e;padding:15px;color:white;"> <nav> <a href="/admin" style="color:white;margin-right:20px;">Dashboard</a> <a href="/admin/articles" style="color:white;margin-right:20px;">Články</a> <a href="/admin/upload" style="color:white;">Upload</a> </nav> </header> <main style="padding:20px;">  <h1>Nový článek</h1> <div class="layout"> <form id="articleForm" class="meta"> <label>Sekce</label> <select id="section"></select> <label>Podsekce</label> <select id="subsection"></select> <label>Datum</label> <input type="date" id="date" value="2026-05-17"> <label>Místo</label> <input type="text" id="location" placeholder="např. Brno, New York…"> <label>Název článku</label> <input type="text" id="title" placeholder="Název článku"> <button type="button" id="saveBtn" class="primary">💾 Uložit článek</button> </form> <div class="editor-card"> <div class="editor-toolbar" id="tiptap-toolbar"> <button data-action="bold"><b>B</b></button> <button data-action="italic"><i>I</i></button> <button data-action="heading1">H1</button> <button data-action="heading2">H2</button> <button data-action="bulletList">• List</button> <button data-action="orderedList">1. List</button> <button data-action="blockquote">„“</button> <button data-action="codeBlock">&lt;/&gt;</button> <button id="uploadImageBtn">📷 Vložit fotku</button> </div> <div id="tiptap-editor" class="tiptap"></div> </div> </div> <script id="sections-json" type="application/json">
     {JSON.stringify(sectionsData)}
-  </script>  <script type="module">
+  </script> <script type="module">
     import { Editor } from "https://cdn.skypack.dev/@tiptap/core";
     import StarterKit from "https://cdn.skypack.dev/@tiptap/starter-kit";
     import Image from "https://cdn.skypack.dev/@tiptap/extension-image";
@@ -20,7 +19,6 @@
       content: "<p>Napiš svůj článek…</p>"
     });
 
-    // načtení sekcí z hidden JSONu
     const sectionsRaw = document.getElementById("sections-json").textContent;
     const sectionsData = JSON.parse(sectionsRaw);
 
@@ -45,10 +43,8 @@
       });
     });
 
-    // inicializace podsekcí pro první sekci
     sectionSelect.dispatchEvent(new Event("change"));
 
-    // toolbar
     document.getElementById("tiptap-toolbar").addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (!btn) return;
@@ -68,7 +64,6 @@
       if (actions[action]) actions[action]();
     });
 
-    // vložit fotku
     document.getElementById("uploadImageBtn").addEventListener("click", async () => {
       const input = document.createElement("input");
       input.type = "file";
@@ -94,7 +89,6 @@
       };
     });
 
-    // uložit článek
     document.getElementById("saveBtn").addEventListener("click", async () => {
       const body = {
         title: document.getElementById("title").value,
@@ -113,7 +107,6 @@
 
       const data = await res.json();
       if (data.success) {
-        alert("Článek uložen");
         window.location.href = "/admin/articles";
       }
     });
