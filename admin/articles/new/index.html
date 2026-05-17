@@ -7,7 +7,9 @@
               window.location.href = "/admin/login";
             }
           });
-        </script> <header style="background:#1e1e1e;padding:15px;color:white;"> <nav> <a href="/admin" style="color:white;margin-right:20px;">Dashboard</a> <a href="/admin/articles" style="color:white;margin-right:20px;">Články</a> <a href="/admin/upload" style="color:white;">Upload</a> </nav> </header> <main style="padding:20px;">  <h1 data-astro-cid-y7wmjtyx>Nový článek</h1> <div class="layout" data-astro-cid-y7wmjtyx> <!-- LEVÝ PANEL – META --> <form id="articleForm" class="meta" data-astro-cid-y7wmjtyx> <label data-astro-cid-y7wmjtyx>Sekce</label> <select id="section" data-astro-cid-y7wmjtyx></select> <label data-astro-cid-y7wmjtyx>Podsekce</label> <select id="subsection" data-astro-cid-y7wmjtyx></select> <label data-astro-cid-y7wmjtyx>Datum</label> <input type="date" id="date" value="2026-05-17" data-astro-cid-y7wmjtyx> <label data-astro-cid-y7wmjtyx>Místo</label> <input type="text" id="location" placeholder="např. Brno, New York…" data-astro-cid-y7wmjtyx> <label data-astro-cid-y7wmjtyx>Název článku</label> <input type="text" id="title" placeholder="Název článku" data-astro-cid-y7wmjtyx> <button type="button" id="saveBtn" class="primary" data-astro-cid-y7wmjtyx>💾 Uložit článek</button> </form> <!-- PRAVÝ PANEL – TIPTAP --> <div class="editor-card" data-astro-cid-y7wmjtyx> <div class="editor-toolbar" id="tiptap-toolbar" data-astro-cid-y7wmjtyx> <button type="button" data-action="bold" data-astro-cid-y7wmjtyx><b data-astro-cid-y7wmjtyx>B</b></button> <button type="button" data-action="italic" data-astro-cid-y7wmjtyx><i data-astro-cid-y7wmjtyx>I</i></button> <button type="button" data-action="heading1" data-astro-cid-y7wmjtyx>H1</button> <button type="button" data-action="heading2" data-astro-cid-y7wmjtyx>H2</button> <button type="button" data-action="bulletList" data-astro-cid-y7wmjtyx>• List</button> <button type="button" data-action="orderedList" data-astro-cid-y7wmjtyx>1. List</button> <button type="button" data-action="blockquote" data-astro-cid-y7wmjtyx>„“</button> <button type="button" data-action="codeBlock" data-astro-cid-y7wmjtyx>&lt;/&gt;</button> <button type="button" id="uploadImageBtn" data-astro-cid-y7wmjtyx>📷 Vložit fotku</button> </div> <div id="tiptap-editor" class="tiptap" data-astro-cid-y7wmjtyx></div> </div> </div>  <script type="module">
+        </script> <header style="background:#1e1e1e;padding:15px;color:white;"> <nav> <a href="/admin" style="color:white;margin-right:20px;">Dashboard</a> <a href="/admin/articles" style="color:white;margin-right:20px;">Články</a> <a href="/admin/upload" style="color:white;">Upload</a> </nav> </header> <main style="padding:20px;">  <h1 data-astro-cid-y7wmjtyx>Nový článek</h1> <div class="layout" data-astro-cid-y7wmjtyx> <!-- LEVÝ PANEL – META --> <form id="articleForm" class="meta" data-astro-cid-y7wmjtyx> <label data-astro-cid-y7wmjtyx>Sekce</label> <select id="section" data-astro-cid-y7wmjtyx></select> <label data-astro-cid-y7wmjtyx>Podsekce</label> <select id="subsection" data-astro-cid-y7wmjtyx></select> <label data-astro-cid-y7wmjtyx>Datum</label> <input type="date" id="date" value="2026-05-17" data-astro-cid-y7wmjtyx> <label data-astro-cid-y7wmjtyx>Místo</label> <input type="text" id="location" placeholder="např. Brno, New York…" data-astro-cid-y7wmjtyx> <label data-astro-cid-y7wmjtyx>Název článku</label> <input type="text" id="title" placeholder="Název článku" data-astro-cid-y7wmjtyx> <button type="button" id="saveBtn" class="primary" data-astro-cid-y7wmjtyx>💾 Uložit článek</button> </form> <!-- PRAVÝ PANEL – TIPTAP --> <div class="editor-card" data-astro-cid-y7wmjtyx> <div class="editor-toolbar" id="tiptap-toolbar" data-astro-cid-y7wmjtyx> <button type="button" data-action="bold" data-astro-cid-y7wmjtyx><b data-astro-cid-y7wmjtyx>B</b></button> <button type="button" data-action="italic" data-astro-cid-y7wmjtyx><i data-astro-cid-y7wmjtyx>I</i></button> <button type="button" data-action="heading1" data-astro-cid-y7wmjtyx>H1</button> <button type="button" data-action="heading2" data-astro-cid-y7wmjtyx>H2</button> <button type="button" data-action="bulletList" data-astro-cid-y7wmjtyx>• List</button> <button type="button" data-action="orderedList" data-astro-cid-y7wmjtyx>1. List</button> <button type="button" data-action="blockquote" data-astro-cid-y7wmjtyx>„“</button> <button type="button" data-action="codeBlock" data-astro-cid-y7wmjtyx>&lt;/&gt;</button> <button type="button" id="uploadImageBtn" data-astro-cid-y7wmjtyx>📷 Vložit fotku</button> </div> <div id="tiptap-editor" class="tiptap" data-astro-cid-y7wmjtyx></div> </div> </div>  <script id="sections-json" type="application/json">
+    {JSON.stringify(sectionsData)}
+  </script>  <script type="module">
     import { Editor } from "https://cdn.skypack.dev/@tiptap/core";
     import StarterKit from "https://cdn.skypack.dev/@tiptap/starter-kit";
     import Image from "https://cdn.skypack.dev/@tiptap/extension-image";
@@ -18,8 +20,10 @@
       content: "<p>Napiš svůj článek…</p>"
     });
 
-    // SEKCE + PODSEKCE – SPRÁVNĚ PŘEDANÝ JSON
-    const sectionsData = JSON.parse(`${JSON.stringify(sectionsData)}`);
+    // načtení sekcí z hidden JSONu
+    const sectionsRaw = document.getElementById("sections-json").textContent;
+    const sectionsData = JSON.parse(sectionsRaw);
+
     const sectionSelect = document.getElementById("section");
     const subsectionSelect = document.getElementById("subsection");
 
@@ -41,9 +45,10 @@
       });
     });
 
+    // inicializace podsekcí pro první sekci
     sectionSelect.dispatchEvent(new Event("change"));
 
-    // TOOLBAR
+    // toolbar
     document.getElementById("tiptap-toolbar").addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (!btn) return;
@@ -63,7 +68,7 @@
       if (actions[action]) actions[action]();
     });
 
-    // VLOŽIT FOTKU
+    // vložit fotku
     document.getElementById("uploadImageBtn").addEventListener("click", async () => {
       const input = document.createElement("input");
       input.type = "file";
@@ -89,7 +94,7 @@
       };
     });
 
-    // ULOŽIT ČLÁNEK
+    // uložit článek
     document.getElementById("saveBtn").addEventListener("click", async () => {
       const body = {
         title: document.getElementById("title").value,
