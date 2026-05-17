@@ -1,118 +1,167 @@
 ---
-import AdminLayout from '../../../layouts/AdminLayout.astro';
-import articles from '../../../../data/articles.json';
-
-// Vytvoříme nové ID (nejvyšší + 1)
-const newId = Math.max(0, ...articles.map(a => a.id || 0)) + 1;
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import sections from "../../../data/sections.json";
 ---
 
 <AdminLayout title="Nový článek">
-  <section class="header">
-    <h1>Nový článek</h1>
-    <p>Vytvoř nový článek pro web.</p>
-  </section>
 
-  <form id="newArticleForm">
-    <label>
-      Název článku
-      <input type="text" name="title" required />
-    </label>
+  <h1>Nový článek</h1>
 
-    <label>
-      Slug (URL)
-      <input type="text" name="slug" placeholder="např. moje-cesta-do-usa" />
-    </label>
+  <form id="articleForm">
 
-    <label>
-      Sekce
-      <input type="text" name="section" />
-    </label>
+    <label>Název článku</label>
+    <input type="text" id="title" placeholder="Název článku" />
 
-    <label>
-      Podsekce
-      <input type="text" name="subsection" />
-    </label>
+    <label>Datum</label>
+    <input type="date" id="date" />
 
-    <label>
-      Datum
-      <input type="date" name="date" />
-    </label>
+    <label>Místo</label>
+    <input type="text" id="location" placeholder="např. Brno, New York…" />
 
-    <label>
-      Obsah článku
-      <textarea name="content" rows="10" required></textarea>
-    </label>
+    <label>Sekce</label>
+    <select id="section"></select>
 
-    <button type="submit" class="btn-primary">Vytvořit článek</button>
+    <label>Podsekce</label>
+    <select id="subsection"></select>
+
+    <label>Obsah článku</label>
+    <div id="editor"></div>
+
+    <button type="button" id="uploadImageBtn">📷 Vložit fotku</button>
+    <button type="button" id="saveBtn">💾 Uložit článek</button>
+
   </form>
 
+  <style>
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 800px;
+    }
+
+    input, select {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background: #1e1e1e;
+      color: white;
+      font-size: 16px;
+    }
+
+    #editor {
+      height: 350px;
+      background: #1e1e1e;
+      color: white;
+      border-radius: 8px;
+    }
+
+    button {
+      padding: 12px;
+      background: #4a90e2;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #357ac8;
+    }
+  </style>
+
+  <!-- Quill editor -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
   <script>
-    const form = document.getElementById('newArticleForm');
+    // Inicializace editoru
+    const quill = new Quill("#editor", {
+      theme: "snow"
+    });
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    // Sekce a podsekce
+    const sectionsData = JSON.parse(`<?=
+      JSON.stringify(sections)
+    ?>`);
 
-      const data = Object.fromEntries(new FormData(form).entries());
-      data.id = newId;
-      data.published = false;
+    const sectionSelect = document.getElementById("section");
+    const subsectionSelect = document.getElementById("subsection");
 
-      const response = await fetch('/api/articles/new', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+    Object.keys(sectionsData).forEach(sec => {
+      const opt = document.createElement("option");
+      opt.value = sec;
+      opt.textContent = sec;
+      sectionSelect.appendChild(opt);
+    });
+
+    sectionSelect.addEventListener("change", () => {
+      subsectionSelect.innerHTML = "";
+      sectionsData[sectionSelect.value].forEach(sub => {
+        const opt = document.createElement("option");
+        opt.value = sub;
+        opt.textContent = sub;
+        subsectionSelect.appendChild(opt);
+      });
+    });
+
+    sectionSelect.dispatchEvent(new Event("change"));
+
+    // Vložit fotku (workflow uložený v projektu)
+    document.getElementById("uploadImageBtn").addEventListener("click", async () => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.click();
+
+      input.onchange = async () => {
+        const file = input.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        // Upload do R2
+        const res = await fetch("/api/upload/image", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          // Vložit obrázek do článku
+          quill.insertEmbed(quill.getLength(), "image", data.url);
+        }
+      };
+    });
+
+    // Uložit článek
+    document.getElementById("saveBtn").addEventListener("click", async () => {
+      const body = {
+        title: document.getElementById("title").value,
+        date: document.getElementById("date").value,
+        location: document.getElementById("location").value,
+        section: document.getElementById("section").value,
+        subsection: document.getElementById("subsection").value,
+        content: quill.root.innerHTML
+      };
+
+      const res = await fetch("/api/articles/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
       });
 
-      if (response.ok) {
-        window.location.href = '/admin/articles';
-      } else {
-        alert('Nepodařilo se uložit článek.');
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Článek uložen");
+        window.location.href = "/admin/articles";
       }
     });
   </script>
+
 </AdminLayout>
-
-<style>
-  :global(body) {
-    background: #05060a;
-    color: #f5f5f5;
-  }
-
-  .header {
-    margin-bottom: 2rem;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-top: 2rem;
-  }
-
-  label {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    font-weight: 500;
-  }
-
-  input, textarea {
-    background: #0f172a;
-    border: 1px solid #1e293b;
-    padding: 0.7rem 1rem;
-    border-radius: 0.5rem;
-    color: #f5f5f5;
-  }
-
-  .btn-primary {
-    padding: 0.8rem 1.4rem;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-    color: #020617;
-    font-weight: 600;
-    text-decoration: none;
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.35);
-    border: none;
-    cursor: pointer;
-    margin-top: 1rem;
-  }
-</style>
