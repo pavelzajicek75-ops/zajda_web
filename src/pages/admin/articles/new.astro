@@ -1,6 +1,6 @@
 ---
-import AdminLayout from "../../../layouts/AdminLayout.astro";
-import sections from "../../../data/sections.json";
+import AdminLayout from "../../../../layouts/AdminLayout.astro";
+import sections from "../../../../data/sections.json";
 
 const sectionsData = sections;
 ---
@@ -10,6 +10,7 @@ const sectionsData = sections;
   <h1>Nový článek</h1>
 
   <div class="layout">
+    <!-- LEVÝ PANEL – META -->
     <form id="articleForm" class="meta">
 
       <label>Název článku</label>
@@ -34,6 +35,7 @@ const sectionsData = sections;
       <button type="button" id="saveBtn" class="primary">💾 Uložit článek</button>
     </form>
 
+    <!-- PRAVÝ PANEL – TIPTAP -->
     <div class="editor-card">
       <div class="editor-toolbar" id="tiptap-toolbar">
         <button type="button" data-action="bold"><b>B</b></button>
@@ -46,20 +48,19 @@ const sectionsData = sections;
         <button type="button" data-action="codeBlock">{`</>`}</button>
         <button type="button" id="uploadImageBtn">📷 Vložit fotku</button>
       </div>
+
       <div id="tiptap-editor" class="tiptap"></div>
     </div>
   </div>
 
+  <!-- STYLING -->
   <style>
-    h1 {
-      margin-bottom: 20px;
-    }
+    h1 { margin-bottom: 20px; }
 
     .layout {
       display: grid;
       grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
       gap: 24px;
-      align-items: flex-start;
     }
 
     .meta {
@@ -86,12 +87,6 @@ const sectionsData = sections;
       font-size: 0.95rem;
     }
 
-    input:focus, select:focus {
-      outline: none;
-      border-color: #4a90e2;
-      box-shadow: 0 0 0 1px #4a90e233;
-    }
-
     .primary {
       margin-top: 10px;
       padding: 10px 14px;
@@ -101,10 +96,6 @@ const sectionsData = sections;
       color: white;
       font-weight: 500;
       cursor: pointer;
-    }
-
-    .primary:hover {
-      background: #357ac8;
     }
 
     .editor-card {
@@ -137,10 +128,6 @@ const sectionsData = sections;
       cursor: pointer;
     }
 
-    .editor-toolbar button:hover {
-      background: #2a2a2a;
-    }
-
     .tiptap {
       min-height: 380px;
       padding: 14px 16px;
@@ -148,49 +135,14 @@ const sectionsData = sections;
       font-size: 0.95rem;
     }
 
-    .tiptap p {
-      margin: 0 0 0.6em;
-    }
-
-    .tiptap h1, .tiptap h2, .tiptap h3 {
-      margin: 0.8em 0 0.4em;
-    }
-
-    .tiptap ul, .tiptap ol {
-      padding-left: 1.4em;
-      margin: 0.4em 0;
-    }
-
-    .tiptap blockquote {
-      border-left: 3px solid #4a90e2;
-      margin: 0.6em 0;
-      padding-left: 0.8em;
-      color: #aaa;
-    }
-
-    .tiptap pre {
-      background: #181818;
-      padding: 8px 10px;
-      border-radius: 6px;
-      font-family: monospace;
-      font-size: 0.85rem;
-      overflow-x: auto;
-    }
-
     .tiptap img {
       max-width: 100%;
       border-radius: 8px;
       margin: 10px 0;
     }
-
-    @media (max-width: 900px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
-    }
   </style>
 
-  <!-- TipTap přes CDN (starter kit) -->
+  <!-- TIPTAP -->
   <script type="module">
     import { Editor } from "https://cdn.skypack.dev/@tiptap/core";
     import StarterKit from "https://cdn.skypack.dev/@tiptap/starter-kit";
@@ -198,14 +150,11 @@ const sectionsData = sections;
 
     const editor = new Editor({
       element: document.querySelector("#tiptap-editor"),
-      extensions: [
-        StarterKit,
-        Image
-      ],
+      extensions: [StarterKit, Image],
       content: "<p>Napiš svůj článek…</p>"
     });
 
-    // Sekce + podsekce
+    // SEKCE + PODSEKCE
     const sectionsData = JSON.parse(`<?= JSON.stringify(sectionsData) ?>`);
     const sectionSelect = document.getElementById("section");
     const subsectionSelect = document.getElementById("subsection");
@@ -230,43 +179,27 @@ const sectionsData = sections;
 
     sectionSelect.dispatchEvent(new Event("change"));
 
-    // Toolbar akce
-    const toolbar = document.getElementById("tiptap-toolbar");
-    toolbar.addEventListener("click", (e) => {
+    // TOOLBAR
+    document.getElementById("tiptap-toolbar").addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (!btn) return;
       const action = btn.dataset.action;
-      if (!action) return;
 
-      switch (action) {
-        case "bold":
-          editor.chain().focus().toggleBold().run();
-          break;
-        case "italic":
-          editor.chain().focus().toggleItalic().run();
-          break;
-        case "heading1":
-          editor.chain().focus().toggleHeading({ level: 1 }).run();
-          break;
-        case "heading2":
-          editor.chain().focus().toggleHeading({ level: 2 }).run();
-          break;
-        case "bulletList":
-          editor.chain().focus().toggleBulletList().run();
-          break;
-        case "orderedList":
-          editor.chain().focus().toggleOrderedList().run();
-          break;
-        case "blockquote":
-          editor.chain().focus().toggleBlockquote().run();
-          break;
-        case "codeBlock":
-          editor.chain().focus().toggleCodeBlock().run();
-          break;
-      }
+      const actions = {
+        bold: () => editor.chain().focus().toggleBold().run(),
+        italic: () => editor.chain().focus().toggleItalic().run(),
+        heading1: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
+        heading2: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
+        bulletList: () => editor.chain().focus().toggleBulletList().run(),
+        orderedList: () => editor.chain().focus().toggleOrderedList().run(),
+        blockquote: () => editor.chain().focus().toggleBlockquote().run(),
+        codeBlock: () => editor.chain().focus().toggleCodeBlock().run(),
+      };
+
+      if (actions[action]) actions[action]();
     });
 
-    // Vložit fotku – hook na náš upload workflow
+    // VLOŽIT FOTKU
     document.getElementById("uploadImageBtn").addEventListener("click", async () => {
       const input = document.createElement("input");
       input.type = "file";
@@ -292,7 +225,7 @@ const sectionsData = sections;
       };
     });
 
-    // Uložit článek
+    // ULOŽIT ČLÁNEK
     document.getElementById("saveBtn").addEventListener("click", async () => {
       const body = {
         title: document.getElementById("title").value,
