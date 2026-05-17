@@ -8,7 +8,6 @@
   --accent: #4a90e2;
   --accent-hover: #357ac8;
   --radius: 10px;
-  --transition: 0.15s ease;
 }
 
 body {
@@ -16,7 +15,6 @@ body {
   color: var(--text);
   font-family: system-ui, sans-serif;
   margin: 0;
-  padding: 0;
 }
 
 .admin-container {
@@ -25,11 +23,11 @@ body {
   padding: 24px;
 }
 
-h1 {
-  margin-bottom: 20px;
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
 }
-
-/* FORM */
 
 .meta {
   display: flex;
@@ -62,8 +60,6 @@ select {
   font-size: 1.05rem;
 }
 
-/* BUTTON */
-
 button.primary {
   padding: 14px 18px;
   background: var(--accent);
@@ -78,8 +74,6 @@ button.primary {
 button.primary:hover {
   background: var(--accent-hover);
 }
-
-/* EDITOR */
 
 .editor-card {
   background: var(--bg2);
@@ -96,9 +90,6 @@ button.primary:hover {
   padding: 10px;
   background: var(--bg3);
   border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 10;
 }
 
 .editor-toolbar button {
@@ -107,8 +98,6 @@ button.primary:hover {
   color: var(--text);
   padding: 8px 12px;
   border-radius: var(--radius);
-  font-size: 0.85rem;
-  cursor: pointer;
 }
 
 .tiptap {
@@ -117,16 +106,4 @@ button.primary:hover {
   font-size: 1.05rem;
   line-height: 1.6;
   color: var(--text);
-}
-
-.layout {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 24px;
-}
-
-@media (max-width: 900px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
 }
