@@ -1,37 +1,66 @@
 ---
-import { readFileSync } from "fs";
-import path from "path";
+import Layout from '../../layouts/Layout.astro';
+import articles from '../../../data/articles.json';
 
-// 🔹 1) Definujeme getStaticPaths – načítá JSON přímo uvnitř funkce
-export async function getStaticPaths() {
-  const filePath = path.resolve("src/data/cestovani/usa2026/articles.json");
-  const articles = JSON.parse(readFileSync(filePath, "utf-8"));
+// Slug z URL
+const { slug } = Astro.params;
 
-  return articles.map(article => ({
-    params: { slug: article.slug },
-    props: { article },
-  }));
+// Najdeme článek podle slugu
+const article = articles.find(a => a.slug === slug);
+
+if (!article) {
+  throw new Error(`Článek se slugem "${slug}" nebyl nalezen.`);
 }
 
-// 🔹 2) Získáme data pro konkrétní článek
-const { article } = Astro.props;
+// STATIC BUILD: vygenerujeme všechny cesty
+export async function getStaticPaths() {
+  return articles
+    .filter(a => a.slug && a.slug.length > 0)
+    .map(a => ({
+      params: { slug: a.slug }
+    }));
+}
 ---
 
-<html lang="cs">
-  <head>
-    <meta charset="UTF-8" />
-    <title>{article.title}</title>
-  </head>
-
-  <body>
+<Layout title={article.title}>
+  <article class="content">
     <h1>{article.title}</h1>
-    <p><strong>Datum:</strong> {article.date}</p>
-    <p><strong>Sekce:</strong> {article.section}</p>
 
-    <article>
-      <p>{article.content}</p>
-    </article>
+    {article.date && (
+      <p class="date">{article.date}</p>
+    )}
 
-    <p><a href="/cestovani/clanky">← Zpět na seznam článků</a></p>
-  </body>
-</html>
+    <div class="text">
+      {article.content}
+    </div>
+  </article>
+</Layout>
+
+<style>
+  :global(body) {
+    background: #05060a;
+    color: #f5f5f5;
+  }
+
+  .content {
+    max-width: 800px;
+    margin: 3rem auto;
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 2.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .date {
+    opacity: 0.6;
+    margin-bottom: 2rem;
+  }
+
+  .text {
+    line-height: 1.7;
+    font-size: 1.1rem;
+    white-space: pre-wrap;
+  }
+</style>
