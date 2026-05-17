@@ -13,8 +13,11 @@ const sectionsData = sections;
     <!-- LEVÝ PANEL – META -->
     <form id="articleForm" class="meta">
 
-      <label>Název článku</label>
-      <input type="text" id="title" placeholder="Název článku" />
+      <label>Sekce</label>
+      <select id="section"></select>
+
+      <label>Podsekce</label>
+      <select id="subsection"></select>
 
       <label>Datum</label>
       <input
@@ -26,11 +29,8 @@ const sectionsData = sections;
       <label>Místo</label>
       <input type="text" id="location" placeholder="např. Brno, New York…" />
 
-      <label>Sekce</label>
-      <select id="section"></select>
-
-      <label>Podsekce</label>
-      <select id="subsection"></select>
+      <label>Název článku</label>
+      <input type="text" id="title" placeholder="Název článku" />
 
       <button type="button" id="saveBtn" class="primary">💾 Uložit článek</button>
     </form>
@@ -53,7 +53,6 @@ const sectionsData = sections;
     </div>
   </div>
 
-  <!-- STYLING -->
   <style>
     h1 { margin-bottom: 20px; }
 
@@ -142,7 +141,6 @@ const sectionsData = sections;
     }
   </style>
 
-  <!-- TIPTAP -->
   <script type="module">
     import { Editor } from "https://cdn.skypack.dev/@tiptap/core";
     import StarterKit from "https://cdn.skypack.dev/@tiptap/starter-kit";
@@ -154,8 +152,8 @@ const sectionsData = sections;
       content: "<p>Napiš svůj článek…</p>"
     });
 
-    // SEKCE + PODSEKCE
-    const sectionsData = JSON.parse(`<?= JSON.stringify(sectionsData) ?>`);
+    // SEKCE + PODSEKCE – SPRÁVNĚ PŘEDANÝ JSON
+    const sectionsData = JSON.parse(`${JSON.stringify(sectionsData)}`);
     const sectionSelect = document.getElementById("section");
     const subsectionSelect = document.getElementById("subsection");
 
