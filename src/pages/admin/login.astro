@@ -1,0 +1,72 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout noAuth={true} title="Přihlášení">
+  <h1>Přihlášení</h1>
+
+  <form id="loginForm">
+    <label>Uživatel</label>
+    <input type="text" id="username" />
+
+    <label>Heslo</label>
+    <input type="password" id="password" />
+
+    <button type="button" id="loginBtn">Přihlásit</button>
+  </form>
+
+  <style>
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 400px;
+      margin-top: 20px;
+    }
+
+    input {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background: #1e1e1e;
+      color: white;
+    }
+
+    button {
+      padding: 12px;
+      background: #4a90e2;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #357ac8;
+    }
+  </style>
+
+  <script type="module">
+    async function login() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        localStorage.setItem("admin_token", data.token);
+        window.location.href = "/admin";
+      } else {
+        alert("Špatné přihlašovací údaje");
+      }
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", login);
+  </script>
+</AdminLayout>
