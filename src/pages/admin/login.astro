@@ -5,34 +5,77 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 <AdminLayout noAuth={true} title="Přihlášení">
   <h1>Přihlášení</h1>
 
-  <form onsubmit="return false;">
+  <div class="login-box">
     <label>Uživatel</label>
-    <input type="text" id="username" />
+    <input type="text" id="username" autocomplete="username" />
 
     <label>Heslo</label>
-    <input type="password" id="password" />
+    <input type="password" id="password" autocomplete="current-password" />
 
-    <button type="button" onclick="login()">Přihlásit</button>
-  </form>
+    <button id="loginBtn">Přihlásit</button>
+  </div>
+
+  <style>
+    .login-box {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 350px;
+      margin-top: 20px;
+    }
+
+    input {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background: #1e1e1e;
+      color: white;
+    }
+
+    button {
+      padding: 12px;
+      background: #4caf50;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: #3e8e41;
+    }
+  </style>
 
   <script>
+    document.getElementById("loginBtn").addEventListener("click", login);
+
     async function login() {
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-      const res = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-      });
+      if (!username || !password) {
+        alert("Vyplň uživatelské jméno i heslo");
+        return;
+      }
 
-      const data = await res.json();
+      try {
+        const res = await fetch("/api/admin/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
 
-      if (data.success) {
-        localStorage.setItem("admin_token", data.token);
-        window.location.href = "/admin";
-      } else {
-        alert("Špatné přihlašovací údaje");
+        const data = await res.json();
+
+        if (data.success) {
+          localStorage.setItem("admin_token", data.token);
+          window.location.href = "/admin";
+        } else {
+          alert("Špatné přihlašovací údaje");
+        }
+      } catch (err) {
+        alert("Chyba připojení k serveru");
       }
     }
   </script>
