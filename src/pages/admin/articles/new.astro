@@ -53,6 +53,11 @@ const sectionsData = sections;
     </div>
   </div>
 
+  <!-- skrytý JSON se sekcemi -->
+  <script id="sections-json" type="application/json">
+    {JSON.stringify(sectionsData)}
+  </script>
+
   <style>
     h1 { margin-bottom: 20px; }
 
@@ -152,8 +157,10 @@ const sectionsData = sections;
       content: "<p>Napiš svůj článek…</p>"
     });
 
-    // SEKCE + PODSEKCE – SPRÁVNĚ PŘEDANÝ JSON
-    const sectionsData = JSON.parse(`${JSON.stringify(sectionsData)}`);
+    // načtení sekcí z hidden JSONu
+    const sectionsRaw = document.getElementById("sections-json").textContent;
+    const sectionsData = JSON.parse(sectionsRaw);
+
     const sectionSelect = document.getElementById("section");
     const subsectionSelect = document.getElementById("subsection");
 
@@ -175,9 +182,10 @@ const sectionsData = sections;
       });
     });
 
+    // inicializace podsekcí pro první sekci
     sectionSelect.dispatchEvent(new Event("change"));
 
-    // TOOLBAR
+    // toolbar
     document.getElementById("tiptap-toolbar").addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (!btn) return;
@@ -197,7 +205,7 @@ const sectionsData = sections;
       if (actions[action]) actions[action]();
     });
 
-    // VLOŽIT FOTKU
+    // vložit fotku
     document.getElementById("uploadImageBtn").addEventListener("click", async () => {
       const input = document.createElement("input");
       input.type = "file";
@@ -223,7 +231,7 @@ const sectionsData = sections;
       };
     });
 
-    // ULOŽIT ČLÁNEK
+    // uložit článek
     document.getElementById("saveBtn").addEventListener("click", async () => {
       const body = {
         title: document.getElementById("title").value,
