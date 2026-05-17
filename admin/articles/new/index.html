@@ -8,8 +8,8 @@
       content: "<p>Napiš svůj článek…</p>"
     });
 
-    // 🔥 načtení sekcí přes API (funguje i když data nejsou v public)
-    const res = await fetch("/api/sections");
+    // 🔥 GITHUB PAGES FUNKČNÍ FETCH
+    const res = await fetch("/data/sections.json");
     const sectionsData = await res.json();
 
     const sectionSelect = document.getElementById("section");
