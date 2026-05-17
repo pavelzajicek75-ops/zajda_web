@@ -1,8 +1,5 @@
 ---
 import AdminLayout from "../../../layouts/AdminLayout.astro";
-import sections from "../../../data/sections.json";
-
-const sectionsData = sections;
 ---
 
 <AdminLayout title="Nový článek">
@@ -19,11 +16,7 @@ const sectionsData = sections;
       <select id="subsection"></select>
 
       <label>Datum</label>
-      <input
-        type="date"
-        id="date"
-        value={new Date().toISOString().split("T")[0]}
-      />
+      <input type="date" id="date" value={new Date().toISOString().split("T")[0]} />
 
       <label>Místo</label>
       <input type="text" id="location" placeholder="např. Brno, New York…" />
@@ -36,45 +29,38 @@ const sectionsData = sections;
 
     <div class="editor-card">
       <div class="editor-toolbar" id="tiptap-toolbar">
-        <button type="button" data-action="bold"><b>B</b></button>
-        <button type="button" data-action="italic"><i>I</i></button>
-        <button type="button" data-action="heading1">H1</button>
-        <button type="button" data-action="heading2">H2</button>
-        <button type="button" data-action="bulletList">• List</button>
-        <button type="button" data-action="orderedList">1. List</button>
-        <button type="button" data-action="blockquote">„“</button>
-        <button type="button" data-action="codeBlock">{`</>`}</button>
-        <button type="button" id="uploadImageBtn">📷 Vložit fotku</button>
+        <button data-action="bold"><b>B</b></button>
+        <button data-action="italic"><i>I</i></button>
+        <button data-action="heading1">H1</button>
+        <button data-action="heading2">H2</button>
+        <button data-action="bulletList">• List</button>
+        <button data-action="orderedList">1. List</button>
+        <button data-action="blockquote">„“</button>
+        <button data-action="codeBlock">{`</>`}</button>
       </div>
 
       <div id="tiptap-editor" class="tiptap"></div>
     </div>
   </div>
 
-  <!-- JSON se sekcemi pro JS -->
-  <script id="sections-json" type="application/json">
-    {JSON.stringify(sectionsData)}
-  </script>
-
   <script type="module">
     import { Editor } from "https://cdn.skypack.dev/@tiptap/core";
     import StarterKit from "https://cdn.skypack.dev/@tiptap/starter-kit";
-    import Image from "https://cdn.skypack.dev/@tiptap/extension-image";
 
     const editor = new Editor({
       element: document.querySelector("#tiptap-editor"),
-      extensions: [StarterKit, Image],
+      extensions: [StarterKit],
       content: "<p>Napiš svůj článek…</p>"
     });
 
-    // načtení sekcí
-    const sectionsRaw = document.getElementById("sections-json").textContent;
-    const sectionsData = JSON.parse(sectionsRaw);
+    // 🔥 načtení sekcí přes API (funguje i když data nejsou v public)
+    const res = await fetch("/api/sections");
+    const sectionsData = await res.json();
 
     const sectionSelect = document.getElementById("section");
     const subsectionSelect = document.getElementById("subsection");
 
-    Object.keys(sectionsData).forEach((sec) => {
+    Object.keys(sectionsData).forEach(sec => {
       const opt = document.createElement("option");
       opt.value = sec;
       opt.textContent = sec;
@@ -84,7 +70,7 @@ const sectionsData = sections;
     sectionSelect.addEventListener("change", () => {
       subsectionSelect.innerHTML = "";
       const subs = sectionsData[sectionSelect.value] || [];
-      subs.forEach((sub) => {
+      subs.forEach(sub => {
         const opt = document.createElement("option");
         opt.value = sub;
         opt.textContent = sub;
@@ -92,48 +78,7 @@ const sectionsData = sections;
       });
     });
 
-    // inicializace podsekcí pro první sekci
     sectionSelect.dispatchEvent(new Event("change"));
-
-    // toolbar
-    document.getElementById("tiptap-toolbar").addEventListener("click", (e) => {
-      const btn = e.target.closest("button");
-      if (!btn) return;
-      const action = btn.dataset.action;
-
-      const actions = {
-        bold: () => editor.chain().focus().toggleBold().run(),
-        italic: () => editor.chain().focus().toggleItalic().run(),
-        heading1: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
-        heading2: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
-        bulletList: () => editor.chain().focus().toggleBulletList().run(),
-        orderedList: () => editor.chain().focus().toggleOrderedList().run(),
-        blockquote: () => editor.chain().focus().toggleBlockquote().run(),
-        codeBlock: () => editor.chain().focus().toggleCodeBlock().run()
-      };
-
-      if (actions[action]) actions[action]();
-    });
-
-    // dummy upload (zatím jen placeholder)
-    document.getElementById("uploadImageBtn").addEventListener("click", () => {
-      alert("Upload obrázku zatím není napojený – můžeme dodělat potom.");
-    });
-
-    // uložit článek – zatím jen log do konzole
-    document.getElementById("saveBtn").addEventListener("click", async () => {
-      const body = {
-        title: document.getElementById("title").value,
-        date: document.getElementById("date").value,
-        location: document.getElementById("location").value,
-        section: document.getElementById("section").value,
-        subsection: document.getElementById("subsection").value,
-        content: editor.getHTML()
-      };
-
-      console.log("Ukládám článek (zatím jen do konzole):", body);
-      alert("Formulář funguje, sekce i podsekce jsou vyplněné. API můžeme dodělat v dalším kroku.");
-    });
   </script>
 
 </AdminLayout>
