@@ -1,43 +1,16 @@
 ---
-const { title, noAuth = false } = Astro.props;
+const { title } = Astro.props;
 ---
 
 <html lang="cs">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
     <title>{title}</title>
+    <link rel="stylesheet" href="/src/styles/admin.css" />
   </head>
-
   <body>
-    {noAuth ? (
-      <main>
-        <slot />
-      </main>
-    ) : (
-      <>
-        <script>
-          // Kontrola tokenu až po načtení stránky
-          window.addEventListener("DOMContentLoaded", () => {
-            const token = localStorage.getItem("admin_token");
-            if (!token) {
-              window.location.href = "/admin/login";
-            }
-          });
-        </script>
-
-        <header style="background:#1e1e1e;padding:15px;color:white;">
-          <nav>
-            <a href="/admin" style="color:white;margin-right:20px;">Dashboard</a>
-            <a href="/admin/articles" style="color:white;margin-right:20px;">Články</a>
-            <a href="/admin/upload" style="color:white;">Upload</a>
-          </nav>
-        </header>
-
-        <main style="padding:20px;">
-          <slot />
-        </main>
-      </>
-    )}
+    <div class="admin-container">
+      <slot />
+    </div>
   </body>
 </html>
