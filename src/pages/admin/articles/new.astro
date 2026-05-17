@@ -10,7 +10,6 @@ const sectionsData = sections;
   <h1>Nový článek</h1>
 
   <div class="layout">
-    <!-- LEVÝ PANEL – META -->
     <form id="articleForm" class="meta">
 
       <label>Sekce</label>
@@ -20,11 +19,7 @@ const sectionsData = sections;
       <select id="subsection"></select>
 
       <label>Datum</label>
-      <input
-        type="date"
-        id="date"
-        value={new Date().toISOString().split("T")[0]}
-      />
+      <input type="date" id="date" value={new Date().toISOString().split("T")[0]} />
 
       <label>Místo</label>
       <input type="text" id="location" placeholder="např. Brno, New York…" />
@@ -35,116 +30,26 @@ const sectionsData = sections;
       <button type="button" id="saveBtn" class="primary">💾 Uložit článek</button>
     </form>
 
-    <!-- PRAVÝ PANEL – TIPTAP -->
     <div class="editor-card">
       <div class="editor-toolbar" id="tiptap-toolbar">
-        <button type="button" data-action="bold"><b>B</b></button>
-        <button type="button" data-action="italic"><i>I</i></button>
-        <button type="button" data-action="heading1">H1</button>
-        <button type="button" data-action="heading2">H2</button>
-        <button type="button" data-action="bulletList">• List</button>
-        <button type="button" data-action="orderedList">1. List</button>
-        <button type="button" data-action="blockquote">„“</button>
-        <button type="button" data-action="codeBlock">{`</>`}</button>
-        <button type="button" id="uploadImageBtn">📷 Vložit fotku</button>
+        <button data-action="bold"><b>B</b></button>
+        <button data-action="italic"><i>I</i></button>
+        <button data-action="heading1">H1</button>
+        <button data-action="heading2">H2</button>
+        <button data-action="bulletList">• List</button>
+        <button data-action="orderedList">1. List</button>
+        <button data-action="blockquote">„“</button>
+        <button data-action="codeBlock">{`</>`}</button>
+        <button id="uploadImageBtn">📷 Vložit fotku</button>
       </div>
 
       <div id="tiptap-editor" class="tiptap"></div>
     </div>
   </div>
 
-  <!-- skrytý JSON se sekcemi -->
   <script id="sections-json" type="application/json">
     {JSON.stringify(sectionsData)}
   </script>
-
-  <style>
-    h1 { margin-bottom: 20px; }
-
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
-      gap: 24px;
-    }
-
-    .meta {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 16px;
-      border-radius: 12px;
-      background: #141414;
-      border: 1px solid #2a2a2a;
-    }
-
-    label {
-      font-size: 0.85rem;
-      color: #aaa;
-    }
-
-    input, select {
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid #333;
-      background: #1b1b1b;
-      color: #f5f5f5;
-      font-size: 0.95rem;
-    }
-
-    .primary {
-      margin-top: 10px;
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: none;
-      background: #4a90e2;
-      color: white;
-      font-weight: 500;
-      cursor: pointer;
-    }
-
-    .editor-card {
-      border-radius: 12px;
-      background: #101010;
-      border: 1px solid #2a2a2a;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .editor-toolbar {
-      display: flex;
-      gap: 6px;
-      padding: 8px;
-      border-bottom: 1px solid #2a2a2a;
-      background: #151515;
-      position: sticky;
-      top: 0;
-      z-index: 5;
-    }
-
-    .editor-toolbar button {
-      background: #1f1f1f;
-      border: 1px solid #333;
-      color: #ddd;
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-
-    .tiptap {
-      min-height: 380px;
-      padding: 14px 16px;
-      color: #f5f5f5;
-      font-size: 0.95rem;
-    }
-
-    .tiptap img {
-      max-width: 100%;
-      border-radius: 8px;
-      margin: 10px 0;
-    }
-  </style>
 
   <script type="module">
     import { Editor } from "https://cdn.skypack.dev/@tiptap/core";
@@ -157,7 +62,6 @@ const sectionsData = sections;
       content: "<p>Napiš svůj článek…</p>"
     });
 
-    // načtení sekcí z hidden JSONu
     const sectionsRaw = document.getElementById("sections-json").textContent;
     const sectionsData = JSON.parse(sectionsRaw);
 
@@ -182,10 +86,8 @@ const sectionsData = sections;
       });
     });
 
-    // inicializace podsekcí pro první sekci
     sectionSelect.dispatchEvent(new Event("change"));
 
-    // toolbar
     document.getElementById("tiptap-toolbar").addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (!btn) return;
@@ -205,7 +107,6 @@ const sectionsData = sections;
       if (actions[action]) actions[action]();
     });
 
-    // vložit fotku
     document.getElementById("uploadImageBtn").addEventListener("click", async () => {
       const input = document.createElement("input");
       input.type = "file";
@@ -231,7 +132,6 @@ const sectionsData = sections;
       };
     });
 
-    // uložit článek
     document.getElementById("saveBtn").addEventListener("click", async () => {
       const body = {
         title: document.getElementById("title").value,
@@ -250,7 +150,6 @@ const sectionsData = sections;
 
       const data = await res.json();
       if (data.success) {
-        alert("Článek uložen");
         window.location.href = "/admin/articles";
       }
     });
