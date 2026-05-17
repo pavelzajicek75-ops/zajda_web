@@ -59,24 +59,25 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         return;
       }
 
-      try {
-        const res = await fetch("/api/admin/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password })
-        });
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
 
-        const data = await res.json();
+      const data = await res.json();
 
-        if (data.success) {
-          localStorage.setItem("admin_token", data.token);
-          window.location.href = "/admin";
-        } else {
-          alert("Špatné přihlašovací údaje");
-        }
-      } catch (err) {
-        alert("Chyba připojení k serveru");
+      if (data.success) {
+        localStorage.setItem("admin_token", data.token);
+        window.location.href = "/admin";
+      } else {
+        alert("Špatné přihlašovací údaje");
       }
     }
+
+    // ZABRÁNÍ ENTER SUBMITU
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") e.preventDefault();
+    });
   </script>
 </AdminLayout>
