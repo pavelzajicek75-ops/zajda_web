@@ -8,13 +8,14 @@
       content: "<p>Napiš svůj článek…</p>"
     });
 
-    // 🔥 GITHUB PAGES FUNKČNÍ FETCH
+    // 🔥 FUNKČNÍ FETCH PRO CLOUDFLARE PAGES
     const res = await fetch("/data/sections.json");
     const sectionsData = await res.json();
 
     const sectionSelect = document.getElementById("section");
     const subsectionSelect = document.getElementById("subsection");
 
+    // Naplnění sekcí
     Object.keys(sectionsData).forEach(sec => {
       const opt = document.createElement("option");
       opt.value = sec;
@@ -22,6 +23,7 @@
       sectionSelect.appendChild(opt);
     });
 
+    // Naplnění podsekcí
     sectionSelect.addEventListener("change", () => {
       subsectionSelect.innerHTML = "";
       const subs = sectionsData[sectionSelect.value] || [];
@@ -33,5 +35,6 @@
       });
     });
 
+    // Inicializace
     sectionSelect.dispatchEvent(new Event("change"));
   </script>  </div> </body></html>
