@@ -1,7 +1,14 @@
-<!DOCTYPE html><html lang="cs" data-astro-cid-2kanml4j> <head><meta charset="utf-8"><title>Admin</title><style>body{margin:0;padding:20px;background:#111;color:#fff;font-family:system-ui,sans-serif}nav[data-astro-cid-2kanml4j]{display:flex;gap:16px;padding:12px 20px;background:#222;margin:-20px -20px 20px}nav[data-astro-cid-2kanml4j] a[data-astro-cid-2kanml4j]{color:#4a90e2;text-decoration:none}nav[data-astro-cid-2kanml4j] a[data-astro-cid-2kanml4j]:hover{text-decoration:underline}button[data-astro-cid-2kanml4j]{pointer-events:auto!important;opacity:1!important;cursor:pointer!important}
+<!DOCTYPE html><html lang="cs" data-astro-cid-2kanml4j> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Admin</title><style>body{margin:0;background:#121212;color:#fff;font-family:system-ui,sans-serif}header[data-astro-cid-2kanml4j]{background:#1e1e1e;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #333}nav[data-astro-cid-2kanml4j] a[data-astro-cid-2kanml4j]{color:#ccc;margin-right:20px;text-decoration:none}nav[data-astro-cid-2kanml4j] a[data-astro-cid-2kanml4j]:hover{color:#fff}.logout[data-astro-cid-2kanml4j]{cursor:pointer;color:#ff6b6b}main[data-astro-cid-2kanml4j]{padding:20px}
 </style></head> <body data-astro-cid-2kanml4j>  <script>
-          const token = localStorage.getItem("admin_token");
-          if (!token) {
-            window.location.href = "/admin/prihlaseni";
+          document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("admin_token");
+            if (!token) {
+              window.location.href = "/admin/login";
+            }
+          });
+        </script> <header data-astro-cid-2kanml4j> <nav data-astro-cid-2kanml4j> <a href="/admin" data-astro-cid-2kanml4j>Dashboard</a> <a href="/admin/articles" data-astro-cid-2kanml4j>Články</a> <a href="/admin/sections" data-astro-cid-2kanml4j>Sekce</a> <a href="/admin/subsections" data-astro-cid-2kanml4j>Podsekce</a> </nav> <div class="logout" onclick="logout()" data-astro-cid-2kanml4j>Odhlásit</div> </header> <main data-astro-cid-2kanml4j>  <h1>Admin dashboard</h1> <p>Jsi přihlášený jako admin.</p> <ul> <li><a href="/admin/articles">Správa článků</a></li> <li><a href="/admin/upload">Nahrát obrázek</a></li> </ul>  </main> <script>
+          function logout() {
+            localStorage.removeItem("admin_token");
+            window.location.href = "/admin/login";
           }
-        </script> <nav data-astro-cid-2kanml4j> <a href="/admin" data-astro-cid-2kanml4j>Dashboard</a> <a href="/admin/articles" data-astro-cid-2kanml4j>Články</a> <a href="/admin/sections" data-astro-cid-2kanml4j>Sekce</a> <a href="/admin/subsections" data-astro-cid-2kanml4j>Podsekce</a> <a href="/admin/logout" data-astro-cid-2kanml4j>Odhlásit</a> </nav>  <h1>Admin dashboard</h1> <p>Jsi přihlášený jako admin.</p> <ul> <li><a href="/admin/articles">Správa článků</a></li> <li><a href="/admin/upload">Nahrát obrázek</a></li> </ul>   </body></html>
+        </script>  </body> </html>
