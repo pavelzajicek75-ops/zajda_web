@@ -4,64 +4,85 @@ const { title, noAuth = false } = Astro.props;
 
 <html lang="cs">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
 
     <style>
       body {
         margin: 0;
-        padding: 20px;
-        background: #111;
-        color: #fff;
+        background: #121212;
+        color: white;
         font-family: system-ui, sans-serif;
       }
 
-      nav {
+      header {
+        background: #1e1e1e;
+        padding: 15px 20px;
         display: flex;
-        gap: 16px;
-        padding: 12px 20px;
-        background: #222;
-        margin: -20px -20px 20px -20px;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #333;
       }
 
       nav a {
-        color: #4a90e2;
+        color: #ccc;
+        margin-right: 20px;
         text-decoration: none;
       }
 
       nav a:hover {
-        text-decoration: underline;
+        color: white;
       }
 
-      button {
-        pointer-events: auto !important;
-        opacity: 1 !important;
-        cursor: pointer !important;
+      .logout {
+        cursor: pointer;
+        color: #ff6b6b;
+      }
+
+      main {
+        padding: 20px;
       }
     </style>
   </head>
 
   <body>
     {noAuth ? (
-      <slot />
+      <main>
+        <slot />
+      </main>
     ) : (
       <>
         <script>
-          const token = localStorage.getItem("admin_token");
-          if (!token) {
-            window.location.href = "/admin/prihlaseni";
-          }
+          document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("admin_token");
+            if (!token) {
+              window.location.href = "/admin/login";
+            }
+          });
         </script>
 
-        <nav>
-          <a href="/admin">Dashboard</a>
-          <a href="/admin/articles">Články</a>
-          <a href="/admin/sections">Sekce</a>
-          <a href="/admin/subsections">Podsekce</a>
-          <a href="/admin/logout">Odhlásit</a>
-        </nav>
+        <header>
+          <nav>
+            <a href="/admin">Dashboard</a>
+            <a href="/admin/articles">Články</a>
+            <a href="/admin/sections">Sekce</a>
+            <a href="/admin/subsections">Podsekce</a>
+          </nav>
 
-        <slot />
+          <div class="logout" onclick="logout()">Odhlásit</div>
+        </header>
+
+        <main>
+          <slot />
+        </main>
+
+        <script>
+          function logout() {
+            localStorage.removeItem("admin_token");
+            window.location.href = "/admin/login";
+          }
+        </script>
       </>
     )}
   </body>
