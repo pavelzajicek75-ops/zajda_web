@@ -18,7 +18,7 @@ const { title, noAuth = false } = Astro.props;
       <>
         <script>
           // Kontrola tokenu až po načtení stránky
-          window.addEventListener("load", () => {
+          window.addEventListener("DOMContentLoaded", () => {
             const token = localStorage.getItem("admin_token");
             if (!token) {
               window.location.href = "/admin/login";
