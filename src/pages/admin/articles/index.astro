@@ -1,6 +1,6 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
-import articles from '../../../data/articles.json';
+import articles from '../../../../data/articles.json';
 
 // Seřadíme články podle data (nejnovější nahoře)
 const sortedArticles = [...articles].sort((a, b) => {
@@ -12,65 +12,65 @@ const sortedArticles = [...articles].sort((a, b) => {
 
 <AdminLayout title="Články">
   <section class="header">
-    <div>
-      <h1>Články</h1>
-      <p>Správa všech článků na webu.</p>
-    </div>
-
+    <h1>Články</h1>
     <a href="/admin/articles/new" class="btn-primary">+ Nový článek</a>
   </section>
 
-  {sortedArticles.length === 0 ? (
-    <div class="empty">
-      <p>Nemáš žádné články.</p>
-      <a href="/admin/articles/new" class="btn-primary">Vytvořit první článek</a>
-    </div>
-  ) : (
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Název</th>
-            <th>Sekce</th>
-            <th>Podsekce</th>
-            <th>Datum</th>
-            <th>Stav</th>
-            <th></th>
-          </tr>
-        </thead>
+  <table class="article-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Název</th>
+        <th>Slug</th>
+        <th>Sekce</th>
+        <th>Datum</th>
+        <th>Akce</th>
+      </tr>
+    </thead>
 
-        <tbody>
-          {sortedArticles.map((article) => (
-            <tr>
-              <td class="title-cell">
-                <span class="title">{article.title}</span>
-                {article.slug && <span class="slug">/{article.slug}</span>}
-              </td>
+    <tbody>
+      {sortedArticles.map(article => (
+        <tr>
+          <td>{article.id}</td>
+          <td>{article.title}</td>
+          <td>{article.slug}</td>
+          <td>{article.section}</td>
+          <td>{article.date}</td>
+          <td class="actions">
+            <a href={`/admin/edit/${article.id}`} class="btn-edit">Upravit</a>
+            <button class="btn-delete" data-id={article.id}>Smazat</button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
 
-              <td>{article.section || '—'}</td>
-              <td>{article.subsection || '—'}</td>
+  <script>
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.id;
 
-              <td>
-                {article.date
-                  ? new Date(article.date).toLocaleDateString('cs-CZ')
-                  : '—'}
-              </td>
+        if (!confirm(`Opravdu chceš smazat článek ID ${id}?`)) {
+          return;
+        }
 
-              <td>
-                <span class={`status ${article.published ? 'published' : 'draft'}`}>
-                  {article.published ? 'Publikováno' : 'Koncept'}
-                </span>
-              </td>
+        const response = await fetch('/api/articles/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
 
-              <td class="actions">
-                <a href={`/admin/articles/${article.id}`} class="link">Upravit</a>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )}
+        const result = await response.json();
+
+        if (result.success) {
+          alert('Článek byl smazán.');
+          location.reload();
+        } else {
+          alert('Mazání se nepodařilo.');
+        }
+      });
+    });
+  </script>
 </AdminLayout>
 
 <style>
@@ -82,75 +82,50 @@ const sortedArticles = [...articles].sort((a, b) => {
   .header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
     margin-bottom: 2rem;
   }
 
+  .article-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #1e293b;
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-edit {
+    padding: 0.4rem 0.8rem;
+    background: #3b82f6;
+    border-radius: 6px;
+    color: white;
+    text-decoration: none;
+  }
+
+  .btn-delete {
+    padding: 0.4rem 0.8rem;
+    background: #ef4444;
+    border-radius: 6px;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
   .btn-primary {
-    padding: 0.6rem 1.2rem;
+    padding: 0.8rem 1.4rem;
     border-radius: 999px;
     background: linear-gradient(135deg, #22c55e, #16a34a);
     color: #020617;
     font-weight: 600;
     text-decoration: none;
     box-shadow: 0 0 20px rgba(34, 197, 94, 0.35);
-  }
-
-  .empty {
-    border: 1px dashed #1f2937;
-    padding: 2rem;
-    text-align: center;
-    border-radius: 1rem;
-  }
-
-  .table-wrapper {
-    border-radius: 1rem;
-    border: 1px solid #111827;
-    overflow: hidden;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  thead {
-    background: rgba(15, 23, 42, 0.95);
-  }
-
-  th, td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid #111827;
-  }
-
-  .title-cell {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .slug {
-    font-size: 0.8rem;
-    color: #6b7280;
-  }
-
-  .status {
-    padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-  }
-
-  .status.published {
-    background: rgba(34, 197, 94, 0.12);
-    color: #4ade80;
-  }
-
-  .status.draft {
-    background: rgba(148, 163, 184, 0.12);
-    color: #e5e7eb;
-  }
-
-  .actions .link {
-    color: #60a5fa;
-    text-decoration: none;
+    border: none;
   }
 </style>
