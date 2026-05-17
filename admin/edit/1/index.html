@@ -2,7 +2,7 @@
 </style><script type="module">const t=document.getElementById("editForm");t.addEventListener("submit",async n=>{n.preventDefault();const e=Object.fromEntries(new FormData(t).entries());e.id={id},(await fetch("/api/articles/update",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(e)})).ok?window.location.href="/admin/articles":alert("Nepodařilo se uložit změny.")});
 </script></head> <body>  <script>
           // Kontrola tokenu až po načtení stránky
-          window.addEventListener("load", () => {
+          window.addEventListener("DOMContentLoaded", () => {
             const token = localStorage.getItem("admin_token");
             if (!token) {
               window.location.href = "/admin/login";

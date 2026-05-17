@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="cs"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Admin</title></head> <body>  <script>
           // Kontrola tokenu až po načtení stránky
-          window.addEventListener("load", () => {
+          window.addEventListener("DOMContentLoaded", () => {
             const token = localStorage.getItem("admin_token");
             if (!token) {
               window.location.href = "/admin/login";

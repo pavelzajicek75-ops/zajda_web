@@ -2,7 +2,7 @@
 </style><script type="module">document.querySelectorAll(".btn-delete").forEach(e=>{e.addEventListener("click",async()=>{const t=e.dataset.id;if(!confirm(`Opravdu chceš smazat článek ID ${t}?`))return;(await(await fetch("/api/articles/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:t})})).json()).success?(alert("Článek byl smazán."),location.reload()):alert("Mazání se nepodařilo.")})});
 </script></head> <body>  <script>
           // Kontrola tokenu až po načtení stránky
-          window.addEventListener("load", () => {
+          window.addEventListener("DOMContentLoaded", () => {
             const token = localStorage.getItem("admin_token");
             if (!token) {
               window.location.href = "/admin/login";
