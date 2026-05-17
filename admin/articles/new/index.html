@@ -1,12 +1,4 @@
-<!DOCTYPE html><html lang="cs"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Nový článek</title></head> <body>  <script>
-          // Kontrola tokenu až po načtení stránky
-          window.addEventListener("DOMContentLoaded", () => {
-            const token = localStorage.getItem("admin_token");
-            if (!token) {
-              window.location.href = "/admin/login";
-            }
-          });
-        </script> <header style="background:#1e1e1e;padding:15px;color:white;"> <nav> <a href="/admin" style="color:white;margin-right:20px;">Dashboard</a> <a href="/admin/articles" style="color:white;margin-right:20px;">Články</a> <a href="/admin/upload" style="color:white;">Upload</a> </nav> </header> <main style="padding:20px;">  <h1>Nový článek</h1> <div class="layout"> <form id="articleForm" class="meta"> <label>Sekce</label> <select id="section"></select> <label>Podsekce</label> <select id="subsection"></select> <label>Datum</label> <input type="date" id="date" value="2026-05-17"> <label>Místo</label> <input type="text" id="location" placeholder="např. Brno, New York…"> <label>Název článku</label> <input type="text" id="title" placeholder="Název článku"> <button type="button" id="saveBtn" class="primary">💾 Uložit článek</button> </form> <div class="editor-card"> <div class="editor-toolbar" id="tiptap-toolbar"> <button data-action="bold"><b>B</b></button> <button data-action="italic"><i>I</i></button> <button data-action="heading1">H1</button> <button data-action="heading2">H2</button> <button data-action="bulletList">• List</button> <button data-action="orderedList">1. List</button> <button data-action="blockquote">„“</button> <button data-action="codeBlock">&lt;/&gt;</button> <button id="uploadImageBtn">📷 Vložit fotku</button> </div> <div id="tiptap-editor" class="tiptap"></div> </div> </div> <script id="sections-json" type="application/json">
+<!DOCTYPE html><html lang="cs"> <head><meta charset="utf-8"><title>Nový článek</title><link rel="stylesheet" href="/src/styles/admin.css"></head> <body> <div class="admin-container">  <h1>Nový článek</h1> <div class="layout"> <form id="articleForm" class="meta"> <label>Sekce</label> <select id="section"></select> <label>Podsekce</label> <select id="subsection"></select> <label>Datum</label> <input type="date" id="date" value="2026-05-17"> <label>Místo</label> <input type="text" id="location" placeholder="např. Brno, New York…"> <label>Název článku</label> <input type="text" id="title" placeholder="Název článku"> <button type="button" id="saveBtn" class="primary">💾 Uložit článek</button> </form> <div class="editor-card"> <div class="editor-toolbar" id="tiptap-toolbar"> <button data-action="bold"><b>B</b></button> <button data-action="italic"><i>I</i></button> <button data-action="heading1">H1</button> <button data-action="heading2">H2</button> <button data-action="bulletList">• List</button> <button data-action="orderedList">1. List</button> <button data-action="blockquote">„“</button> <button data-action="codeBlock">&lt;/&gt;</button> <button id="uploadImageBtn">📷 Vložit fotku</button> </div> <div id="tiptap-editor" class="tiptap"></div> </div> </div> <script id="sections-json" type="application/json">
     {JSON.stringify(sectionsData)}
   </script> <script type="module">
     import { Editor } from "https://cdn.skypack.dev/@tiptap/core";
@@ -110,4 +102,4 @@
         window.location.href = "/admin/articles";
       }
     });
-  </script>  </main>  </body></html>
+  </script>  </div> </body></html>

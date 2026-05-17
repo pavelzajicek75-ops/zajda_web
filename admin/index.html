@@ -1,9 +1,1 @@
-<!DOCTYPE html><html lang="cs"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Admin</title></head> <body>  <script>
-          // Kontrola tokenu až po načtení stránky
-          window.addEventListener("DOMContentLoaded", () => {
-            const token = localStorage.getItem("admin_token");
-            if (!token) {
-              window.location.href = "/admin/login";
-            }
-          });
-        </script> <header style="background:#1e1e1e;padding:15px;color:white;"> <nav> <a href="/admin" style="color:white;margin-right:20px;">Dashboard</a> <a href="/admin/articles" style="color:white;margin-right:20px;">Články</a> <a href="/admin/upload" style="color:white;">Upload</a> </nav> </header> <main style="padding:20px;">  <h1>Admin dashboard</h1> <p>Jsi přihlášený jako admin.</p> <ul> <li><a href="/admin/articles">Správa článků</a></li> <li><a href="/admin/upload">Nahrát obrázek</a></li> </ul>  </main>  </body></html>
+<!DOCTYPE html><html lang="cs"> <head><meta charset="utf-8"><title>Admin</title><link rel="stylesheet" href="/src/styles/admin.css"></head> <body> <div class="admin-container">  <h1>Admin dashboard</h1> <p>Jsi přihlášený jako admin.</p> <ul> <li><a href="/admin/articles">Správa článků</a></li> <li><a href="/admin/upload">Nahrát obrázek</a></li> </ul>  </div> </body></html>
