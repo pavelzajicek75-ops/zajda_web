@@ -1,29 +1,25 @@
-name: Deploy Astro site to GitHub Pages
+export async function onRequestPost(context) {
+  const formData = await context.request.formData();
+  const file = formData.get("file");
 
-on:
-  push:
-    branches: ["main"]
+  if (!file) {
+    return new Response(JSON.stringify({ error: "No file uploaded" }), {
+      status: 400
+    });
+  }
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  const arrayBuffer = await file.arrayBuffer();
+  const key = file.name;
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+  // Upload do R2
+  await context.env.R2_BUCKET.put(key, arrayBuffer, {
+    httpMetadata: { contentType: file.type }
+  });
 
-      - name: Install dependencies
-        run: npm install
+  // Veřejná URL
+  const publicUrl = `https://${context.env.ACCOUNT_ID}.r2.cloudflarestorage.com/${context.env.BUCKET_NAME}/${key}`;
 
-      - name: Build
-        run: npm run build
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+  return new Response(JSON.stringify({ success: true, url: publicUrl }), {
+    status: 200
+  });
+}
