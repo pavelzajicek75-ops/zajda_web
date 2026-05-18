@@ -1,0 +1,13 @@
+---
+// /src/pages/admin/upload.astro
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Upload obrázku">
+  <h1>Upload obrázku do R2</h1>
+
+  <form action="/api/r2-upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" accept="image/*" required />
+    <button type="submit">Nahrát obrázek</button>
+  </form>
+</AdminLayout>
