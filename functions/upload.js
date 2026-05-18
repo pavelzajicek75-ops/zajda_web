@@ -16,25 +16,48 @@ export async function onRequestPost(context) {
     httpMetadata: { contentType: file.type }
   });
 
-  // Vytvoření thumbnailu
-  const image = await context.env.ASSETS.fetch("https://dummy"); // hack pro aktivaci Image API
+  // Vytvoření bitmapy
   const bitmap = await createImageBitmap(new Blob([arrayBuffer]));
 
+  // Thumbnail
   const maxWidth = 400;
   const scale = maxWidth / bitmap.width;
   const newWidth = maxWidth;
   const newHeight = Math.round(bitmap.height * scale);
 
-  const offscreen = new OffscreenCanvas(newWidth, newHeight);
-  const ctx = offscreen.getContext("2d");
-  ctx.drawImage(bitmap, 0, 0, newWidth, newHeight);
+  const canvasThumb = new OffscreenCanvas(newWidth, newHeight);
+  const ctxThumb = canvasThumb.getContext("2d");
+  ctxThumb.drawImage(bitmap, 0, 0, newWidth, newHeight);
 
-  const thumbBlob = await offscreen.convertToBlob({ type: file.type });
+  const thumbBlob = await canvasThumb.convertToBlob({ type: file.type });
   const thumbBuffer = await thumbBlob.arrayBuffer();
 
-  // Uložení thumbnailu
   await context.env.R2_BUCKET.put(`thumbs/${key}`, thumbBuffer, {
     httpMetadata: { contentType: file.type }
+  });
+
+  // WebP originál
+  const canvasWebp = new OffscreenCanvas(bitmap.width, bitmap.height);
+  const ctxWebp = canvasWebp.getContext("2d");
+  ctxWebp.drawImage(bitmap, 0, 0);
+
+  const webpBlob = await canvasWebp.convertToBlob({ type: "image/webp", quality: 0.85 });
+  const webpBuffer = await webpBlob.arrayBuffer();
+
+  await context.env.R2_BUCKET.put(`webp/original/${key}.webp`, webpBuffer, {
+    httpMetadata: { contentType: "image/webp" }
+  });
+
+  // WebP thumbnail
+  const canvasWebpThumb = new OffscreenCanvas(newWidth, newHeight);
+  const ctxWebpThumb = canvasWebpThumb.getContext("2d");
+  ctxWebpThumb.drawImage(bitmap, 0, 0, newWidth, newHeight);
+
+  const webpThumbBlob = await canvasWebpThumb.convertToBlob({ type: "image/webp", quality: 0.85 });
+  const webpThumbBuffer = await webpThumbBlob.arrayBuffer();
+
+  await context.env.R2_BUCKET.put(`webp/thumbs/${key}.webp`, webpThumbBuffer, {
+    httpMetadata: { contentType: "image/webp" }
   });
 
   // Veřejná URL originálu
