@@ -1,0 +1,44 @@
+---
+import Layout from "../../layouts/MainLayout.astro";
+
+const id = Astro.params.id;
+
+// Načtení článku
+let article = {};
+try {
+  const res = await fetch(`/api/articles/get?id=${id}`);
+  article = await res.json();
+} catch (e) {
+  console.error("Failed to load article:", e);
+}
+
+// Funkce pro nahrazení <img> za <picture>
+function transformImages(html) {
+  return html.replace(
+    /<img\s+src="([^"]+)"[^>]*>/g,
+    (_, url) => `
+      <picture>
+        <source srcset="${url}?width=1200&format=webp" type="image/webp" />
+        <source srcset="${url}?width=1200" type="image/jpeg" />
+        <img src="${url}?width=1200" alt="" loading="lazy" />
+      </picture>
+    `
+  );
+}
+
+const content = transformImages(article.content || "");
+---
+
+<Layout title={article.title}>
+  <h1>{article.title}</h1>
+
+  <article class="content" set:html={content}></article>
+
+  <style>
+    .content picture img {
+      width: 100%;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+  </style>
+</Layout>
