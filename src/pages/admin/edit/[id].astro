@@ -1,6 +1,5 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
-import articles from '../../../../data/articles.json';
 
 const { id } = Astro.params;
 const article = articles.find(a => String(a.id) === String(id));
