@@ -1,0 +1,30 @@
+---
+export const prerender = false;
+
+const id = Astro.params.id;
+
+let article = {};
+let photos = [];
+
+try {
+  const res = await fetch(`/api/articles/get?id=${id}`);
+  article = await res.json();
+} catch (e) {
+  console.error("Failed to load article:", e);
+}
+
+try {
+  const res = await fetch('/api/photos/list');
+  photos = await res.json();
+} catch (e) {
+  console.error("Failed to load photos:", e);
+}
+---
+
+<h1>Upravit článek</h1>
+
+<p>Formulář se načte až v prohlížeči.</p>
+
+<script>
+  // Tady bude JS pro editaci článku
+</script>
