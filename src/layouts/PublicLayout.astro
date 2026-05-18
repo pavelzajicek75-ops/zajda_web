@@ -1,0 +1,28 @@
+---
+const { title } = Astro.props;
+---
+
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title ? `${title} | Moje diagnóza, můj vesmír` : "Moje diagnóza, můj vesmír"}</title>
+  </head>
+
+  <body
+    style="
+      margin: 0;
+      background:
+        radial-gradient(circle at top, rgba(255, 140, 58, 0.18), transparent 55%),
+        radial-gradient(circle at 10% 90%, rgba(120, 80, 255, 0.18), transparent 55%),
+        radial-gradient(circle at 90% 10%, rgba(255, 255, 255, 0.06), transparent 60%),
+        #050509;
+      font-family: system-ui, sans-serif;
+      color: #f3f3f3;
+    "
+  >
+    <main style="max-width: 1120px; margin: 0 auto; padding: 2.5rem 1.5rem 2rem;">
+      <slot />
+    </main>
+  </body>
+</html>
