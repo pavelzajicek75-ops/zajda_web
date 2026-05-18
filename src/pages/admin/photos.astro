@@ -13,7 +13,7 @@ try {
   console.error("Failed to load photos:", e);
 }
 
-// Funkce pro mazání (běží v prohlížeči)
+// Mazání fotky
 const deletePhoto = async (key) => {
   if (!confirm(`Opravdu smazat ${key}?`)) return;
 
@@ -31,6 +31,12 @@ const deletePhoto = async (key) => {
   } else {
     alert("Chyba při mazání: " + data.error);
   }
+};
+
+// Kopírování URL fotky
+const copyPhotoUrl = async (url) => {
+  await navigator.clipboard.writeText(url);
+  alert("URL zkopírována do schránky.");
 };
 ---
 
@@ -54,6 +60,22 @@ const deletePhoto = async (key) => {
           Velikost: {(photo.size / 1024).toFixed(1)} KB<br />
           Nahráno: {new Date(photo.uploaded).toLocaleString()}
         </div>
+
+        <button 
+          style="
+            margin-top: 10px;
+            width: 100%;
+            padding: 8px;
+            background: #1976d2;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+          "
+          onClick={() => copyPhotoUrl(photo.url)}
+        >
+          📋 Vložit do článku
+        </button>
 
         <button 
           style="
