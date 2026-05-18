@@ -33,7 +33,7 @@ const deletePhoto = async (key) => {
   }
 };
 
-// Kopírování URL fotky
+// Kopírování URL originálu
 const copyPhotoUrl = async (url) => {
   await navigator.clipboard.writeText(url);
   alert("URL zkopírována do schránky.");
@@ -48,51 +48,54 @@ const copyPhotoUrl = async (url) => {
   )}
 
   <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 20px;">
-    {photos.map(photo => (
-      <div style="background: #1a1a1a; padding: 10px; border-radius: 8px;">
-        <img 
-          src={photo.url} 
-          alt={photo.key} 
-          style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px;"
-        />
-        <div style="margin-top: 10px; font-size: 14px;">
-          <strong>{photo.key}</strong><br />
-          Velikost: {(photo.size / 1024).toFixed(1)} KB<br />
-          Nahráno: {new Date(photo.uploaded).toLocaleString()}
+    {photos.map(photo => {
+      const thumbUrl = photo.url.replace("/original/", "/thumbs/");
+      return (
+        <div style="background: #1a1a1a; padding: 10px; border-radius: 8px;">
+          <img 
+            src={thumbUrl} 
+            alt={photo.key} 
+            style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px;"
+          />
+          <div style="margin-top: 10px; font-size: 14px;">
+            <strong>{photo.key}</strong><br />
+            Velikost: {(photo.size / 1024).toFixed(1)} KB<br />
+            Nahráno: {new Date(photo.uploaded).toLocaleString()}
+          </div>
+
+          <button 
+            style="
+              margin-top: 10px;
+              width: 100%;
+              padding: 8px;
+              background: #1976d2;
+              border: none;
+              border-radius: 6px;
+              color: white;
+              cursor: pointer;
+            "
+            onClick={() => copyPhotoUrl(photo.url)}
+          >
+            📋 Vložit do článku
+          </button>
+
+          <button 
+            style="
+              margin-top: 10px;
+              width: 100%;
+              padding: 8px;
+              background: #c62828;
+              border: none;
+              border-radius: 6px;
+              color: white;
+              cursor: pointer;
+            "
+            onClick={() => deletePhoto(photo.key)}
+          >
+            🗑️ Smazat
+          </button>
         </div>
-
-        <button 
-          style="
-            margin-top: 10px;
-            width: 100%;
-            padding: 8px;
-            background: #1976d2;
-            border: none;
-            border-radius: 6px;
-            color: white;
-            cursor: pointer;
-          "
-          onClick={() => copyPhotoUrl(photo.url)}
-        >
-          📋 Vložit do článku
-        </button>
-
-        <button 
-          style="
-            margin-top: 10px;
-            width: 100%;
-            padding: 8px;
-            background: #c62828;
-            border: none;
-            border-radius: 6px;
-            color: white;
-            cursor: pointer;
-          "
-          onClick={() => deletePhoto(photo.key)}
-        >
-          🗑️ Smazat
-        </button>
-      </div>
-    ))}
+      );
+    })}
   </div>
 </Layout>
