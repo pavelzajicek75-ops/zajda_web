@@ -1,5 +1,5 @@
 ---
-import Layout from "../../layouts/BaseLayout.astro";
+import Layout from "../../layouts/PublicLayout.astro";
 
 const id = Astro.params.id;
 
@@ -30,7 +30,7 @@ const content = transformImages(article.content || "");
 ---
 
 <Layout title={article.title}>
-  <h1>{article.title}</h1>
+  <h1 style="margin-bottom: 1.5rem;">{article.title}</h1>
 
   <article class="content" set:html={content}></article>
 
