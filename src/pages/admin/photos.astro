@@ -49,7 +49,7 @@ const copyPhotoUrl = async (url) => {
 
   <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 20px;">
     {photos.map(photo => {
-      const thumbUrl = photo.url.replace("/original/", "/thumbs/");
+      const thumbUrl = `${photo.url}?width=400&format=webp`;
       return (
         <div style="background: #1a1a1a; padding: 10px; border-radius: 8px;">
           <img 
