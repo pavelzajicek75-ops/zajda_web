@@ -1,0 +1,19 @@
+---
+export const prerender = false;
+
+let photos = [];
+try {
+  const res = await fetch('/api/photos/list');
+  photos = await res.json();
+} catch (e) {
+  console.error("Failed to load photos:", e);
+}
+---
+
+<h1>Fotky</h1>
+
+<p>Obsah se načte až v prohlížeči.</p>
+
+<script>
+  // Tady můžeš mít JS pro načítání fotek
+</script>
