@@ -1,9 +1,0 @@
-{
-  "subsections": [
-    { "id": 1, "section_id": 1, "name": "USA 2020", "slug": "usa-2020" },
-    { "id": 2, "section_id": 1, "name": "Island", "slug": "island" },
-    { "id": 3, "section_id": 1, "name": "Tokyo", "slug": "tokyo" },
-    { "id": 4, "section_id": 2, "name": "Krajiny", "slug": "krajiny" },
-    { "id": 5, "section_id": 2, "name": "Města", "slug": "mesta" }
-  ]
-}
